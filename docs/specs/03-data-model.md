@@ -66,7 +66,7 @@ Cả 4 schema đều bật `timestamps: true`, Mongoose tự thêm `createdAt` v
 
 | Trường | Kiểu | Bắt buộc | Mặc định | Ràng buộc / validate |
 | --- | --- | --- | --- | --- |
-| username | String | Có | | unique, trim, 3–30 ký tự, chỉ chữ, số và `_` |
+| username | String | Có | | unique, lowercase, trim, 3–30 ký tự, chỉ chữ, số và `_` |
 | email | String | Có | | unique, lowercase, trim, đúng định dạng email |
 | passwordHash | String | Có | | hash bcrypt (10 salt rounds), `select: false` để không lộ ra khi query |
 | role | String | Có | `member` | enum: `member`, `admin` |

@@ -13,8 +13,8 @@ Form HTML chỉ gửi được GET/POST, nên sửa và xoá dùng POST tới `/
 | GET | `/search?q=` | UC03 | Tìm theo tiêu đề | Công khai |
 | GET | `/categories/:slug` | UC03 | Bài theo danh mục | Công khai |
 | GET | `/tags/:tag` | UC03 | Bài theo tag | Công khai |
-| GET, POST | `/register` | UC04 | Form / xử lý đăng ký | Chưa đăng nhập |
-| GET, POST | `/login` | UC05 | Form / xử lý đăng nhập | Chưa đăng nhập |
+| GET, POST | `/register` | UC04 | Form / xử lý đăng ký | `redirectIfLoggedIn` |
+| GET, POST | `/login` | UC05 | Form / xử lý đăng nhập | `redirectIfLoggedIn` |
 | POST | `/logout` | UC06 | Huỷ session | `requireLogin` |
 | GET, POST | `/profile` | UC07 | Xem / cập nhật email, mật khẩu | `requireLogin` |
 | GET | `/posts/new` | UC08 | Form tạo bài | `requireLogin` |
@@ -53,10 +53,11 @@ npm run create-admin -- <email>
 
 | Tên | Kiểm tra | Không đạt thì |
 | --- | --- | --- |
-| `loadUser` (gắn toàn app) | Đọc `userId` trong session, gán `res.locals.currentUser` cho view | Bỏ qua, coi là khách |
+| `loadUser` (gắn toàn app) | Đọc `userId` trong session, gán `res.locals.currentUser` cho view | Bỏ qua, coi là khách. User không tồn tại hoặc bị khoá thì xoá `userId`, `role` khỏi session |
 | `requireLogin` | Có `currentUser` | Redirect `/login` |
 | `requireOwnerOrAdmin` | `doc.author` = user hiện tại hoặc `role = admin` | Trả trang 403 |
 | `requireAdmin` | `role = admin` | Trả trang 403 |
+| `redirectIfLoggedIn` | Đã đăng nhập | Redirect `/` |
 
 ## Danh sách view (EJS)
 

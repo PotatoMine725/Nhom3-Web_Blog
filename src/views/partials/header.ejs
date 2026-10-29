@@ -16,6 +16,7 @@
     </form>
     <% if (currentUser) { %>
       <a class="btn btn-sm btn-primary me-2" href="/posts/new">Viết bài</a>
+      <span class="me-2 text-secondary"><%= currentUser.username %></span>
       <form action="/logout" method="post" class="d-inline">
         <button class="btn btn-sm btn-outline-secondary">Đăng xuất</button>
       </form>
@@ -26,3 +27,6 @@
   </div>
 </nav>
 <main class="container">
+<% if (flash) { %>
+  <div class="alert alert-<%= flash.type %>"><%= flash.message %></div>
+<% } %>
