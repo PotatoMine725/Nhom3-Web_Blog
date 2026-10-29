@@ -62,5 +62,9 @@ docs/                # specs, plans, reports, reviews, prompts
 
 ## Git
 
-- Mỗi phần việc một branch, mở PR vào `main`.
-- Commit message ngắn, tiếng Việt hoặc tiếng Anh, nói rõ làm gì.
+Chi tiết: `docs/GIT_CONVENTION.md`. Tóm tắt:
+
+- Tạo nhánh từ `dev`: `feature/...`, `fix/...`, `docs/...`, `chore/...` (chữ thường, không dấu, nối `-`).
+- PR luôn vào **`dev`**, không bao giờ vào `main`. Không push trực tiếp lên `dev` hay `main`.
+- `dev` → `main` chỉ khi feature chạy ổn định trên giao diện web, và người dùng quyết định.
+- Commit và title PR: `<loại>: <mô tả>` với loại là `feat`, `fix`, `docs`, `refactor`, `style`, `chore`. Ví dụ `feat: CRUD bài viết (UC08–UC11)`.
