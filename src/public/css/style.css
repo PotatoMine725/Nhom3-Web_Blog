@@ -2,3 +2,59 @@
 body {
   min-height: 100vh;
 }
+
+/* Bảng màu kiểu Stack Overflow: ghi đè biến của Bootstrap 5.3 */
+:root {
+  --bs-primary: #0074cc;
+  --bs-primary-rgb: 0, 116, 204;
+  --bs-link-color: #0074cc;
+  --bs-link-color-rgb: 0, 116, 204;
+  --bs-link-hover-color: #0063bf;
+  --bs-link-hover-color-rgb: 0, 99, 191;
+  --bs-body-color: #232629;
+  --bs-body-color-rgb: 35, 38, 41;
+  --bs-secondary-color: #6a737c;
+  --bs-secondary-rgb: 106, 115, 124;
+  --bs-border-color: #d6d9dc;
+  --bs-tertiary-bg-rgb: 248, 249, 249;
+}
+
+/* Nút xanh: .btn-primary và .btn-outline-primary đọc biến riêng, không đọc --bs-primary */
+.btn-primary {
+  --bs-btn-bg: #0074cc;
+  --bs-btn-border-color: #0074cc;
+  --bs-btn-hover-bg: #0063bf;
+  --bs-btn-hover-border-color: #0063bf;
+  --bs-btn-active-bg: #0057a8;
+  --bs-btn-active-border-color: #0057a8;
+  --bs-btn-disabled-bg: #0074cc;
+  --bs-btn-disabled-border-color: #0074cc;
+  --bs-btn-focus-shadow-rgb: 0, 116, 204;
+}
+
+.btn-outline-primary {
+  --bs-btn-color: #0074cc;
+  --bs-btn-border-color: #0074cc;
+  --bs-btn-hover-bg: #0063bf;
+  --bs-btn-hover-border-color: #0063bf;
+  --bs-btn-active-bg: #0057a8;
+  --bs-btn-active-border-color: #0057a8;
+  --bs-btn-disabled-color: #0074cc;
+  --bs-btn-disabled-border-color: #0074cc;
+  --bs-btn-focus-shadow-rgb: 0, 116, 204;
+}
+
+/* Navbar: nền xám nhạt, viền cam ở trên */
+.navbar {
+  border-top: 3px solid #f48024;
+}
+
+.navbar-brand:hover {
+  color: #f48024;
+}
+
+/* Viền focus của ô nhập theo màu chính */
+.form-control:focus {
+  border-color: #0074cc;
+  box-shadow: 0 0 0 0.25rem rgba(0, 116, 204, 0.25);
+}
