@@ -37,6 +37,18 @@ Lưu ý:
 - Khai báo `/posts/new` trước `/posts/:slug`, nếu không Express sẽ hiểu `new` là một slug.
 - Admin không tự khoá hoặc hạ quyền chính mình.
 
+## Tạo admin đầu tiên
+
+Đăng ký luôn tạo user với `role = member`, và chỉ admin mới đổi được vai trò (UC15). Vì vậy admin đầu tiên được tạo bằng script chạy trên máy, không qua web:
+
+```bash
+npm run create-admin -- <email>
+```
+
+- Script `scripts/create-admin.js` kết nối MongoDB theo `.env`, tìm user theo email (user phải đăng ký trước), đặt `role = admin`, in kết quả rồi thoát.
+- Không tìm thấy email: báo lỗi, không tạo user mới.
+- Chỉ người có quyền truy cập máy chạy server mới làm được, nên không cần thêm route hay giao diện.
+
 ## Middleware
 
 | Tên | Kiểm tra | Không đạt thì |

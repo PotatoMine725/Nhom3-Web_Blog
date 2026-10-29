@@ -29,6 +29,7 @@ npm install          # cài thư viện
 cp .env.example .env # tạo file cấu hình (lần đầu)
 npm run dev          # chạy với nodemon (cần MongoDB đã bật)
 npm start            # chạy thường
+npm run create-admin -- <email>  # nâng user lên admin (cần MongoDB, có từ plan auth)
 ```
 
 ## Cấu trúc

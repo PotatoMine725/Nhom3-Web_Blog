@@ -29,12 +29,14 @@ src/
   utils/            # hàm dùng chung (slugify, ...)
   views/            # EJS: partials, posts, auth, users, admin, errors
   public/           # css, js tĩnh
+scripts/
+  create-admin.js   # nâng một user đã đăng ký lên admin (specs/04)
 ```
 
 ## Thứ tự triển khai
 
 1. Khung project và kết nối DB (xong).
-2. Đăng ký / đăng nhập / đăng xuất (UC04–UC06) + middleware.
+2. Đăng ký / đăng nhập / đăng xuất (UC04–UC06) + middleware + script `create-admin`.
 3. CRUD bài viết (UC01, UC02, UC08–UC11).
 4. Bình luận (UC12, UC13).
 5. Danh mục, tag, tìm kiếm (UC03, UC14).

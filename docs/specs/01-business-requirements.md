@@ -41,3 +41,4 @@ Hệ thống là một blog nhiều tác giả. Thành viên đăng bài, ngư�
 | Ngày | Thay đổi | Người duyệt |
 | --- | --- | --- |
 | 2026-10-29 | Bản đầu tiên | Hoang |
+| 2026-10-29 | Thêm cách tạo admin đầu tiên bằng script `npm run create-admin` (specs/04) | Hoang |
