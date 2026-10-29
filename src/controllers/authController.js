@@ -1,5 +1,8 @@
 const User = require('../models/User');
 
+// Trường lặp trong form (a=1&a=2) thành mảng; coi như rỗng để ra lỗi validate thay vì 500
+const str = (v) => (typeof v === 'string' ? v : '');
+
 function showRegister(req, res) {
   res.render('auth/register', { title: 'Đăng ký', errors: [], values: {} });
 }
@@ -8,10 +11,10 @@ function showRegister(req, res) {
 async function register(req, res, next) {
   try {
     // Không lấy role/isLocked từ form; role mặc định là member
-    const username = (req.body.username || '').trim();
-    const email = (req.body.email || '').trim().toLowerCase();
-    const password = req.body.password || '';
-    const confirmPassword = req.body.confirmPassword || '';
+    const username = str(req.body.username).trim();
+    const email = str(req.body.email).trim().toLowerCase();
+    const password = str(req.body.password);
+    const confirmPassword = str(req.body.confirmPassword);
 
     const errors = [];
     const user = new User({ username, email });
@@ -23,8 +26,8 @@ async function register(req, res, next) {
     }
 
     // Mật khẩu không nằm trong schema nên kiểm tra ở đây (bcrypt bỏ qua phần sau 72 byte)
-    if (password.length < 6 || password.length > 72) {
-      errors.push('Mật khẩu từ 6 đến 72 ký tự');
+    if (password.length < 6 || Buffer.byteLength(password, 'utf8') > 72) {
+      errors.push('Mật khẩu từ 6 ký tự, tối đa 72 byte (khoảng 72 ký tự không dấu)');
     } else if (confirmPassword !== password) {
       errors.push('Mật khẩu nhập lại không khớp');
     }
@@ -67,8 +70,8 @@ function showLogin(req, res) {
 // UC05, BR8
 async function login(req, res, next) {
   try {
-    const email = (req.body.email || '').trim().toLowerCase();
-    const password = req.body.password || '';
+    const email = str(req.body.email).trim().toLowerCase();
+    const password = str(req.body.password);
 
     const user = await User.findOne({ email }).select('+passwordHash');
     // Cùng một câu cho "không có user" và "sai mật khẩu" để không lộ email nào tồn tại
