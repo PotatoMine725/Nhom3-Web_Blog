@@ -55,6 +55,7 @@ docs/                # specs, plans, reports, reviews, prompts
 - Sửa/xoá dùng `POST .../edit`, `POST .../delete` (không dùng method-override).
 - `author` luôn lấy từ session, không lấy từ form.
 - Mật khẩu: `bcryptjs`, field `passwordHash` có `select: false`.
+- Đăng nhập thành công thì gọi `req.session.regenerate()` trước khi gán `userId` (chống session fixation).
 - Không thêm thư viện mới khi chưa cần; nếu cần, nêu lý do trong plan.
 - Không commit `.env` hay `node_modules`.
 

@@ -5,9 +5,15 @@ const createApp = require('./app');
 
 const PORT = process.env.PORT || 3000;
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/nhom3_blog';
-const SESSION_SECRET = process.env.SESSION_SECRET || 'dev-secret';
+const SESSION_SECRET = process.env.SESSION_SECRET;
+const HOST = '127.0.0.1'; // chỉ chạy localhost, máy khác trong mạng không truy cập được
 
 async function start() {
+  if (!SESSION_SECRET) {
+    console.error('Thiếu SESSION_SECRET trong .env (copy từ .env.example).');
+    process.exit(1);
+  }
+
   try {
     await connectDB(MONGODB_URI);
   } catch (err) {
@@ -17,7 +23,7 @@ async function start() {
   }
 
   const app = createApp({ mongoUri: MONGODB_URI, sessionSecret: SESSION_SECRET });
-  app.listen(PORT, () => {
+  app.listen(PORT, HOST, () => {
     console.log(`Server chạy tại http://localhost:${PORT}`);
   });
 }
