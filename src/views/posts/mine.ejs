@@ -1,0 +1,32 @@
+<%- include('../partials/header') %>
+
+<h1 class="h3 mb-4"><%= title %></h1>
+
+<% if (posts.length === 0) { %>
+  <p class="text-secondary">Bạn chưa có bài viết nào. <a href="/posts/new">Viết bài</a></p>
+<% } else { %>
+  <table class="table align-middle">
+    <thead>
+      <tr><th>Tiêu đề</th><th>Trạng thái</th><th>Ngày tạo</th><th></th></tr>
+    </thead>
+    <tbody>
+      <% posts.forEach(function (post) { %>
+        <tr>
+          <td><a href="/posts/<%= post.slug %>"><%= post.title %></a></td>
+          <td><%= post.status === 'draft' ? 'Nháp' : 'Đã đăng' %></td>
+          <td><%= post.createdAt.toLocaleDateString('vi-VN') %></td>
+          <td class="text-end">
+            <div class="d-flex gap-2 justify-content-end">
+              <a class="btn btn-sm btn-outline-primary" href="/posts/<%= post.slug %>/edit">Sửa</a>
+              <form action="/posts/<%= post.slug %>/delete" method="post" onsubmit="return confirm('Xoá bài viết này?')">
+                <button class="btn btn-sm btn-outline-danger">Xoá</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+<% } %>
+
+<%- include('../partials/footer') %>

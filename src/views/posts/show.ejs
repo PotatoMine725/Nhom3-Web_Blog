@@ -1,0 +1,37 @@
+<%- include('../partials/header') %>
+
+<article>
+  <h1 class="h3 mb-2">
+    <%= post.title %>
+    <% if (post.status === 'draft') { %><span class="badge text-bg-secondary fs-6">Nháp</span><% } %>
+  </h1>
+
+  <div class="small text-secondary mb-3">
+    <%= post.author ? post.author.username : 'Không rõ' %>
+    · Tạo <%= post.createdAt.toLocaleDateString('vi-VN') %>
+    <% if (post.updatedAt.getTime() !== post.createdAt.getTime()) { %>
+      · Cập nhật <%= post.updatedAt.toLocaleDateString('vi-VN') %>
+    <% } %>
+  </div>
+
+  <% if (post.tags.length) { %>
+    <div class="mb-3">
+      <% post.tags.forEach(function (tag) { %>
+        <span class="badge text-bg-light border"><%= tag %></span>
+      <% }) %>
+    </div>
+  <% } %>
+
+  <div class="post-content mb-4"><%= post.content %></div>
+
+  <% if (canEdit) { %>
+    <div class="d-flex gap-2">
+      <a class="btn btn-sm btn-outline-primary" href="/posts/<%= post.slug %>/edit">Sửa</a>
+      <form action="/posts/<%= post.slug %>/delete" method="post" onsubmit="return confirm('Xoá bài viết này?')">
+        <button class="btn btn-sm btn-outline-danger">Xoá</button>
+      </form>
+    </div>
+  <% } %>
+</article>
+
+<%- include('../partials/footer') %>

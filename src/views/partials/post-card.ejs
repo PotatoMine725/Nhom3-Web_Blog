@@ -1,0 +1,10 @@
+<%# Nhận biến post (đã populate author). Mọi dữ liệu người dùng được escape %>
+<article class="border-bottom py-3">
+  <h2 class="h5 mb-1"><a href="/posts/<%= post.slug %>"><%= post.title %></a></h2>
+  <div class="small text-secondary mb-2">
+    <%= post.author ? post.author.username : 'Không rõ' %>
+    · <%= post.createdAt.toLocaleDateString('vi-VN') %>
+    · Chưa phân loại
+  </div>
+  <p class="mb-0"><%= post.content.slice(0, 200) %><%= post.content.length > 200 ? '…' : '' %></p>
+</article>

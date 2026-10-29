@@ -1,0 +1,39 @@
+<%- include('../partials/header') %>
+
+<h1 class="h3 mb-3"><%= title %></h1>
+
+<% if (errors.length) { %>
+  <div class="alert alert-danger">
+    <ul class="mb-0">
+      <% errors.forEach(function (msg) { %>
+        <li><%= msg %></li>
+      <% }) %>
+    </ul>
+  </div>
+<% } %>
+
+<form action="<%= action %>" method="post">
+  <div class="mb-3">
+    <label class="form-label" for="title">Tiêu đề</label>
+    <input class="form-control" id="title" name="title" value="<%= values.title %>">
+  </div>
+  <div class="mb-3">
+    <label class="form-label" for="content">Nội dung</label>
+    <textarea class="form-control" id="content" name="content" rows="12"><%= values.content %></textarea>
+  </div>
+  <div class="mb-3">
+    <label class="form-label" for="tags">Tag</label>
+    <input class="form-control" id="tags" name="tags" value="<%= values.tags %>">
+    <div class="form-text">Cách nhau bằng dấu phẩy, tối đa 10 tag.</div>
+  </div>
+  <div class="mb-3">
+    <label class="form-label" for="status">Trạng thái</label>
+    <select class="form-select w-auto" id="status" name="status">
+      <option value="draft" <%= values.status === 'draft' ? 'selected' : '' %>>Nháp</option>
+      <option value="published" <%= values.status === 'published' ? 'selected' : '' %>>Đăng</option>
+    </select>
+  </div>
+  <button class="btn btn-primary">Lưu</button>
+</form>
+
+<%- include('../partials/footer') %>
