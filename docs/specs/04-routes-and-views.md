@@ -53,7 +53,7 @@ npm run create-admin -- <email>
 
 | Tên | Kiểm tra | Không đạt thì |
 | --- | --- | --- |
-| `loadUser` (gắn toàn app) | Đọc `userId` trong session, gán `res.locals.currentUser` cho view | Bỏ qua, coi là khách |
+| `loadUser` (gắn toàn app) | Đọc `userId` trong session, gán `res.locals.currentUser` cho view | Bỏ qua, coi là khách. User không tồn tại hoặc bị khoá thì xoá `userId`, `role` khỏi session |
 | `requireLogin` | Có `currentUser` | Redirect `/login` |
 | `requireOwnerOrAdmin` | `doc.author` = user hiện tại hoặc `role = admin` | Trả trang 403 |
 | `requireAdmin` | `role = admin` | Trả trang 403 |

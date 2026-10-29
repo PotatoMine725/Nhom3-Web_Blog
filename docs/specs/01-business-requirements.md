@@ -43,3 +43,5 @@ Hệ thống là một blog nhiều tác giả. Thành viên đăng bài, ngư�
 | 2026-10-29 | Bản đầu tiên | Hoang |
 | 2026-10-29 | Thêm cách tạo admin đầu tiên bằng script `npm run create-admin` (specs/04) | Hoang |
 | 2026-10-29 | Thêm middleware `redirectIfLoggedIn` cho `/register`, `/login` (specs/04) | Hoang |
+| 2026-10-29 | `username` lưu chữ thường, để `An_01` và `an_01` không thành hai tài khoản (specs/03) | Hoang |
+| 2026-10-29 | Ghi rõ `loadUser` xoá `userId`, `role` khỏi session khi user bị xoá hoặc bị khoá (specs/04) | Hoang |
