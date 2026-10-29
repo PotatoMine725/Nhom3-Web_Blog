@@ -1,0 +1,9 @@
+<%- include('../partials/header') %>
+
+<h1 class="h3 mb-4"><%= title %></h1>
+
+<% if (posts.length === 0) { %>
+  <p class="text-secondary">Chưa có bài viết nào.</p>
+<% } %>
+
+<%- include('../partials/footer') %>
