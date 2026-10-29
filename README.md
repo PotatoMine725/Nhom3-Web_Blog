@@ -28,4 +28,5 @@ Nếu thấy dòng `Không kết nối được MongoDB. Đã bật mongod chưa
 
 - Thiết kế đã chốt: [docs/specs](docs/specs/README.md)
 - Quy trình làm việc (spec → plan → code → report → review): [docs/README.md](docs/README.md)
+- Quy ước Git (nhánh, commit, PR): [docs/GIT_CONVENTION.md](docs/GIT_CONVENTION.md)
 - Hướng dẫn cho Claude Code: [CLAUDE.md](CLAUDE.md)
