@@ -4,7 +4,7 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo');
 
 const { loadUser } = require('./middlewares/auth');
-const indexRoutes = require('./routes/index');
+const postRoutes = require('./routes/posts');
 const authRoutes = require('./routes/auth');
 
 function createApp({ mongoUri, sessionSecret }) {
@@ -35,7 +35,7 @@ function createApp({ mongoUri, sessionSecret }) {
     next();
   });
 
-  app.use('/', indexRoutes);
+  app.use('/', postRoutes);
   app.use('/', authRoutes);
 
   app.use((req, res) => {

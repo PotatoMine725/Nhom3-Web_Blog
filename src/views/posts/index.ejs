@@ -6,4 +6,10 @@
   <p class="text-secondary">Chưa có bài viết nào.</p>
 <% } %>
 
+<% posts.forEach(function (post) { %>
+  <%- include('../partials/post-card', { post: post }) %>
+<% }) %>
+
+<%- include('../partials/pagination') %>
+
 <%- include('../partials/footer') %>

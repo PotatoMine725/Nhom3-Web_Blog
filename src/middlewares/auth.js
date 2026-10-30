@@ -33,9 +33,30 @@ function requireAdmin(req, res, next) {
   next();
 }
 
+// findDoc(req) trả về Promise của document (có field author) hoặc null.
+// Đặt sau requireLogin. Document tìm được gắn vào req.doc.
+function requireOwnerOrAdmin(findDoc) {
+  return async (req, res, next) => {
+    try {
+      const doc = await findDoc(req);
+      if (!doc) {
+        return res.status(404).render('errors/404', { title: 'Không tìm thấy trang' });
+      }
+      const user = res.locals.currentUser;
+      if (doc.author.equals(user._id) || user.role === 'admin') {
+        req.doc = doc;
+        return next();
+      }
+      res.status(403).render('errors/403', { title: 'Không có quyền' });
+    } catch (err) {
+      next(err);
+    }
+  };
+}
+
 function redirectIfLoggedIn(req, res, next) {
   if (res.locals.currentUser) return res.redirect('/');
   next();
 }
 
-module.exports = { loadUser, requireLogin, requireAdmin, redirectIfLoggedIn };
+module.exports = { loadUser, requireLogin, requireAdmin, requireOwnerOrAdmin, redirectIfLoggedIn };

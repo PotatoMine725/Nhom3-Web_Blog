@@ -1,0 +1,18 @@
+<%# Nhận page, totalPages, basePath. Chỉ hiện khi có nhiều hơn một trang %>
+<% if (totalPages > 1) { %>
+  <nav class="mt-4" aria-label="Phân trang">
+    <ul class="pagination">
+      <li class="page-item <%= page <= 1 ? 'disabled' : '' %>">
+        <a class="page-link" href="<%= basePath %>?page=<%= page - 1 %>">Trước</a>
+      </li>
+      <% for (let n = 1; n <= totalPages; n++) { %>
+        <li class="page-item <%= n === page ? 'active' : '' %>">
+          <a class="page-link" href="<%= basePath %>?page=<%= n %>"><%= n %></a>
+        </li>
+      <% } %>
+      <li class="page-item <%= page >= totalPages ? 'disabled' : '' %>">
+        <a class="page-link" href="<%= basePath %>?page=<%= page + 1 %>">Sau</a>
+      </li>
+    </ul>
+  </nav>
+<% } %>
