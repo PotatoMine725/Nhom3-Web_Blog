@@ -23,7 +23,7 @@ function createApp({ mongoUri, sessionSecret }) {
       resave: false,
       saveUninitialized: false,
       store: MongoStore.create({ mongoUrl: mongoUri }),
-      cookie: { httpOnly: true, maxAge: 7 * 24 * 60 * 60 * 1000 },
+      cookie: { httpOnly: true, sameSite: 'lax', maxAge: 7 * 24 * 60 * 60 * 1000 },
     })
   );
 
