@@ -53,3 +53,4 @@ Hệ thống là một blog nhiều tác giả. Thành viên đăng bài, ngư�
 | 2026-10-29 | `username` lưu chữ thường, để `An_01` và `an_01` không thành hai tài khoản (specs/03) | Hoang |
 | 2026-10-29 | Ghi rõ `loadUser` xoá `userId`, `role` khỏi session khi user bị xoá hoặc bị khoá (specs/04) | Hoang |
 | 2026-10-30 | Thêm tính năng mở rộng: like, bookmark, lượt xem + bài nổi bật, ảnh bìa, thống kê admin, tìm kiếm full-text kết hợp lọc (BR6 mở rộng, BR9–BR11, UC17–UC20) | Hoang |
+| 2026-10-30 | Cookie session `sameSite: 'lax'`; chấp nhận ảnh bìa bài nháp xem được nếu có link (specs/04) | Hoang |

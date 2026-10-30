@@ -44,6 +44,8 @@ Lưu ý:
 - Admin không tự khoá hoặc hạ quyền chính mình.
 - `POST /posts` và `POST /posts/:slug/edit` nhận form `multipart/form-data` (có ảnh bìa), nên đi qua middleware `uploadCover` (multer) trước controller. `uploadCover` luôn đặt **sau** middleware kiểm quyền (`requireLogin`, và `requireOwnerOrAdmin` ở route sửa) để khách và người không có quyền không ghi được file lên đĩa.
 - Like, bookmark trên bài nháp hoặc bài không tồn tại trả 404 (giống UC02).
+- Ảnh bìa phục vụ công khai qua `/uploads`, kể cả ảnh của bài nháp. Chấp nhận vì tên file ngẫu nhiên, không đoán được; không kiểm quyền từng ảnh.
+- Cookie session đặt `sameSite: 'lax'` để trình duyệt không gửi cookie kèm form POST từ trang web khác (chống CSRF đơn giản, không cần thư viện).
 
 ## Tạo admin đầu tiên
 
