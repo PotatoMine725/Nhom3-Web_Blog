@@ -121,7 +121,7 @@ flowchart LR
 | --- | --- |
 | Actor | Khách |
 | Tiền điều kiện | Không |
-| Luồng chính | 1. Nhập từ khoá ở ô tìm kiếm, chọn danh mục, nhập tag (đều không bắt buộc). 2. Gửi `GET /search?q=&category=&tag=`. 3. Hệ thống lọc bài `published`, khớp đủ mọi điều kiện đã nhập: từ khoá dùng text index trên `title` (`$text`), danh mục theo slug, tag khớp đúng một tag. 4. Có từ khoá thì sắp theo độ khớp, không có thì mới nhất trước. 5. Hiện kết quả 10 bài/trang, giữ nguyên điều kiện khi chuyển trang. |
+| Luồng chính | 1. Nhập từ khoá ở ô tìm kiếm, chọn danh mục, nhập tag (đều không bắt buộc). 2. Gửi `GET /search?q=&category=&tag=`. 3. Hệ thống lọc bài `published`, khớp đủ mọi điều kiện đã nhập: từ khoá dùng text index trên `title` (`$text`), danh mục theo slug, tag được trim + lowercase rồi so khớp đúng với một phần tử của `tags`. 4. Có từ khoá thì sắp theo độ khớp, không có thì mới nhất trước. 5. Hiện kết quả 10 bài/trang, giữ nguyên điều kiện khi chuyển trang. |
 | Luồng phụ | 2a. Không nhập điều kiện nào: chuyển về `/`. 3a. Không có kết quả: báo "Không tìm thấy bài viết phù hợp". 3b. Danh mục không tồn tại: coi như không có kết quả. |
 | Hậu điều kiện | Không đổi dữ liệu |
 

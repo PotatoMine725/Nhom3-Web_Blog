@@ -82,7 +82,7 @@ PK là khoá chính, FK là trường ObjectId tham chiếu sang collection khá
 
 ## Schema chi tiết
 
-Cả 6 schema đều bật `timestamps: true`, Mongoose tự thêm `createdAt` và `updatedAt`. Collection `sessions` do connect-mongo tự tạo, không cần thiết kế.
+User, Post, Category, Comment bật `timestamps: true`, Mongoose tự thêm `createdAt` và `updatedAt`. Like, Bookmark không bao giờ bị sửa nên chỉ bật `timestamps: { createdAt: true, updatedAt: false }`. Collection `sessions` do connect-mongo tự tạo, không cần thiết kế.
 
 ### User
 
@@ -146,6 +146,7 @@ Hai collection cùng cấu trúc (`likes`, `bookmarks`), mỗi document là mộ
 | comments | `{ post: 1, createdAt: 1 }` | Lấy bình luận của bài theo thứ tự |
 | likes, bookmarks | `{ user: 1, post: 1 }` (unique) | Chặn like / lưu trùng (BR9), kiểm tra "tôi đã like chưa", trang "Đã lưu" |
 | likes, bookmarks | `post` | Đếm like của một bài, xoá theo bài (BR6), thống kê |
+| bookmarks | `{ user: 1, createdAt: -1 }` | Trang "Đã lưu": lọc theo user, mới lưu nhất trước, phân trang |
 
 ## Logic gắn với schema
 
@@ -171,8 +172,8 @@ Trang `/admin` chạy các truy vấn sau. Mỗi truy vấn là một aggregatio
 | Số bài theo trạng thái | posts | `$group: { _id: '$status', count: { $sum: 1 } }` |
 | Tổng bình luận, tổng like | comments, likes | `countDocuments()` |
 | Bài đăng theo tháng (6 tháng gần nhất) | posts | `$match` (published, `createdAt` ≥ 6 tháng trước) → `$group` theo `{ $year, $month }` của `createdAt` → `$sort` |
-| Top 5 tác giả nhiều bài đã đăng | posts | `$match` (published) → `$group` theo `author` → `$sort` → `$limit: 5` → `$lookup` users lấy `username` |
-| Top 5 bài nhiều like | likes | `$group` theo `post` → `$sort` → `$limit: 5` → `$lookup` posts lấy `title`, `slug` |
+| Top 5 tác giả nhiều bài đã đăng | posts | `$match` (published) → `$group: { _id: '$author', count: { $sum: 1 } }` → `$sort: { count: -1 }` → `$limit: 5` → `$lookup` users lấy `username` |
+| Top 5 bài nhiều like | likes | `$group: { _id: '$post', count: { $sum: 1 } }` → `$lookup` posts → `$match` bài `published` → `$sort: { count: -1 }` → `$limit: 5`, lấy `title`, `slug` |
 | Top 5 bài nhiều bình luận | comments | Như trên, trên collection comments |
 | Top 5 bài nhiều lượt xem | posts | `find({ status: 'published' }).sort({ views: -1 }).limit(5)` |
 

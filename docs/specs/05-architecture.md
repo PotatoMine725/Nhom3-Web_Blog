@@ -23,8 +23,8 @@ src/
   server.js         # đọc .env, kết nối DB, chạy server
   app.js            # tạo Express app: view engine, session, route, lỗi
   config/db.js      # kết nối MongoDB
-  models/           # User, Post, Category, Comment
-  routes/           # auth, posts, comments, admin, interactions (like, bookmark)
+  models/           # User, Post, Category, Comment, Like, Bookmark
+  routes/           # auth, posts (gồm cả like, bookmark), comments, admin
   controllers/      # xử lý từng use case
   middlewares/      # loadUser, requireLogin, requireOwnerOrAdmin, requireAdmin, uploadCover
   utils/            # hàm dùng chung (slugify, ...)

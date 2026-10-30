@@ -19,9 +19,9 @@ Form HTML chỉ gửi được GET/POST, nên sửa và xoá dùng POST tới `/
 | POST | `/logout` | UC06 | Huỷ session | `requireLogin` |
 | GET, POST | `/profile` | UC07 | Xem / cập nhật email, mật khẩu | `requireLogin` |
 | GET | `/posts/new` | UC08 | Form tạo bài | `requireLogin` |
-| POST | `/posts` | UC08 | Lưu bài mới | `requireLogin` |
-| GET, POST | `/posts/:slug/edit` | UC09 | Form / lưu sửa bài | `requireLogin` + `requireOwnerOrAdmin` |
-| POST | `/posts/:slug/delete` | UC10, UC16 | Xoá bài + bình luận của bài | `requireLogin` + `requireOwnerOrAdmin` |
+| POST | `/posts` | UC08 | Lưu bài mới | `requireLogin` + `uploadCover` |
+| GET, POST | `/posts/:slug/edit` | UC09 | Form / lưu sửa bài | `requireLogin` + `requireOwnerOrAdmin` (+ `uploadCover` ở POST) |
+| POST | `/posts/:slug/delete` | UC10, UC16 | Xoá bài + bình luận, like, bookmark và file ảnh bìa của bài (BR6) | `requireLogin` + `requireOwnerOrAdmin` |
 | GET | `/me/posts` | UC11 | Bài của tôi, cả nháp | `requireLogin` |
 | POST | `/posts/:slug/like` | UC17 | Like / bỏ like, quay lại trang bài | `requireLogin` |
 | POST | `/posts/:slug/bookmark` | UC18 | Lưu / bỏ lưu, quay lại trang bài | `requireLogin` |
@@ -42,7 +42,7 @@ Lưu ý:
 
 - Khai báo `/posts/new` trước `/posts/:slug`, nếu không Express sẽ hiểu `new` là một slug.
 - Admin không tự khoá hoặc hạ quyền chính mình.
-- `POST /posts` và `POST /posts/:slug/edit` nhận form `multipart/form-data` (có ảnh bìa), nên đi qua middleware `uploadCover` (multer) trước controller. Ở route sửa, `uploadCover` đặt **sau** `requireOwnerOrAdmin` để người không có quyền không upload được file.
+- `POST /posts` và `POST /posts/:slug/edit` nhận form `multipart/form-data` (có ảnh bìa), nên đi qua middleware `uploadCover` (multer) trước controller. `uploadCover` luôn đặt **sau** middleware kiểm quyền (`requireLogin`, và `requireOwnerOrAdmin` ở route sửa) để khách và người không có quyền không ghi được file lên đĩa.
 - Like, bookmark trên bài nháp hoặc bài không tồn tại trả 404 (giống UC02).
 
 ## Tạo admin đầu tiên

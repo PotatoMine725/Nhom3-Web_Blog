@@ -39,7 +39,7 @@ Hệ thống là một blog nhiều tác giả. Thành viên đăng bài, ngư�
 | BR6 | Xoá bài viết thì xoá luôn các bình luận, like, bookmark và file ảnh bìa của bài đó. |
 | BR7 | Trang chủ hiển thị bài đã đăng, mới nhất trước, 10 bài mỗi trang. |
 | BR8 | Tài khoản bị admin khoá thì không đăng nhập được. |
-| BR9 | Mỗi thành viên like / lưu một bài tối đa 1 lần; bấm lần nữa là bỏ like / bỏ lưu. Chỉ like, lưu được bài đã đăng. |
+| BR9 | Mỗi thành viên like / lưu một bài tối đa 1 lần; bấm lần nữa là bỏ like / bỏ lưu. Chỉ like, lưu được bài đang ở trạng thái đã đăng. Bài chuyển về nháp thì giữ nguyên like / bookmark nhưng ẩn khỏi "Đã lưu" và thống kê; đăng lại thì hiện lại. |
 | BR10 | Mỗi lần mở trang chi tiết bài đã đăng thì lượt xem tăng 1, trừ khi người mở là tác giả bài. |
 | BR11 | Ảnh bìa chỉ nhận JPG, PNG, WEBP, tối đa 2 MB; lưu trong thư mục `uploads/` trên máy chạy server. |
 
