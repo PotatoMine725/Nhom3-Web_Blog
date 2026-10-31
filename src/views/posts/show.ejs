@@ -34,4 +34,51 @@
   <% } %>
 </article>
 
+<section id="comments" class="mt-5">
+  <h2 class="h5 mb-3">Bình luận (<%= comments.length %>)</h2>
+
+  <% if (!comments.length) { %>
+    <p class="text-secondary">Chưa có bình luận nào.</p>
+  <% } %>
+  <% comments.forEach(function (c) { %>
+    <div class="border-bottom py-2">
+      <div class="small text-secondary">
+        <strong><%= c.author ? c.author.username : 'Không rõ' %></strong>
+        · <%= c.createdAt.toLocaleString('vi-VN') %>
+      </div>
+      <div class="comment-content"><%= c.content %></div>
+      <% if (c.canDelete) { %>
+        <form action="/comments/<%= c._id %>/delete" method="post" onsubmit="return confirm('Xoá bình luận này?')">
+          <button class="btn btn-sm btn-outline-danger mt-1">Xoá</button>
+        </form>
+      <% } %>
+    </div>
+  <% }) %>
+
+  <div class="mt-4">
+    <% if (post.status !== 'published') { %>
+      <p class="text-secondary">Bài nháp chưa nhận bình luận.</p>
+    <% } else if (currentUser) { %>
+      <% if (errors.length) { %>
+        <div class="alert alert-danger">
+          <ul class="mb-0">
+            <% errors.forEach(function (msg) { %>
+              <li><%= msg %></li>
+            <% }) %>
+          </ul>
+        </div>
+      <% } %>
+      <form action="/posts/<%= post.slug %>/comments" method="post">
+        <div class="mb-2">
+          <textarea class="form-control" name="content" rows="3" aria-label="Bình luận"><%= commentContent %></textarea>
+          <div class="form-text">Tối đa 1000 ký tự.</div>
+        </div>
+        <button class="btn btn-primary">Gửi</button>
+      </form>
+    <% } else { %>
+      <p>Hãy <a href="/login">đăng nhập</a> để bình luận.</p>
+    <% } %>
+  </div>
+</section>
+
 <%- include('../partials/footer') %>

@@ -1,4 +1,5 @@
 const Post = require('../models/Post');
+const Comment = require('../models/Comment');
 
 const PAGE_SIZE = 10;
 
@@ -53,6 +54,27 @@ function isOwnerOrAdmin(post, user) {
   return Boolean((post.author && post.author._id.equals(user._id)) || user.role === 'admin');
 }
 
+// Render trang bài kèm bình luận; commentController dùng lại để hiện lỗi form bình luận
+async function renderShow(res, post, { status = 200, errors = [], commentContent = '' } = {}) {
+  const user = res.locals.currentUser;
+  // lean() để gắn thêm canDelete lên object thường
+  const comments = await Comment.find({ post: post._id })
+    .sort({ createdAt: 1, _id: 1 })
+    .populate('author', 'username')
+    .lean();
+  comments.forEach((c) => {
+    c.canDelete = isOwnerOrAdmin(c, user);
+  });
+  res.status(status).render('posts/show', {
+    title: post.title,
+    post,
+    canEdit: isOwnerOrAdmin(post, user),
+    comments,
+    errors,
+    commentContent,
+  });
+}
+
 // UC01, BR7
 async function index(req, res, next) {
   try {
@@ -87,7 +109,7 @@ async function show(req, res, next) {
     if (!post || (post.status === 'draft' && !canEdit)) {
       return res.status(404).render('errors/404', { title: 'Không tìm thấy trang' });
     }
-    res.render('posts/show', { title: post.title, post, canEdit });
+    await renderShow(res, post);
   } catch (err) {
     next(err);
   }
@@ -160,7 +182,7 @@ async function update(req, res, next) {
 async function remove(req, res, next) {
   try {
     await req.doc.deleteOne();
-    // BR6: bước 4 thêm Comment.deleteMany({ post: req.doc._id })
+    await Comment.deleteMany({ post: req.doc._id }); // BR6
     req.session.flash = { type: 'success', message: 'Đã xoá bài viết' };
     res.redirect('/me/posts');
   } catch (err) {
@@ -178,4 +200,4 @@ async function mine(req, res, next) {
   }
 }
 
-module.exports = { index, show, showNew, create, showEdit, update, remove, mine };
+module.exports = { renderShow, index, show, showNew, create, showEdit, update, remove, mine };

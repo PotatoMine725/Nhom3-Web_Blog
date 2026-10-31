@@ -59,8 +59,9 @@ body {
   box-shadow: 0 0 0 0.25rem rgba(0, 116, 204, 0.25);
 }
 
-/* Nội dung bài: giữ xuống dòng nhưng vẫn in text đã escape (không render HTML/Markdown) */
-.post-content {
+/* Nội dung bài và bình luận: giữ xuống dòng nhưng vẫn in text đã escape (không render HTML/Markdown) */
+.post-content,
+.comment-content {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }

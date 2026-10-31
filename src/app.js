@@ -6,6 +6,7 @@ const MongoStore = require('connect-mongo');
 const { loadUser } = require('./middlewares/auth');
 const postRoutes = require('./routes/posts');
 const authRoutes = require('./routes/auth');
+const commentRoutes = require('./routes/comments');
 
 function createApp({ mongoUri, sessionSecret }) {
   const app = express();
@@ -36,6 +37,7 @@ function createApp({ mongoUri, sessionSecret }) {
   });
 
   app.use('/', postRoutes);
+  app.use('/', commentRoutes);
   app.use('/', authRoutes);
 
   app.use((req, res) => {
