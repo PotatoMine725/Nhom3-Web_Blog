@@ -1,0 +1,38 @@
+<%# Sidebar phải. Cần popularTags, recentComments (do middleware loadSidebar nạp). Mọi dữ liệu người dùng được escape %>
+<aside class="layout__right" aria-label="Thanh bên">
+  <section class="sidebar-card">
+    <h2 class="sidebar-card__title">Thẻ phổ biến</h2>
+    <div class="sidebar-card__body">
+      <% if (locals.popularTags && popularTags.length) { %>
+        <%# Chưa có route /tags/:tag nên chip không có link %>
+        <% popularTags.forEach(function (t) { %>
+          <span class="tag-chip"><%= t._id %> <span class="tag-chip__count">× <%= t.count %></span></span>
+        <% }) %>
+      <% } else { %>
+        <p class="small text-secondary mb-0">Chưa có thẻ nào.</p>
+      <% } %>
+    </div>
+  </section>
+
+  <section class="sidebar-card">
+    <h2 class="sidebar-card__title">Bình luận mới</h2>
+    <div class="sidebar-card__body">
+      <% if (locals.recentComments && recentComments.length) { %>
+        <ul class="list-unstyled mb-0">
+          <% recentComments.forEach(function (c) { %>
+            <li class="sidebar-comment">
+              <div class="small">
+                <strong><%= c.author ? c.author.username : 'Không rõ' %></strong>
+                <span class="text-secondary">· <%= timeAgo(c.createdAt) %></span>
+              </div>
+              <div class="small"><%= c.content.slice(0, 60) %><%= c.content.length > 60 ? '…' : '' %></div>
+              <a class="small" href="/posts/<%= c.post.slug %>#comments"><%= c.post.title %></a>
+            </li>
+          <% }) %>
+        </ul>
+      <% } else { %>
+        <p class="small text-secondary mb-0">Chưa có bình luận nào.</p>
+      <% } %>
+    </div>
+  </section>
+</aside>

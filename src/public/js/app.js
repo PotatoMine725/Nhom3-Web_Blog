@@ -1,5 +1,20 @@
 // JS thuần cho giao diện. Trang vẫn dùng được khi tắt JS.
 
+// Nút "Sao chép liên kết" ở trang bài: mặc định ẩn trong HTML, có JS mới hiện
+var copyBtn = document.getElementById('copyLinkBtn');
+if (copyBtn && navigator.clipboard) {
+  copyBtn.hidden = false;
+  copyBtn.addEventListener('click', function () {
+    navigator.clipboard.writeText(location.href.split('#')[0]).then(function () {
+      var old = copyBtn.textContent;
+      copyBtn.textContent = 'Đã sao chép!';
+      setTimeout(function () {
+        copyBtn.textContent = old;
+      }, 2000);
+    });
+  });
+}
+
 // Phím "/" nhảy vào ô tìm kiếm (trừ khi đang gõ trong ô nhập khác)
 document.addEventListener('keydown', function (e) {
   if (e.key !== '/' || e.ctrlKey || e.metaKey || e.altKey) return;
