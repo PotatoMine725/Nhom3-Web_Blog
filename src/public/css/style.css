@@ -83,6 +83,11 @@ body {
   color: var(--bs-body-color);
 }
 
+/* Bootstrap không vẽ vòng focus cho .btn trơn (nút ☰, tìm kiếm, avatar): tự thêm để dùng được bằng bàn phím */
+.site-header .btn:focus-visible {
+  box-shadow: 0 0 0 0.25rem rgba(0, 116, 204, 0.4);
+}
+
 /* Màn hình nhỏ: ô tìm kiếm nằm hàng riêng bên dưới, mở bằng nút biểu tượng */
 .site-header__search {
   order: 3;
