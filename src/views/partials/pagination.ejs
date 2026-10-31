@@ -1,17 +1,18 @@
-<%# Nhận page, totalPages, basePath. Chỉ hiện khi có nhiều hơn một trang %>
+<%# Nhận page, totalPages, basePath, query (tuỳ chọn: tham số giữ lại như tab). Chỉ hiện khi có nhiều hơn một trang %>
 <% if (totalPages > 1) { %>
+  <% var pageHref = function (n) { return basePath + '?' + new URLSearchParams(Object.assign({}, locals.query, { page: n })).toString(); }; %>
   <nav class="mt-4" aria-label="Phân trang">
     <ul class="pagination">
       <li class="page-item <%= page <= 1 ? 'disabled' : '' %>">
-        <a class="page-link" href="<%= basePath %>?page=<%= page - 1 %>">Trước</a>
+        <a class="page-link" href="<%= pageHref(page - 1) %>">Trước</a>
       </li>
       <% for (let n = 1; n <= totalPages; n++) { %>
         <li class="page-item <%= n === page ? 'active' : '' %>">
-          <a class="page-link" href="<%= basePath %>?page=<%= n %>"><%= n %></a>
+          <a class="page-link" href="<%= pageHref(n) %>"><%= n %></a>
         </li>
       <% } %>
       <li class="page-item <%= page >= totalPages ? 'disabled' : '' %>">
-        <a class="page-link" href="<%= basePath %>?page=<%= page + 1 %>">Sau</a>
+        <a class="page-link" href="<%= pageHref(page + 1) %>">Sau</a>
       </li>
     </ul>
   </nav>

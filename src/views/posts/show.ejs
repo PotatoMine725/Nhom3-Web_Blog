@@ -1,38 +1,70 @@
 <%- include('../partials/header') %>
 
+<nav aria-label="breadcrumb" class="small mb-2">
+  <ol class="breadcrumb mb-0">
+    <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Bài viết</li>
+  </ol>
+</nav>
+
 <article>
   <h1 class="h3 mb-2">
     <%= post.title %>
     <% if (post.status === 'draft') { %><span class="badge text-bg-secondary fs-6">Nháp</span><% } %>
   </h1>
 
-  <div class="small text-secondary mb-3">
-    <%= post.author ? post.author.username : 'Không rõ' %>
-    · Tạo <%= post.createdAt.toLocaleDateString('vi-VN') %>
+  <div class="post-meta mb-3">
+    <%- include('../partials/avatar', { name: post.author ? post.author.username : '?', size: 28 }) %>
+    <strong><%= post.author ? post.author.username : 'Không rõ' %></strong>
+    <span class="text-secondary" title="<%= post.createdAt.toLocaleString('vi-VN') %>"><%= timeAgo(post.createdAt) %></span>
     <% if (post.updatedAt.getTime() !== post.createdAt.getTime()) { %>
-      · Cập nhật <%= post.updatedAt.toLocaleDateString('vi-VN') %>
+      <span class="text-secondary" title="<%= post.updatedAt.toLocaleString('vi-VN') %>">· đã sửa <%= timeAgo(post.updatedAt) %></span>
     <% } %>
+    <span class="text-secondary">· ~<%= readingTime(post.content) %> phút đọc</span>
   </div>
 
   <% if (post.tags.length) { %>
     <div class="mb-3">
       <% post.tags.forEach(function (tag) { %>
-        <span class="badge text-bg-light border"><%= tag %></span>
+        <span class="tag-chip"><%= tag %></span>
       <% }) %>
     </div>
   <% } %>
 
-  <div class="post-content mb-4"><%= post.content %></div>
+  <div class="post-content mb-3"><%= post.content %></div>
 
-  <% if (canEdit) { %>
-    <div class="d-flex gap-2">
-      <a class="btn btn-sm btn-outline-primary" href="/posts/<%= post.slug %>/edit">Sửa</a>
-      <form action="/posts/<%= post.slug %>/delete" method="post" onsubmit="return confirm('Xoá bài viết này?')">
-        <button class="btn btn-sm btn-outline-danger">Xoá</button>
-      </form>
-    </div>
-  <% } %>
+  <%# Thanh hành động. Nút sao chép chỉ hiện khi có JS (xem app.js), tránh nút chết %>
+  <div class="post-actions">
+    <a class="post-actions__item" href="#comments" title="Xem và viết bình luận">Bình luận (<%= comments.length %>)</a>
+    <button type="button" class="post-actions__item" id="copyLinkBtn" hidden title="Sao chép liên kết bài viết">Sao chép liên kết</button>
+    <% if (canEdit) { %>
+      <a class="post-actions__item" href="/posts/<%= post.slug %>/edit">Sửa</a>
+      <button type="button" class="post-actions__item post-actions__item--danger" data-bs-toggle="modal" data-bs-target="#deletePostModal">Xoá</button>
+    <% } %>
+  </div>
 </article>
+
+<% if (canEdit) { %>
+  <div class="modal fade" id="deletePostModal" tabindex="-1" aria-labelledby="deletePostModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title h5" id="deletePostModalLabel">Xoá bài viết?</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+        </div>
+        <div class="modal-body">
+          Bài viết và toàn bộ bình luận của nó sẽ bị xoá, không khôi phục được.
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Huỷ</button>
+          <form action="/posts/<%= post.slug %>/delete" method="post">
+            <button class="btn btn-danger">Xoá bài</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+<% } %>
 
 <section id="comments" class="mt-5">
   <h2 class="h5 mb-3">Bình luận (<%= comments.length %>)</h2>

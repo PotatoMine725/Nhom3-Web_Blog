@@ -75,25 +75,52 @@ async function renderShow(res, post, { status = 200, errors = [], commentContent
   });
 }
 
-// UC01, BR7
+// UC01, BR5, BR7
 async function index(req, res, next) {
   try {
     let page = parseInt(req.query.page, 10);
     if (!(page >= 1)) page = 1;
 
+    // ?tab=unanswered chỉ lọc thêm: bài đã đăng chưa có bình luận nào (giá trị khác -> tab mới nhất)
+    const tab = req.query.tab === 'unanswered' ? 'unanswered' : 'new';
     const filter = { status: 'published' };
+    if (tab === 'unanswered') {
+      filter._id = { $nin: await Comment.distinct('post') };
+    }
+
     // Đếm trước để kẹp page, tránh skip quá lớn làm MongoDB báo lỗi
     const total = await Post.countDocuments(filter);
     const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
     page = Math.min(page, totalPages);
 
+    // lean() để gắn thêm commentCount lên object thường
     const posts = await Post.find(filter)
       .sort({ createdAt: -1, _id: -1 })
       .skip((page - 1) * PAGE_SIZE)
       .limit(PAGE_SIZE)
-      .populate('author', 'username');
+      .populate('author', 'username')
+      .lean();
 
-    res.render('posts/index', { title: 'Bài viết mới nhất', posts, page, totalPages, basePath: '/' });
+    // Đếm bình luận của các bài trong trang này bằng một truy vấn
+    const counts = await Comment.aggregate([
+      { $match: { post: { $in: posts.map((p) => p._id) } } },
+      { $group: { _id: '$post', count: { $sum: 1 } } },
+    ]);
+    const countByPost = new Map(counts.map((c) => [String(c._id), c.count]));
+    posts.forEach((p) => {
+      p.commentCount = countByPost.get(String(p._id)) || 0;
+    });
+
+    res.render('posts/index', {
+      title: 'Bài viết',
+      posts,
+      page,
+      totalPages,
+      basePath: '/',
+      tab,
+      // pagination giữ tab khi chuyển trang
+      query: tab === 'unanswered' ? { tab } : {},
+    });
   } catch (err) {
     next(err);
   }

@@ -1,10 +1,26 @@
-<%# Nhận biến post (đã populate author). Mọi dữ liệu người dùng được escape %>
-<article class="border-bottom py-3">
-  <h2 class="h5 mb-1"><a href="/posts/<%= post.slug %>"><%= post.title %></a></h2>
-  <div class="small text-secondary mb-2">
-    <%= post.author ? post.author.username : 'Không rõ' %>
-    · <%= post.createdAt.toLocaleDateString('vi-VN') %>
-    · Chưa phân loại
+<%# Một hàng bài viết kiểu Stack Overflow. Nhận post (đã populate author, có commentCount). Mọi dữ liệu người dùng được escape %>
+<article class="post-row">
+  <div class="post-row__stats">
+    <span class="post-row__count <%= post.commentCount > 0 ? 'post-row__count--has' : '' %>"><%= post.commentCount %></span>
+    <span class="post-row__count-label">bình luận</span>
   </div>
-  <p class="mb-0"><%= post.content.slice(0, 200) %><%= post.content.length > 200 ? '…' : '' %></p>
+
+  <div class="post-row__main">
+    <h2 class="post-row__title"><a href="/posts/<%= post.slug %>"><%= post.title %></a></h2>
+    <p class="post-row__excerpt"><%= post.content.slice(0, 200) %><%= post.content.length > 200 ? '…' : '' %></p>
+
+    <div class="post-row__footer">
+      <div class="post-row__tags">
+        <% post.tags.forEach(function (tag) { %>
+          <span class="tag-chip"><%= tag %></span>
+        <% }) %>
+      </div>
+      <div class="post-row__meta">
+        <%- include('avatar', { name: post.author ? post.author.username : '?', size: 20 }) %>
+        <span><%= post.author ? post.author.username : 'Không rõ' %></span>
+        <span class="text-secondary" title="<%= post.createdAt.toLocaleString('vi-VN') %>"><%= timeAgo(post.createdAt) %></span>
+        <span class="text-secondary">· ~<%= readingTime(post.content) %> phút đọc</span>
+      </div>
+    </div>
+  </div>
 </article>
