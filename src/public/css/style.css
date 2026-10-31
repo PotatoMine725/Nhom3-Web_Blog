@@ -44,13 +44,142 @@ body {
   --bs-btn-focus-shadow-rgb: 0, 116, 204;
 }
 
-/* Navbar: nền xám nhạt, viền cam ở trên */
-.navbar {
+/* Thanh trên cùng: dính đầu trang, viền cam ở trên */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+  background: var(--bs-body-bg);
   border-top: 3px solid #f48024;
+  border-bottom: 1px solid var(--bs-border-color);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
 }
 
-.navbar-brand:hover {
+.site-header__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  max-width: 1264px;
+  margin: 0 auto;
+  padding: 8px 16px;
+}
+
+.site-header__brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: var(--bs-body-color);
+  text-decoration: none;
+}
+
+.site-header__brand:hover {
   color: #f48024;
+}
+
+.site-header__icon-btn {
+  padding: 6px 8px;
+  color: var(--bs-body-color);
+}
+
+/* Màn hình nhỏ: ô tìm kiếm nằm hàng riêng bên dưới, mở bằng nút biểu tượng */
+.site-header__search {
+  order: 3;
+  flex: 1 1 100%;
+}
+
+.site-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+/* Bố cục chính: menu trái | nội dung | (sidebar phải) */
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 1264px;
+  margin: 0 auto;
+}
+
+.layout__main {
+  padding: 24px 16px;
+}
+
+.layout__left {
+  position: sticky;
+  top: 60px;
+  align-self: start;
+  padding-top: 24px;
+  border-right: 1px solid var(--bs-border-color);
+}
+
+.left-nav__link {
+  display: block;
+  padding: 8px 12px;
+  color: var(--bs-secondary-color);
+  text-decoration: none;
+}
+
+.left-nav__link:hover {
+  color: var(--bs-body-color);
+  background: rgba(var(--bs-tertiary-bg-rgb), 1);
+}
+
+.left-nav__link.active {
+  font-weight: 700;
+  color: var(--bs-body-color);
+  background: rgba(var(--bs-tertiary-bg-rgb), 1);
+  border-right: 3px solid #f48024;
+}
+
+/* Trang form / đăng nhập: cột nội dung hẹp ở giữa */
+.content-narrow {
+  max-width: 560px;
+}
+
+@media (min-width: 992px) {
+  .site-header__search {
+    order: 0;
+    flex: 1 1 auto;
+    max-width: 720px;
+  }
+
+  .layout {
+    grid-template-columns: 164px minmax(0, 1fr);
+  }
+
+  .layout--sidebar {
+    grid-template-columns: 164px minmax(0, 1fr) 300px;
+  }
+
+  .layout__main {
+    padding: 24px;
+  }
+}
+
+/* Avatar chữ cái: màu nền đặt inline theo tên người dùng */
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: 50%;
+  color: #fff;
+  font-weight: 600;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+.site-footer {
+  max-width: 1264px;
+  margin: 0 auto;
+  padding: 24px 16px;
+  border-top: 1px solid var(--bs-border-color);
+  color: var(--bs-secondary-color);
+  font-size: 0.875rem;
 }
 
 /* Viền focus của ô nhập theo màu chính */
