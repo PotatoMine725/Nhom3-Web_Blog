@@ -4,6 +4,7 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo');
 
 const { loadUser } = require('./middlewares/auth');
+const viewHelpers = require('./utils/viewHelpers');
 const postRoutes = require('./routes/posts');
 const authRoutes = require('./routes/auth');
 const commentRoutes = require('./routes/comments');
@@ -28,11 +29,16 @@ function createApp({ mongoUri, sessionSecret }) {
     })
   );
 
-  // Biến dùng chung cho mọi view: currentUser (loadUser) và flash (thông báo hiện một lần)
+  // Hàm nhỏ cho view: initials, avatarColor, timeAgo, readingTime
+  Object.assign(app.locals, viewHelpers);
+
+  // Biến dùng chung cho mọi view: currentUser (loadUser), flash (thông báo hiện một lần)
+  // và currentPath (để tô đậm mục menu đang mở)
   app.use(loadUser);
   app.use((req, res, next) => {
     res.locals.flash = req.session.flash || null;
     delete req.session.flash;
+    res.locals.currentPath = req.path;
     next();
   });
 

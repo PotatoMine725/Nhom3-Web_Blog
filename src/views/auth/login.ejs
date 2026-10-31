@@ -1,12 +1,13 @@
 <%- include('../partials/header') %>
 
+<div class="content-narrow">
 <h1 class="h3 mb-3">Đăng nhập</h1>
 
 <% if (error) { %>
   <div class="alert alert-danger"><%= error %></div>
 <% } %>
 
-<form action="/login" method="post" class="col-md-6 p-0">
+<form action="/login" method="post">
   <div class="mb-3">
     <label class="form-label" for="email">Email</label>
     <input class="form-control" id="email" name="email" value="<%= values.email || '' %>">
@@ -19,5 +20,6 @@
 </form>
 
 <p class="mt-3">Chưa có tài khoản? <a href="/register">Đăng ký</a></p>
+</div>
 
 <%- include('../partials/footer') %>

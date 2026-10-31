@@ -1,0 +1,14 @@
+<%# Menu trái. Chỉ liệt kê mục đã có route; mục đang mở được tô đậm theo currentPath %>
+<ul class="nav flex-column left-nav">
+  <li>
+    <a class="left-nav__link <%= currentPath === '/' ? 'active' : '' %>" href="/" <%- currentPath === '/' ? 'aria-current="page"' : '' %>>Trang chủ</a>
+  </li>
+  <% if (currentUser) { %>
+    <li>
+      <a class="left-nav__link <%= currentPath === '/me/posts' ? 'active' : '' %>" href="/me/posts" <%- currentPath === '/me/posts' ? 'aria-current="page"' : '' %>>Bài của tôi</a>
+    </li>
+    <li>
+      <a class="left-nav__link <%= currentPath === '/posts/new' ? 'active' : '' %>" href="/posts/new" <%- currentPath === '/posts/new' ? 'aria-current="page"' : '' %>>Viết bài</a>
+    </li>
+  <% } %>
+</ul>
