@@ -9,7 +9,7 @@
 
 ### Khớp spec?
 
-- [x] Route, quyền đúng specs/04: `/search`, `/categories/:slug`, `/tags/:tag` công khai; 4 route `/admin/categories*` có `requireLogin` + `requireAdmin`.
+- [ ] Route, quyền: `/search`, `/categories/:slug`, `/tags/:tag` công khai, đúng specs/04. Riêng 4 route `/admin/categories*`, plan đặt thêm `requireLogin` trước `requireAdmin`. Specs/04 chỉ ghi `requireAdmin` (khách cũng nhận 403), xem vấn đề #5.
 - [x] Schema Category đúng specs/03 (name unique, trim, ≤ 50; slug unique sinh từ name). Không đổi schema Post.
 - [x] UC03 đủ luồng chính và luồng phụ 2a, 3a, 3b (danh mục không tồn tại ép 0 kết quả bằng `_id: { $in: [] }`, không gán `category: null`). UC14 đủ thêm, sửa, xoá; xoá thì bài về "Chưa phân loại".
 - [x] BR5 (chỉ `published` ở mọi trang danh sách), BR7 (10 bài/trang, kẹp page).
@@ -33,6 +33,7 @@
 | 1 | Thấp | `categoryController.create` | Hai request tạo cùng tên ("Node js" và "Node.js") cùng lúc có thể bị lỗi 11000 trên `slug`, không phải `name`, và hiện câu "Tên danh mục đã tồn tại" sai | Phân biệt theo `err.keyPattern`: `name` thì "Tên danh mục đã tồn tại"; `slug` thì "Bấm Lưu lại lần nữa", giống `validationMessages` của Post |
 | 2 | Thấp | `categoryController.list` | Nếu truyền danh sách bảng admin với tên `categories`, biến này sẽ đè `res.locals.categories` của header. Vẫn chạy được, nhưng khó đọc | Đặt tên khác, ví dụ `rows` |
 | 3 | Rất thấp | `showNew` | Plan chỉ nói `showEdit` truyền `values.category` | `showNew` truyền `category: ''` cho đồng bộ |
+| 5 | Trung bình | Route admin, ca kiểm thử #1 | Plan đặt `requireLogin, requireAdmin`, nên khách bị chuyển về `/login`. Specs/04 (dòng 31–33, bảng middleware dòng 69) chỉ ghi `requireAdmin`, nghĩa là khách nhận 403 | Theo spec: chỉ dùng `requireAdmin` (hàm này đã tự xử lý trường hợp chưa đăng nhập). Ca #1 đổi thành "khách → 403" |
 | 4 | Ghi nhớ | `loadCategories` sort `{ name: 1 }` | So theo mã ký tự, nên tên bắt đầu bằng "Đ" đứng sau "Z" | Chấp nhận |
 
 ### Trả lời câu hỏi mở
@@ -47,4 +48,4 @@
 
 ### Kết luận
 
-**Duyệt.** Nên sửa #1–#3 lúc code (mỗi cái 1–2 dòng).
+**Duyệt có điều kiện**: sửa #5 trong plan (chỉ dùng `requireAdmin`), rồi code. Nên sửa #1–#3 lúc code (mỗi cái 1–2 dòng).
