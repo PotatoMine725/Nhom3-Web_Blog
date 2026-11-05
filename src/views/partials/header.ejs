@@ -23,10 +23,23 @@
     </a>
 
     <form id="searchForm" class="site-header__search collapse d-lg-block" action="/search" method="get" role="search">
-      <input id="searchInput" class="form-control" type="search" name="q" placeholder="Tìm bài viết…" aria-label="Tìm bài viết" title="Nhấn / để tìm nhanh">
+      <input id="searchInput" class="form-control" type="search" name="q" value="<%= locals.q || '' %>" placeholder="Tìm bài viết…" aria-label="Tìm bài viết" title="Nhấn / để tìm nhanh">
     </form>
 
     <div class="site-header__actions">
+      <%# Menu danh mục (specs/04). categories do loadCategories nạp cho mọi trang %>
+      <div class="dropdown">
+        <button class="btn btn-sm site-header__menu-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Danh mục</button>
+        <ul class="dropdown-menu">
+          <% if (locals.categories && categories.length) { %>
+            <% categories.forEach(function (c) { %>
+              <li><a class="dropdown-item" href="/categories/<%= c.slug %>"><%= c.name %></a></li>
+            <% }) %>
+          <% } else { %>
+            <li><span class="dropdown-item-text text-secondary">Chưa có danh mục</span></li>
+          <% } %>
+        </ul>
+      </div>
       <button class="btn site-header__icon-btn d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#searchForm" aria-controls="searchForm" aria-label="Tìm kiếm">
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"/><path d="M13 13l4 4"/></svg>
       </button>
@@ -47,6 +60,7 @@
               <li><h6 class="dropdown-header">Quản trị</h6></li>
               <li><a class="dropdown-item" href="/admin/users">Người dùng</a></li>
               <li><a class="dropdown-item" href="/admin/posts">Kiểm duyệt bài</a></li>
+              <li><a class="dropdown-item" href="/admin/categories">Quản lý danh mục</a></li>
               <li><hr class="dropdown-divider"></li>
             <% } %>
             <li>
