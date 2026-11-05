@@ -7,13 +7,13 @@ let ok = false;
 before(async () => { ok = await h.startApp(); });
 after(async () => { if (ok) { await h.clearDb(); } await h.stopApp(); });
 beforeEach(async (t) => {
-  if (!ok) return t.skip(`Không kết nối được MongoDB (${h.TEST_URI})`);
+  if (!ok) return t.skip('Không kết nối được MongoDB test');
   await h.clearDb();
 });
 
 test('đăng nhập đúng thì về trang chủ, sai thì 401', async (t) => {
   if (!ok) return t.skip('Cần MongoDB');
-  await h.createUser({ username: 'an', email: 'an@test.local' });
+  await h.createUser({ username: 'an_test', email: 'an@test.local' });
   const c = h.client();
   const bad = await c.post('/login', { email: 'an@test.local', password: 'sai' });
   assert.strictEqual(bad.status, 401);

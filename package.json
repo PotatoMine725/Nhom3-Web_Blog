@@ -8,7 +8,7 @@
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
     "create-admin": "node scripts/create-admin.js",
-    "test": "node --test --test-concurrency=1"
+    "test": "node --test --test-concurrency=1 --test-force-exit"
   },
   "engines": {
     "node": ">=18"
