@@ -76,7 +76,7 @@ let ok = false;
 before(async () => {
   ok = await h.startApp();
   // $text cần text index đã được tạo
-  if (ok) await Post.init();
+  if (ok) await Promise.all([Post.init(), Category.init()]);
 });
 after(async () => { if (ok) { await h.clearDb(); } await h.stopApp(); });
 beforeEach(async (t) => {
