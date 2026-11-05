@@ -53,8 +53,10 @@ async function bookmarks(req, res, next) {
       .sort({ createdAt: -1, _id: -1 })
       .skip((page - 1) * PAGE_SIZE)
       .limit(PAGE_SIZE)
+      // match: bài vừa chuyển về nháp giữa hai truy vấn thì post = null, filter(Boolean) loại ra
       .populate({
         path: 'post',
+        match: { status: 'published' },
         populate: [
           { path: 'author', select: 'username' },
           { path: 'category', select: 'name slug' },

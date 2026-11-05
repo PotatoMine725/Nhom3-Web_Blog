@@ -46,6 +46,7 @@ Merge `origin/feature/admin-profile` (đã gồm `feature/categories-search`) v�
 - `src/views/posts/index.ejs`: lấy bản của nhánh danh mục (form lọc `/search`, "N kết quả", tab theo `isHome` / `locals.tab`). Trạng thái rỗng ở trang khác trang chủ dùng `locals.emptyText`, mặc định "Không tìm thấy bài viết phù hợp".
 - `src/views/posts/show.ejs`: dòng meta có cả "N lượt xem" và "Danh mục: …"; nút Thích / Lưu giữ nguyên.
 - Thống nhất tên biến rỗng: bỏ `emptyMessage`, dùng `emptyText` (`postController.popular`, `reactionController.bookmarks`). `searchController`, `categoryController` không truyền biến này (dùng câu mặc định).
-- `reactionController.bookmarks`: populate thêm `category` của bài để thẻ bài trang "Đã lưu" hiện danh mục.
+- `reactionController.bookmarks`: populate thêm `category` của bài để thẻ bài trang "Đã lưu" hiện danh mục; populate `post` có `match: { status: 'published' }` (giữ `filter(Boolean)`) để bài vừa chuyển về nháp không lọt vào danh sách.
+- Merge thêm lần nữa `origin/feature/admin-profile` để lấy bản mới: session store dùng `client: mongoose.connection.getClient()`, bỏ `--test-force-exit` (không xung đột).
 
 Kiểm thử sau khi gộp (không có MongoDB): `node --check` mọi file JS trong `src` đạt; `npm test`: **59 test, 24 pass, 0 fail, 35 skip** (skip là test cần DB). Render thử `posts/index` (trang chủ có tab, tab chưa bình luận rỗng, search, popular rỗng, bookmarks rỗng) và `posts/show` (admin, khách, bài chưa phân loại) bằng `ejs.renderFile`: không lỗi biến. Vẫn cần chạy `npm test` trên máy có `mongod` và thử trên trình duyệt.
