@@ -1,6 +1,7 @@
 const path = require('path');
 const express = require('express');
 const session = require('express-session');
+const mongoose = require('mongoose');
 const MongoStore = require('connect-mongo');
 
 const { loadUser } = require('./middlewares/auth');
@@ -11,7 +12,8 @@ const commentRoutes = require('./routes/comments');
 const categoryRoutes = require('./routes/categories');
 const loadCategories = require('./middlewares/loadCategories');
 
-function createApp({ mongoUri, sessionSecret }) {
+// Gọi sau khi mongoose đã kết nối: session store dùng chung kết nối đó
+function createApp({ sessionSecret }) {
   const app = express();
 
   app.set('view engine', 'ejs');
@@ -26,7 +28,7 @@ function createApp({ mongoUri, sessionSecret }) {
       secret: sessionSecret,
       resave: false,
       saveUninitialized: false,
-      store: MongoStore.create({ mongoUrl: mongoUri }),
+      store: MongoStore.create({ client: mongoose.connection.getClient() }),
       cookie: { httpOnly: true, sameSite: 'lax', maxAge: 7 * 24 * 60 * 60 * 1000 },
     })
   );
