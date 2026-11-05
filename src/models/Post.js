@@ -29,6 +29,8 @@ const postSchema = new mongoose.Schema(
     category: { type: mongoose.Schema.Types.ObjectId, ref: 'Category', default: null },
     // Lượt xem: chỉ tăng bằng $inc trong controller (BR10), không lấy từ form
     views: { type: Number, default: 0, min: 0 },
+    // Tên file ảnh bìa trong uploads/ do server đặt (BR11), không lấy từ form; null = không có ảnh
+    coverImage: { type: String, default: null },
   },
   { timestamps: true }
 );

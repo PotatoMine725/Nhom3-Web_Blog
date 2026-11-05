@@ -147,3 +147,7 @@ vite.config.ts.timestamp-*
 
 # Turbo Repo
 .turbo
+
+# Ảnh bìa người dùng upload (giữ thư mục bằng .gitkeep)
+uploads/*
+!uploads/.gitkeep
