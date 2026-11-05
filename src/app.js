@@ -8,6 +8,8 @@ const viewHelpers = require('./utils/viewHelpers');
 const postRoutes = require('./routes/posts');
 const authRoutes = require('./routes/auth');
 const commentRoutes = require('./routes/comments');
+const userRoutes = require('./routes/users');
+const adminRoutes = require('./routes/admin');
 
 function createApp({ mongoUri, sessionSecret }) {
   const app = express();
@@ -45,6 +47,8 @@ function createApp({ mongoUri, sessionSecret }) {
   app.use('/', postRoutes);
   app.use('/', commentRoutes);
   app.use('/', authRoutes);
+  app.use('/', userRoutes);
+  app.use('/', adminRoutes);
 
   app.use((req, res) => {
     res.status(404).render('errors/404', { title: 'Không tìm thấy trang' });

@@ -211,7 +211,9 @@ async function remove(req, res, next) {
     await req.doc.deleteOne();
     await Comment.deleteMany({ post: req.doc._id }); // BR6
     req.session.flash = { type: 'success', message: 'Đã xoá bài viết' };
-    res.redirect('/me/posts');
+    // Admin xoá bài người khác (UC16, từ trang kiểm duyệt) thì quay lại /admin/posts
+    const isAuthor = req.doc.author.equals(res.locals.currentUser._id);
+    res.redirect(isAuthor ? '/me/posts' : '/admin/posts');
   } catch (err) {
     next(err);
   }
