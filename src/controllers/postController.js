@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const Post = require('../models/Post');
 const Comment = require('../models/Comment');
+const Like = require('../models/Like');
+const Bookmark = require('../models/Bookmark');
 const Category = require('../models/Category');
 
 const PAGE_SIZE = 10;
@@ -65,9 +67,25 @@ function isOwnerOrAdmin(post, user) {
   return Boolean((post.author && post.author._id.equals(user._id)) || user.role === 'admin');
 }
 
+// Gắn commentCount cho các bài (object lean) bằng một truy vấn; dùng cho mọi danh sách bài
+async function addCommentCounts(posts) {
+  const counts = await Comment.aggregate([
+    { $match: { post: { $in: posts.map((p) => p._id) } } },
+    { $group: { _id: '$post', count: { $sum: 1 } } },
+  ]);
+  const countByPost = new Map(counts.map((c) => [String(c._id), c.count]));
+  posts.forEach((p) => {
+    p.commentCount = countByPost.get(String(p._id)) || 0;
+  });
+}
+
 // Render trang bài kèm bình luận; commentController dùng lại để hiện lỗi form bình luận
 async function renderShow(res, post, { status = 200, errors = [], commentContent = '' } = {}) {
   const user = res.locals.currentUser;
+  // Số like và trạng thái nút Like / Lưu của người đang xem (UC17, UC18)
+  const likeCount = await Like.countDocuments({ post: post._id });
+  const liked = user ? Boolean(await Like.exists({ user: user._id, post: post._id })) : false;
+  const bookmarked = user ? Boolean(await Bookmark.exists({ user: user._id, post: post._id })) : false;
   // lean() để gắn thêm canDelete lên object thường
   const comments = await Comment.find({ post: post._id })
     .sort({ createdAt: 1, _id: 1 })
@@ -83,6 +101,9 @@ async function renderShow(res, post, { status = 200, errors = [], commentContent
     comments,
     errors,
     commentContent,
+    likeCount,
+    liked,
+    bookmarked,
   });
 }
 
@@ -113,15 +134,7 @@ async function index(req, res, next) {
       .populate('category', 'name slug')
       .lean();
 
-    // Đếm bình luận của các bài trong trang này bằng một truy vấn
-    const counts = await Comment.aggregate([
-      { $match: { post: { $in: posts.map((p) => p._id) } } },
-      { $group: { _id: '$post', count: { $sum: 1 } } },
-    ]);
-    const countByPost = new Map(counts.map((c) => [String(c._id), c.count]));
-    posts.forEach((p) => {
-      p.commentCount = countByPost.get(String(p._id)) || 0;
-    });
+    await addCommentCounts(posts);
 
     res.render('posts/index', {
       title: 'Bài viết',
@@ -138,17 +151,26 @@ async function index(req, res, next) {
   }
 }
 
-// UC02, BR5
+// UC02, BR5, BR10
 async function show(req, res, next) {
   try {
+    const user = res.locals.currentUser;
     const post = await Post.findOne({ slug: req.params.slug })
       .populate('author', 'username')
       .populate('category', 'name slug');
-    const canEdit = post ? isOwnerOrAdmin(post, res.locals.currentUser) : false;
+    const canEdit = post ? isOwnerOrAdmin(post, user) : false;
 
     // Bài nháp người khác mở cũng trả 404 để không lộ việc bài tồn tại
     if (!post || (post.status === 'draft' && !canEdit)) {
       return res.status(404).render('errors/404', { title: 'Không tìm thấy trang' });
+    }
+
+    // BR10: bài đã đăng, người mở không phải tác giả thì tăng lượt xem.
+    // $inc để không mất lượt khi nhiều người mở cùng lúc; timestamps: false để không đổi updatedAt
+    const isAuthor = Boolean(user && post.author && post.author._id.equals(user._id));
+    if (post.status === 'published' && !isAuthor) {
+      await Post.updateOne({ _id: post._id }, { $inc: { views: 1 } }, { timestamps: false });
+      post.views += 1; // chỉ để hiển thị, không save
     }
     await renderShow(res, post);
   } catch (err) {
@@ -238,7 +260,10 @@ async function update(req, res, next) {
 async function remove(req, res, next) {
   try {
     await req.doc.deleteOne();
-    await Comment.deleteMany({ post: req.doc._id }); // BR6
+    // BR6: xoá cả bình luận, like, bookmark của bài
+    await Comment.deleteMany({ post: req.doc._id });
+    await Like.deleteMany({ post: req.doc._id });
+    await Bookmark.deleteMany({ post: req.doc._id });
     req.session.flash = { type: 'success', message: 'Đã xoá bài viết' };
     // Admin xoá bài người khác (UC16, từ trang kiểm duyệt) thì quay lại /admin/posts
     const isAuthor = req.doc.author.equals(res.locals.currentUser._id);
@@ -258,4 +283,40 @@ async function mine(req, res, next) {
   }
 }
 
-module.exports = { renderShow, index, show, showNew, create, showEdit, update, remove, mine };
+// UC19, BR5: 10 bài đã đăng nhiều lượt xem nhất, không phân trang
+async function popular(req, res, next) {
+  try {
+    const posts = await Post.find({ status: 'published' })
+      .sort({ views: -1, createdAt: -1, _id: -1 })
+      .limit(PAGE_SIZE)
+      .populate('author', 'username')
+      .populate('category', 'name slug')
+      .lean();
+    await addCommentCounts(posts);
+    res.render('posts/index', {
+      title: 'Bài nổi bật',
+      posts,
+      page: 1,
+      totalPages: 1,
+      basePath: '/popular',
+      emptyText: 'Chưa có bài nào được đăng.',
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+module.exports = {
+  PAGE_SIZE,
+  addCommentCounts,
+  renderShow,
+  index,
+  show,
+  popular,
+  showNew,
+  create,
+  showEdit,
+  update,
+  remove,
+  mine,
+};

@@ -54,6 +54,7 @@
             <li><span class="dropdown-item-text fw-semibold"><%= currentUser.username %></span></li>
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" href="/me/posts">Bài của tôi</a></li>
+            <li><a class="dropdown-item" href="/me/bookmarks">Đã lưu</a></li>
             <li><a class="dropdown-item" href="/profile">Hồ sơ</a></li>
             <% if (currentUser.role === 'admin') { %>
               <li><hr class="dropdown-divider"></li>

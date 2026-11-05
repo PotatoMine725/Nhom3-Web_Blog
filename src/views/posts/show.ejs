@@ -21,6 +21,7 @@
       <span class="text-secondary" title="<%= post.updatedAt.toLocaleString('vi-VN') %>">· đã sửa <%= timeAgo(post.updatedAt) %></span>
     <% } %>
     <span class="text-secondary">· ~<%= readingTime(post.content) %> phút đọc</span>
+    <span class="text-secondary">· <%= post.views %> lượt xem</span>
     <span class="text-secondary">· Danh mục:
       <% if (post.category && post.category.name) { %>
         <a href="/categories/<%= post.category.slug %>"><%= post.category.name %></a>
@@ -42,6 +43,20 @@
 
   <%# Thanh hành động. Nút sao chép chỉ hiện khi có JS (xem app.js), tránh nút chết %>
   <div class="post-actions">
+    <%# Like / Lưu (UC17, UC18): chỉ bài đã đăng; khách thấy link đăng nhập %>
+    <% if (post.status !== 'published') { %>
+      <span class="post-actions__item"><%= likeCount %> lượt thích</span>
+    <% } else if (currentUser) { %>
+      <form class="d-inline" action="/posts/<%= post.slug %>/like" method="post">
+        <button class="post-actions__item" aria-pressed="<%= liked %>" title="<%= liked ? 'Bỏ thích bài này' : 'Thích bài này' %>"><%= liked ? 'Bỏ thích' : 'Thích' %> (<%= likeCount %>)</button>
+      </form>
+      <form class="d-inline" action="/posts/<%= post.slug %>/bookmark" method="post">
+        <button class="post-actions__item" aria-pressed="<%= bookmarked %>" title="<%= bookmarked ? 'Bỏ lưu bài này' : 'Lưu bài để đọc sau' %>"><%= bookmarked ? 'Bỏ lưu' : 'Lưu' %></button>
+      </form>
+    <% } else { %>
+      <a class="post-actions__item" href="/login" title="Đăng nhập để thích bài">Thích (<%= likeCount %>)</a>
+      <a class="post-actions__item" href="/login" title="Đăng nhập để lưu bài">Lưu</a>
+    <% } %>
     <a class="post-actions__item" href="#comments" title="Xem và viết bình luận">Bình luận (<%= comments.length %>)</a>
     <button type="button" class="post-actions__item" id="copyLinkBtn" hidden title="Sao chép liên kết bài viết">Sao chép liên kết</button>
     <% if (canEdit) { %>
@@ -60,7 +75,7 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
         </div>
         <div class="modal-body">
-          Bài viết và toàn bộ bình luận của nó sẽ bị xoá, không khôi phục được.
+          Bài viết cùng toàn bộ bình luận, lượt thích và lượt lưu của nó sẽ bị xoá, không khôi phục được.
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Huỷ</button>

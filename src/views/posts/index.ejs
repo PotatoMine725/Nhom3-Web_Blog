@@ -57,7 +57,7 @@
       <rect x="10" y="8" width="44" height="48" rx="6"/><path d="M20 22h24M20 32h24M20 42h14"/>
     </svg>
     <% if (!isHome) { %>
-      <%# Trang khác (vd. /me/bookmarks) có thể truyền emptyText riêng %>
+      <%# Trang khác trang chủ (/search, /popular, /me/bookmarks...) có thể truyền emptyText riêng %>
       <p class="empty-state__text"><%= locals.emptyText || 'Không tìm thấy bài viết phù hợp' %></p>
       <a class="btn btn-outline-primary" href="/">Xem tất cả bài viết</a>
     <% } else if (locals.tab === 'unanswered') { %>
