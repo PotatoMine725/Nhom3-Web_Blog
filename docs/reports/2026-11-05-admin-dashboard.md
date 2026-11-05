@@ -2,7 +2,7 @@
 
 - Ngày: 2026-11-05
 - Plan: `plans/2026-11-05-admin-dashboard.md`
-- Branch / PR: `feature/admin-dashboard` (tạo từ `origin/feature/like-bookmark-popular`) → PR vào `dev` (do điều phối viên tạo)
+- Branch / PR: `feature/admin-dashboard` (tạo từ `origin/feature/like-bookmark-popular`) → PR #23 vào `dev` (do điều phối viên tạo), đã merge
 
 ## Đã làm
 
@@ -28,10 +28,14 @@ Chạy thật trên container cloud (không có MongoDB):
 | # | Thao tác | Kết quả | Đạt? |
 | --- | --- | --- | --- |
 | 1–2 | `fillMonths` (qua năm, rỗng) | Đúng 6 tháng, 0 / percent đúng | Đạt |
-| 3–6 | Quyền, rỗng, số liệu, giới hạn 5 (test tự động) | Chưa chạy: cần MongoDB | Chưa kiểm |
+| 3–6 | Quyền, rỗng, số liệu, giới hạn 5 (test tự động) | Chạy lại trên máy có MongoDB (xem "Cập nhật" bên dưới) | Đạt |
+
+### Cập nhật (2026-11-05, máy có MongoDB)
+
+Chạy `npm test` trên `dev` sau khi gộp mọi PR, `mongod` đang chạy: **84 test, 84 pass, 0 fail, 0 skip**, gồm 4 test DB của trang `/admin`. Chưa mở `/admin` trên trình duyệt. Review sau merge: `reviews/2026-11-05-admin-dashboard.md` (Duyệt, chỉ có vấn đề mức Thấp).
 
 ## Việc còn lại
 
-- Chạy `npm test` trên máy có MongoDB và mở `/admin` bằng tài khoản admin trên trình duyệt trước khi merge.
+- Mở `/admin` bằng tài khoản admin trên trình duyệt (phần `npm test` đã chạy, xem "Cập nhật").
 - `header.ejs` cũng có thể bị nhánh ảnh bìa sửa: nếu xung đột thì chỉ cần giữ dòng "Thống kê" trong nhóm "Quản trị".
 - Bước tiếp theo trong `specs/05`: bước 11 (kiểm thử thủ công UC01–UC20).

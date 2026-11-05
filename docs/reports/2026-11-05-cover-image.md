@@ -2,7 +2,7 @@
 
 - Ngày: 2026-11-05
 - Plan: `plans/2026-11-05-cover-image.md`
-- Branch / PR: `feature/cover-image` (tạo từ `origin/feature/like-bookmark-popular`) → PR vào `dev` (do điều phối viên tạo)
+- Branch / PR: `feature/cover-image` (tạo từ `origin/feature/like-bookmark-popular`) → PR #24 vào `dev` (do điều phối viên tạo), đã merge
 
 ## Đã làm
 
@@ -33,10 +33,14 @@ Chạy thật trên container cloud (không có MongoDB):
 | # | Thao tác | Kết quả | Đạt? |
 | --- | --- | --- | --- |
 | 1–5 | Middleware (test không DB) | Đúng như plan | Đạt |
-| 6–16 | Theo bảng kiểm thử của plan (test cần DB) | Chưa chạy: cần MongoDB | Chưa kiểm |
+| 6–16 | Theo bảng kiểm thử của plan (test cần DB) | Chạy lại trên máy có MongoDB (xem "Cập nhật" bên dưới) | Đạt |
+
+### Cập nhật (2026-11-05, máy có MongoDB)
+
+Chạy `npm test` trên `dev` sau khi gộp mọi PR, `mongod` đang chạy: **84 test, 84 pass, 0 fail, 0 skip**, gồm 11 test DB của `cover-image.test.js`. Sau khi chạy, `uploads/` không còn file thừa (`git status` sạch). Chưa thử bằng trình duyệt. Review sau merge: `reviews/2026-11-05-cover-image.md` (Duyệt, chỉ có vấn đề mức Thấp).
 
 ## Việc còn lại
 
-- Chạy `npm test` trên máy có MongoDB; thử bằng trình duyệt: tạo bài có ảnh, thay ảnh, tick xoá ảnh, chọn file > 2 MB hoặc GIF, xoá bài rồi kiểm tra thư mục `uploads/`.
+- Thử bằng trình duyệt (phần `npm test` đã chạy, xem "Cập nhật"): tạo bài có ảnh, thay ảnh, tick xoá ảnh, chọn file > 2 MB hoặc GIF, xoá bài rồi kiểm tra thư mục `uploads/`.
 - `npm install` lại sau khi pull (có thư viện mới `multer`).
 - Chỉ kiểm mimetype do trình duyệt gửi (đúng spec); file mồ côi khi server tắt giữa chừng không được dọn.
