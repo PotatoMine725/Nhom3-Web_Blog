@@ -9,6 +9,8 @@ const viewHelpers = require('./utils/viewHelpers');
 const postRoutes = require('./routes/posts');
 const authRoutes = require('./routes/auth');
 const commentRoutes = require('./routes/comments');
+const categoryRoutes = require('./routes/categories');
+const loadCategories = require('./middlewares/loadCategories');
 
 // Gọi sau khi mongoose đã kết nối: session store dùng chung kết nối đó
 function createApp({ sessionSecret }) {
@@ -43,10 +45,13 @@ function createApp({ sessionSecret }) {
     res.locals.currentPath = req.path;
     next();
   });
+  // Danh mục cho menu header, form bài, form lọc (mọi trang render đều có header)
+  app.use(loadCategories);
 
   app.use('/', postRoutes);
   app.use('/', commentRoutes);
   app.use('/', authRoutes);
+  app.use('/', categoryRoutes);
 
   app.use((req, res) => {
     res.status(404).render('errors/404', { title: 'Không tìm thấy trang' });

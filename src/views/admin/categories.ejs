@@ -1,0 +1,60 @@
+<%- include('../partials/header') %>
+<%# UC14. Nhận rows (danh mục + postCount), uncategorizedCount, errors, name (giá trị form thêm). Mọi dữ liệu được escape %>
+
+<h1 class="h3 mb-3"><%= title %></h1>
+
+<% if (errors.length) { %>
+  <div class="alert alert-danger">
+    <ul class="mb-0">
+      <% errors.forEach(function (msg) { %>
+        <li><%= msg %></li>
+      <% }) %>
+    </ul>
+  </div>
+<% } %>
+
+<form class="d-flex gap-2 mb-4 content-narrow" action="/admin/categories" method="post">
+  <label class="visually-hidden" for="newName">Tên danh mục mới</label>
+  <input class="form-control" id="newName" name="name" value="<%= name %>" maxlength="50" placeholder="Tên danh mục mới" required>
+  <button class="btn btn-primary text-nowrap">Thêm</button>
+</form>
+
+<% if (!rows.length) { %>
+  <p class="text-secondary">Chưa có danh mục nào.</p>
+<% } else { %>
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead>
+        <tr>
+          <th scope="col">Tên (sửa rồi bấm Lưu)</th>
+          <th scope="col">Đường dẫn</th>
+          <th scope="col" class="text-end">Số bài</th>
+          <th scope="col"><span class="visually-hidden">Xoá</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% rows.forEach(function (c) { %>
+          <tr>
+            <td>
+              <form class="d-flex gap-2" action="/admin/categories/<%= c._id %>/edit" method="post">
+                <input class="form-control form-control-sm" name="name" value="<%= c.name %>" maxlength="50" required aria-label="Tên danh mục <%= c.name %>">
+                <button class="btn btn-sm btn-outline-primary">Lưu</button>
+              </form>
+            </td>
+            <td><a href="/categories/<%= c.slug %>">/categories/<%= c.slug %></a></td>
+            <td class="text-end"><%= c.postCount %></td>
+            <td class="text-end">
+              <form action="/admin/categories/<%= c._id %>/delete" method="post" onsubmit="return confirm('Xoá danh mục này? Các bài của nó sẽ chuyển về Chưa phân loại.')">
+                <button class="btn btn-sm btn-outline-danger">Xoá</button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+<% } %>
+
+<p class="text-secondary small">Bài chưa phân loại: <%= uncategorizedCount %>. Số bài tính cả bài nháp.</p>
+
+<%- include('../partials/footer') %>

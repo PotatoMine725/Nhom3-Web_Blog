@@ -1,26 +1,66 @@
 <%- include('../partials/header') %>
+<%# Dùng chung cho /, /search, /categories/:slug, /tags/:tag. Chỉ trang chủ truyền tab, nên mọi chỗ đọc tab dùng locals.tab %>
+<% var isHome = Boolean(locals.tab); %>
 
 <div class="d-flex justify-content-between align-items-center mb-3">
   <h1 class="h3 mb-0"><%= title %></h1>
-  <% if (currentUser) { %>
-    <a class="btn btn-primary" href="/posts/new" title="Viết bài mới">Viết bài</a>
-  <% } else { %>
-    <a class="btn btn-primary" href="/register" title="Tạo tài khoản để viết bài">Đăng ký để viết bài</a>
+  <% if (isHome) { %>
+    <% if (currentUser) { %>
+      <a class="btn btn-primary" href="/posts/new" title="Viết bài mới">Viết bài</a>
+    <% } else { %>
+      <a class="btn btn-primary" href="/register" title="Tạo tài khoản để viết bài">Đăng ký để viết bài</a>
+    <% } %>
   <% } %>
 </div>
 
-<%# Hai tab: tab chỉ lọc thêm bài chưa có bình luận, vẫn mới nhất trước %>
-<nav class="post-tabs" aria-label="Lọc bài viết">
-  <a class="post-tabs__link <%= tab === 'new' ? 'active' : '' %>" href="/" <%- tab === 'new' ? 'aria-current="page"' : '' %>>Mới nhất</a>
-  <a class="post-tabs__link <%= tab === 'unanswered' ? 'active' : '' %>" href="/?tab=unanswered" title="Bài chưa ai bình luận: hãy là người đầu tiên" <%- tab === 'unanswered' ? 'aria-current="page"' : '' %>>Chưa có bình luận</a>
-</nav>
+<% if (locals.searchForm) { %>
+  <%# Form lọc của /search: giữ lại giá trị đã nhập (UC03, specs/04) %>
+  <form class="search-filter row g-2 align-items-end mb-3" action="/search" method="get" role="search" aria-label="Lọc bài viết">
+    <div class="col-12 col-md-5">
+      <label class="form-label small mb-1" for="filterQ">Từ khoá</label>
+      <input class="form-control" id="filterQ" type="search" name="q" value="<%= filters.q %>" maxlength="100">
+    </div>
+    <div class="col-6 col-md-3">
+      <label class="form-label small mb-1" for="filterCategory">Danh mục</label>
+      <select class="form-select" id="filterCategory" name="category">
+        <option value="">Tất cả</option>
+        <% (locals.categories || []).forEach(function (c) { %>
+          <option value="<%= c.slug %>" <%= filters.category === c.slug ? 'selected' : '' %>><%= c.name %></option>
+        <% }) %>
+      </select>
+    </div>
+    <div class="col-6 col-md-2">
+      <label class="form-label small mb-1" for="filterTag">Tag</label>
+      <input class="form-control" id="filterTag" name="tag" value="<%= filters.tag %>">
+    </div>
+    <div class="col-12 col-md-2">
+      <button class="btn btn-primary w-100">Lọc</button>
+    </div>
+  </form>
+<% } %>
+
+<% if (typeof locals.total === 'number') { %>
+  <p class="text-secondary small mb-2"><%= total %> kết quả</p>
+<% } %>
+
+<% if (isHome) { %>
+  <%# Hai tab: tab chỉ lọc thêm bài chưa có bình luận, vẫn mới nhất trước %>
+  <nav class="post-tabs" aria-label="Lọc bài viết">
+    <a class="post-tabs__link <%= locals.tab === 'new' ? 'active' : '' %>" href="/" <%- locals.tab === 'new' ? 'aria-current="page"' : '' %>>Mới nhất</a>
+    <a class="post-tabs__link <%= locals.tab === 'unanswered' ? 'active' : '' %>" href="/?tab=unanswered" title="Bài chưa ai bình luận: hãy là người đầu tiên" <%- locals.tab === 'unanswered' ? 'aria-current="page"' : '' %>>Chưa có bình luận</a>
+  </nav>
+<% } %>
 
 <% if (posts.length === 0) { %>
   <div class="empty-state">
     <svg width="64" height="64" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
       <rect x="10" y="8" width="44" height="48" rx="6"/><path d="M20 22h24M20 32h24M20 42h14"/>
     </svg>
-    <% if (tab === 'unanswered') { %>
+    <% if (!isHome) { %>
+      <%# Trang khác (vd. /me/bookmarks) có thể truyền emptyText riêng %>
+      <p class="empty-state__text"><%= locals.emptyText || 'Không tìm thấy bài viết phù hợp' %></p>
+      <a class="btn btn-outline-primary" href="/">Xem tất cả bài viết</a>
+    <% } else if (locals.tab === 'unanswered') { %>
       <p class="empty-state__text">Mọi bài viết đều đã có bình luận.</p>
       <a class="btn btn-outline-primary" href="/">Xem tất cả bài viết</a>
     <% } else { %>

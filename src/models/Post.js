@@ -25,7 +25,7 @@ const postSchema = new mongoose.Schema(
       validate: { validator: (arr) => arr.length <= 10, message: 'Tối đa 10 tag' },
     },
     author: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    // Chưa có model Category (làm ở bước 5), tạm luôn null
+    // null = "Chưa phân loại". Xoá danh mục thì bài về null (categoryController.remove)
     category: { type: mongoose.Schema.Types.ObjectId, ref: 'Category', default: null },
   },
   { timestamps: true }
