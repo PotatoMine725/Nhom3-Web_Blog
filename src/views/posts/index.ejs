@@ -9,18 +9,24 @@
   <% } %>
 </div>
 
-<%# Hai tab: tab chỉ lọc thêm bài chưa có bình luận, vẫn mới nhất trước %>
+<%# Hai tab: tab chỉ lọc thêm bài chưa có bình luận, vẫn mới nhất trước. Chỉ trang chủ có biến tab %>
+<% if (locals.tab) { %>
 <nav class="post-tabs" aria-label="Lọc bài viết">
   <a class="post-tabs__link <%= tab === 'new' ? 'active' : '' %>" href="/" <%- tab === 'new' ? 'aria-current="page"' : '' %>>Mới nhất</a>
   <a class="post-tabs__link <%= tab === 'unanswered' ? 'active' : '' %>" href="/?tab=unanswered" title="Bài chưa ai bình luận: hãy là người đầu tiên" <%- tab === 'unanswered' ? 'aria-current="page"' : '' %>>Chưa có bình luận</a>
 </nav>
+<% } %>
 
 <% if (posts.length === 0) { %>
   <div class="empty-state">
     <svg width="64" height="64" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
       <rect x="10" y="8" width="44" height="48" rx="6"/><path d="M20 22h24M20 32h24M20 42h14"/>
     </svg>
-    <% if (tab === 'unanswered') { %>
+    <% if (locals.emptyMessage) { %>
+      <%# Trang khác trang chủ (/popular, /me/bookmarks) tự truyền câu thông báo %>
+      <p class="empty-state__text"><%= emptyMessage %></p>
+      <a class="btn btn-outline-primary" href="/">Về trang chủ</a>
+    <% } else if (locals.tab === 'unanswered') { %>
       <p class="empty-state__text">Mọi bài viết đều đã có bình luận.</p>
       <a class="btn btn-outline-primary" href="/">Xem tất cả bài viết</a>
     <% } else { %>

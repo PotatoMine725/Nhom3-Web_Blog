@@ -27,6 +27,8 @@ const postSchema = new mongoose.Schema(
     author: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     // Chưa có model Category (làm ở bước 5), tạm luôn null
     category: { type: mongoose.Schema.Types.ObjectId, ref: 'Category', default: null },
+    // Lượt xem: chỉ tăng bằng $inc trong controller (BR10), không lấy từ form
+    views: { type: Number, default: 0, min: 0 },
   },
   { timestamps: true }
 );
@@ -35,6 +37,8 @@ postSchema.index({ status: 1, createdAt: -1 });
 postSchema.index({ author: 1 });
 postSchema.index({ category: 1 });
 postSchema.index({ tags: 1 });
+// Bài nổi bật (UC19)
+postSchema.index({ status: 1, views: -1 });
 // default_language: 'none' để MongoDB không bỏ stop word / cắt đuôi từ theo tiếng Anh
 postSchema.index({ title: 'text' }, { default_language: 'none' });
 

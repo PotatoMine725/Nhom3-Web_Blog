@@ -20,6 +20,7 @@
         <span><%= post.author ? post.author.username : 'Không rõ' %></span>
         <span class="text-secondary" title="<%= post.createdAt.toLocaleString('vi-VN') %>"><%= timeAgo(post.createdAt) %></span>
         <span class="text-secondary">· ~<%= readingTime(post.content) %> phút đọc</span>
+        <span class="text-secondary">· <%= post.views || 0 %> lượt xem</span>
       </div>
     </div>
   </div>
