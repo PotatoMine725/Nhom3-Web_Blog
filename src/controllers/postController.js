@@ -1,7 +1,9 @@
+const mongoose = require('mongoose');
 const Post = require('../models/Post');
 const Comment = require('../models/Comment');
 const Like = require('../models/Like');
 const Bookmark = require('../models/Bookmark');
+const Category = require('../models/Category');
 
 const PAGE_SIZE = 10;
 
@@ -17,7 +19,7 @@ function parseTags(input) {
   return [...new Set(tags)];
 }
 
-// Chỉ đọc 4 field này từ form; author, slug, category không bao giờ lấy từ form
+// Chỉ đọc 4 field này từ form; author, slug không bao giờ lấy từ form. category đọc riêng (readCategory)
 function readForm(body) {
   return {
     title: str(body.title).trim(),
@@ -27,12 +29,21 @@ function readForm(body) {
   };
 }
 
+// Ô chọn danh mục: "" = Chưa phân loại (null). Trả về id, null, hoặc undefined nếu id sai / danh mục không tồn tại
+async function readCategory(value) {
+  const id = str(value);
+  if (!id) return null;
+  if (!mongoose.isValidObjectId(id)) return undefined;
+  return (await Category.exists({ _id: id })) ? id : undefined;
+}
+
 function renderForm(res, status, { data, errors, action, isEdit }) {
   res.status(status).render('posts/form', {
     title: isEdit ? 'Sửa bài' : 'Viết bài',
     errors,
     action,
-    values: { ...data, tags: data.tags.join(', ') },
+    // category luôn là chuỗi id ('' = Chưa phân loại) để view so với option
+    values: { ...data, tags: data.tags.join(', '), category: data.category ? String(data.category) : '' },
   });
 }
 
@@ -120,6 +131,7 @@ async function index(req, res, next) {
       .skip((page - 1) * PAGE_SIZE)
       .limit(PAGE_SIZE)
       .populate('author', 'username')
+      .populate('category', 'name slug')
       .lean();
 
     await addCommentCounts(posts);
@@ -143,7 +155,9 @@ async function index(req, res, next) {
 async function show(req, res, next) {
   try {
     const user = res.locals.currentUser;
-    const post = await Post.findOne({ slug: req.params.slug }).populate('author', 'username');
+    const post = await Post.findOne({ slug: req.params.slug })
+      .populate('author', 'username')
+      .populate('category', 'name slug');
     const canEdit = post ? isOwnerOrAdmin(post, user) : false;
 
     // Bài nháp người khác mở cũng trả 404 để không lộ việc bài tồn tại
@@ -167,7 +181,7 @@ async function show(req, res, next) {
 // UC08
 function showNew(req, res) {
   renderForm(res, 200, {
-    data: { title: '', content: '', tags: [], status: 'draft' },
+    data: { title: '', content: '', tags: [], status: 'draft', category: '' },
     errors: [],
     action: '/posts',
     isEdit: false,
@@ -178,6 +192,11 @@ function showNew(req, res) {
 async function create(req, res, next) {
   try {
     const data = readForm(req.body);
+    data.category = await readCategory(req.body.category);
+    if (data.category === undefined) {
+      data.category = null;
+      return renderForm(res, 400, { data, errors: ['Danh mục không tồn tại'], action: '/posts', isEdit: false });
+    }
     // author lấy từ session, không lấy từ form
     const post = new Post({ ...data, author: res.locals.currentUser._id });
     try {
@@ -198,7 +217,7 @@ async function create(req, res, next) {
 function showEdit(req, res) {
   const post = req.doc;
   renderForm(res, 200, {
-    data: { title: post.title, content: post.content, tags: post.tags, status: post.status },
+    data: { title: post.title, content: post.content, tags: post.tags, status: post.status, category: post.category },
     errors: [],
     action: `/posts/${post.slug}/edit`,
     isEdit: true,
@@ -212,6 +231,16 @@ async function update(req, res, next) {
     // Giữ slug cũ trước khi save vì hook có thể đổi post.slug trong bộ nhớ dù validate lỗi
     const oldSlug = post.slug;
     const data = readForm(req.body);
+    data.category = await readCategory(req.body.category);
+    if (data.category === undefined) {
+      data.category = null;
+      return renderForm(res, 400, {
+        data,
+        errors: ['Danh mục không tồn tại'],
+        action: `/posts/${oldSlug}/edit`,
+        isEdit: true,
+      });
+    }
     Object.assign(post, data); // không đụng author
     try {
       await post.save();
@@ -236,7 +265,9 @@ async function remove(req, res, next) {
     await Like.deleteMany({ post: req.doc._id });
     await Bookmark.deleteMany({ post: req.doc._id });
     req.session.flash = { type: 'success', message: 'Đã xoá bài viết' };
-    res.redirect('/me/posts');
+    // Admin xoá bài người khác (UC16, từ trang kiểm duyệt) thì quay lại /admin/posts
+    const isAuthor = req.doc.author.equals(res.locals.currentUser._id);
+    res.redirect(isAuthor ? '/me/posts' : '/admin/posts');
   } catch (err) {
     next(err);
   }
@@ -259,6 +290,7 @@ async function popular(req, res, next) {
       .sort({ views: -1, createdAt: -1, _id: -1 })
       .limit(PAGE_SIZE)
       .populate('author', 'username')
+      .populate('category', 'name slug')
       .lean();
     await addCommentCounts(posts);
     res.render('posts/index', {
@@ -267,7 +299,7 @@ async function popular(req, res, next) {
       page: 1,
       totalPages: 1,
       basePath: '/popular',
-      emptyMessage: 'Chưa có bài nào được đăng.',
+      emptyText: 'Chưa có bài nào được đăng.',
     });
   } catch (err) {
     next(err);

@@ -9,10 +9,10 @@ const str = (v) => (typeof v === 'string' ? v : '');
 async function create(req, res, next) {
   try {
     // Bài nháp coi như không tồn tại để không lộ bài
-    const post = await Post.findOne({ slug: req.params.slug, status: 'published' }).populate(
-      'author',
-      'username'
-    );
+    // populate category giống show vì lỗi form thì render lại trang bài
+    const post = await Post.findOne({ slug: req.params.slug, status: 'published' })
+      .populate('author', 'username')
+      .populate('category', 'name slug');
     if (!post) {
       return res.status(404).render('errors/404', { title: 'Không tìm thấy trang' });
     }

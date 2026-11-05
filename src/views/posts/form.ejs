@@ -23,6 +23,15 @@
     <textarea class="form-control" id="content" name="content" rows="12"><%= values.content %></textarea>
   </div>
   <div class="mb-3">
+    <label class="form-label" for="category">Danh mục</label>
+    <select class="form-select w-auto" id="category" name="category">
+      <option value="">Chưa phân loại</option>
+      <% (locals.categories || []).forEach(function (c) { %>
+        <option value="<%= c._id %>" <%= values.category === String(c._id) ? 'selected' : '' %>><%= c.name %></option>
+      <% }) %>
+    </select>
+  </div>
+  <div class="mb-3">
     <label class="form-label" for="tags">Tag</label>
     <input class="form-control" id="tags" name="tags" value="<%= values.tags %>">
     <div class="form-text">Cách nhau bằng dấu phẩy, tối đa 10 tag.</div>

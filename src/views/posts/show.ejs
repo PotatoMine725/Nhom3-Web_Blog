@@ -22,12 +22,19 @@
     <% } %>
     <span class="text-secondary">· ~<%= readingTime(post.content) %> phút đọc</span>
     <span class="text-secondary">· <%= post.views %> lượt xem</span>
+    <span class="text-secondary">· Danh mục:
+      <% if (post.category && post.category.name) { %>
+        <a href="/categories/<%= post.category.slug %>"><%= post.category.name %></a>
+      <% } else { %>
+        Chưa phân loại
+      <% } %>
+    </span>
   </div>
 
   <% if (post.tags.length) { %>
     <div class="mb-3">
       <% post.tags.forEach(function (tag) { %>
-        <span class="tag-chip"><%= tag %></span>
+        <a class="tag-chip" href="/tags/<%= encodeURIComponent(tag) %>"><%= tag %></a>
       <% }) %>
     </div>
   <% } %>

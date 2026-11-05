@@ -1,0 +1,41 @@
+<%- include('../partials/header') %>
+
+<h1 class="h3 mb-4"><%= title %></h1>
+
+<table class="table table-sm align-middle">
+  <thead>
+    <tr><th>Username</th><th>Email</th><th>Vai trò</th><th>Trạng thái</th><th></th></tr>
+  </thead>
+  <tbody>
+    <% users.forEach(function (user) { %>
+      <% var isMe = user._id.equals(currentUser._id); %>
+      <tr>
+        <td><%= user.username %><% if (isMe) { %> <span class="text-secondary">(bạn)</span><% } %></td>
+        <td><%= user.email %></td>
+        <td><%= user.role === 'admin' ? 'Admin' : 'Thành viên' %></td>
+        <td>
+          <% if (user.isLocked) { %>
+            <span class="badge text-bg-danger">Đã khoá</span>
+          <% } else { %>
+            <span class="badge text-bg-success">Hoạt động</span>
+          <% } %>
+        </td>
+        <td class="text-end">
+          <%# Admin không tự khoá / hạ quyền chính mình nên không hiện nút ở dòng của mình %>
+          <% if (!isMe) { %>
+            <div class="d-flex gap-2 justify-content-end">
+              <form action="/admin/users/<%= user._id %>/lock" method="post" onsubmit="return confirm('<%= user.isLocked ? 'Mở khoá' : 'Khoá' %> tài khoản <%= user.username %>?')">
+                <button class="btn btn-sm <%= user.isLocked ? 'btn-outline-success' : 'btn-outline-danger' %>"><%= user.isLocked ? 'Mở khoá' : 'Khoá' %></button>
+              </form>
+              <form action="/admin/users/<%= user._id %>/role" method="post" onsubmit="return confirm('Đổi vai trò của <%= user.username %>?')">
+                <button class="btn btn-sm btn-outline-primary"><%= user.role === 'admin' ? 'Hạ thành thành viên' : 'Nâng lên admin' %></button>
+              </form>
+            </div>
+          <% } %>
+        </td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
+
+<%- include('../partials/footer') %>

@@ -53,7 +53,13 @@ async function bookmarks(req, res, next) {
       .sort({ createdAt: -1, _id: -1 })
       .skip((page - 1) * PAGE_SIZE)
       .limit(PAGE_SIZE)
-      .populate({ path: 'post', populate: { path: 'author', select: 'username' } })
+      .populate({
+        path: 'post',
+        populate: [
+          { path: 'author', select: 'username' },
+          { path: 'category', select: 'name slug' },
+        ],
+      })
       .lean();
     const posts = rows.map((b) => b.post).filter(Boolean);
     await addCommentCounts(posts);
@@ -64,7 +70,7 @@ async function bookmarks(req, res, next) {
       page,
       totalPages,
       basePath: '/me/bookmarks',
-      emptyMessage: 'Bạn chưa lưu bài nào. Bấm "Lưu" ở trang bài viết để lưu lại đọc sau.',
+      emptyText: 'Bạn chưa lưu bài nào. Bấm "Lưu" ở trang bài viết để lưu lại đọc sau.',
     });
   } catch (err) {
     next(err);

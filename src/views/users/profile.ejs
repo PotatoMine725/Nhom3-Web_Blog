@@ -1,0 +1,46 @@
+<%- include('../partials/header') %>
+
+<div class="content-narrow">
+<h1 class="h3 mb-3">Hồ sơ</h1>
+<p class="text-secondary">Username: <strong><%= currentUser.username %></strong> · Vai trò: <%= currentUser.role === 'admin' ? 'Admin' : 'Thành viên' %></p>
+
+<% if (errors.length) { %>
+  <div class="alert alert-danger">
+    <ul class="mb-0">
+      <% errors.forEach(function (msg) { %>
+        <li><%= msg %></li>
+      <% }) %>
+    </ul>
+  </div>
+<% } %>
+
+<h2 class="h5 mt-4">Đổi email</h2>
+<form action="/profile" method="post">
+  <input type="hidden" name="form" value="email">
+  <div class="mb-3">
+    <label class="form-label" for="email">Email</label>
+    <input class="form-control" id="email" name="email" value="<%= values.email || '' %>">
+  </div>
+  <button class="btn btn-primary">Lưu email</button>
+</form>
+
+<h2 class="h5 mt-5">Đổi mật khẩu</h2>
+<form action="/profile" method="post">
+  <input type="hidden" name="form" value="password">
+  <div class="mb-3">
+    <label class="form-label" for="currentPassword">Mật khẩu hiện tại</label>
+    <input class="form-control" type="password" id="currentPassword" name="currentPassword" autocomplete="current-password">
+  </div>
+  <div class="mb-3">
+    <label class="form-label" for="newPassword">Mật khẩu mới</label>
+    <input class="form-control" type="password" id="newPassword" name="newPassword" autocomplete="new-password">
+  </div>
+  <div class="mb-3">
+    <label class="form-label" for="confirmPassword">Nhập lại mật khẩu mới</label>
+    <input class="form-control" type="password" id="confirmPassword" name="confirmPassword" autocomplete="new-password">
+  </div>
+  <button class="btn btn-primary">Đổi mật khẩu</button>
+</form>
+</div>
+
+<%- include('../partials/footer') %>

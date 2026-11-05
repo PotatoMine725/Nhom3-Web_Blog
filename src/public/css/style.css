@@ -223,6 +223,33 @@ body {
   opacity: 0.7;
 }
 
+/* Chip tag là link tới /tags/:tag */
+a.tag-chip {
+  text-decoration: none;
+}
+
+a.tag-chip:hover {
+  filter: brightness(0.95);
+}
+
+/* Chip danh mục: viền, phân biệt với tag */
+.category-chip {
+  display: inline-block;
+  margin: 0 4px 4px 0;
+  padding: 1px 8px;
+  border: 1px solid var(--tag-color);
+  border-radius: 4px;
+  color: var(--tag-color);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  text-decoration: none;
+}
+
+/* Nút "Danh mục" trên header */
+.site-header__menu-btn {
+  color: var(--bs-body-color);
+}
+
 /* Hàng bài viết trong danh sách */
 .post-row {
   display: flex;

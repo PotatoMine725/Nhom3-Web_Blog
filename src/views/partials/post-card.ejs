@@ -11,8 +11,12 @@
 
     <div class="post-row__footer">
       <div class="post-row__tags">
+        <%# Danh mục chỉ hiện khi đã populate (có name); bài chưa phân loại không hiện gì %>
+        <% if (post.category && post.category.name) { %>
+          <a class="category-chip" href="/categories/<%= post.category.slug %>" title="Danh mục"><%= post.category.name %></a>
+        <% } %>
         <% post.tags.forEach(function (tag) { %>
-          <span class="tag-chip"><%= tag %></span>
+          <a class="tag-chip" href="/tags/<%= encodeURIComponent(tag) %>"><%= tag %></a>
         <% }) %>
       </div>
       <div class="post-row__meta">
