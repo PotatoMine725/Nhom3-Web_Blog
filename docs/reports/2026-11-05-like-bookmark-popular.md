@@ -36,3 +36,16 @@ Chạy thật trên container cloud (không có MongoDB):
 - Chạy `npm test` trên máy có MongoDB và thử bằng trình duyệt (bấm Thích / Lưu, trang Đã lưu, Nổi bật) trước khi merge.
 - `posts/index.ejs` cũng được nhánh danh mục / tìm kiếm sửa: có thể cần gộp tay phần tab / trạng thái rỗng.
 - Bước tiếp theo trong `specs/05`: bước 9 (ảnh bìa).
+
+## Gộp với nhánh danh mục + admin
+
+Merge `origin/feature/admin-profile` (đã gồm `feature/categories-search`) vào nhánh này (commit `f5ac8b9`). Xung đột ở 4 file, gộp tay giữ đủ hành vi hai phía:
+
+- `src/controllers/postController.js`: require cả `Like`, `Bookmark` và `Category`. `show` vừa `populate('category', 'name slug')` vừa giữ biến `user` cho phần tăng lượt xem (BR10, `$inc`). `remove` (đã tự gộp) giữ BR6 xoá Comment/Like/Bookmark và redirect `/me/posts` hoặc `/admin/posts`. `popular` thêm `populate('category')` để thẻ bài hiện danh mục.
+- `src/views/partials/header.ejs`: menu người dùng có "Bài của tôi", "Đã lưu", "Hồ sơ", rồi nhóm "Quản trị" (Người dùng, Kiểm duyệt bài, Quản lý danh mục) nếu là admin. Dropdown danh mục và ô tìm kiếm giữ `q` không đổi.
+- `src/views/posts/index.ejs`: lấy bản của nhánh danh mục (form lọc `/search`, "N kết quả", tab theo `isHome` / `locals.tab`). Trạng thái rỗng ở trang khác trang chủ dùng `locals.emptyText`, mặc định "Không tìm thấy bài viết phù hợp".
+- `src/views/posts/show.ejs`: dòng meta có cả "N lượt xem" và "Danh mục: …"; nút Thích / Lưu giữ nguyên.
+- Thống nhất tên biến rỗng: bỏ `emptyMessage`, dùng `emptyText` (`postController.popular`, `reactionController.bookmarks`). `searchController`, `categoryController` không truyền biến này (dùng câu mặc định).
+- `reactionController.bookmarks`: populate thêm `category` của bài để thẻ bài trang "Đã lưu" hiện danh mục.
+
+Kiểm thử sau khi gộp (không có MongoDB): `node --check` mọi file JS trong `src` đạt; `npm test`: **59 test, 24 pass, 0 fail, 35 skip** (skip là test cần DB). Render thử `posts/index` (trang chủ có tab, tab chưa bình luận rỗng, search, popular rỗng, bookmarks rỗng) và `posts/show` (admin, khách, bài chưa phân loại) bằng `ejs.renderFile`: không lỗi biến. Vẫn cần chạy `npm test` trên máy có `mongod` và thử trên trình duyệt.
