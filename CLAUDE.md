@@ -30,6 +30,7 @@ cp .env.example .env # tạo file cấu hình (lần đầu)
 npm run dev          # chạy với nodemon (cần MongoDB đã bật)
 npm start            # chạy thường
 npm run create-admin -- <email>  # nâng user lên admin (cần MongoDB, có từ plan auth)
+npm test             # chạy test (node:test). Test cần DB dùng nhom3_blog_test, không có MongoDB thì tự skip
 ```
 
 ## Cấu trúc
