@@ -13,6 +13,7 @@ const userRoutes = require('./routes/users');
 const adminRoutes = require('./routes/admin');
 const categoryRoutes = require('./routes/categories');
 const loadCategories = require('./middlewares/loadCategories');
+const { UPLOAD_DIR } = require('./middlewares/uploadCover');
 
 // Gọi sau khi mongoose đã kết nối: session store dùng chung kết nối đó
 function createApp({ sessionSecret }) {
@@ -23,6 +24,13 @@ function createApp({ sessionSecret }) {
 
   app.use(express.urlencoded({ extended: false }));
   app.use(express.static(path.join(__dirname, 'public')));
+  // Ảnh bìa (BR11), công khai. nosniff để trình duyệt chỉ coi file là ảnh theo đuôi, không đoán loại khác
+  app.use(
+    '/uploads',
+    express.static(UPLOAD_DIR, {
+      setHeaders: (res) => res.setHeader('X-Content-Type-Options', 'nosniff'),
+    })
+  );
 
   // Session lưu trong MongoDB (collection "sessions"), sống 7 ngày
   app.use(

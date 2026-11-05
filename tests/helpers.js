@@ -47,7 +47,9 @@ function client() {
     const headers = {};
     if (cookie) headers.cookie = cookie;
     let body;
-    if (form) {
+    if (form instanceof FormData) {
+      body = form; // fetch tự đặt content-type multipart kèm boundary
+    } else if (form) {
       headers['content-type'] = 'application/x-www-form-urlencoded';
       body = new URLSearchParams(form).toString();
     }
@@ -60,7 +62,17 @@ function client() {
   return {
     get: (path) => request('GET', path),
     post: (path, form = {}) => request('POST', path, form),
+    postMultipart: (path, fields = {}, file) => request('POST', path, multipartForm(fields, file)),
   };
+}
+
+// Form multipart/form-data giống trình duyệt gửi (FormData, Blob có sẵn của Node).
+// file = { field, name, type, data (Buffer) }, ô file đặt sau các ô chữ như trong form thật.
+function multipartForm(fields, file) {
+  const fd = new FormData();
+  for (const [key, value] of Object.entries(fields)) fd.append(key, value);
+  if (file) fd.append(file.field || 'coverImage', new Blob([file.data], { type: file.type }), file.name);
+  return fd;
 }
 
 // Tạo user thẳng trong DB (nhanh hơn đi qua form đăng ký)
@@ -79,4 +91,4 @@ async function loginAs(email, password = 'matkhau123') {
   return c;
 }
 
-module.exports = { startApp, stopApp, clearDb, client, createUser, loginAs, TEST_URI };
+module.exports = { startApp, stopApp, clearDb, client, multipartForm, createUser, loginAs, TEST_URI };

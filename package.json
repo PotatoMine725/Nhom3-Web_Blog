@@ -20,7 +20,8 @@
     "ejs": "^3.1.10",
     "express": "^4.21.2",
     "express-session": "^1.18.1",
-    "mongoose": "^8.9.5"
+    "mongoose": "^8.9.5",
+    "multer": "^2.5.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.9"

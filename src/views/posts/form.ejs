@@ -13,7 +13,8 @@
   </div>
 <% } %>
 
-<form action="<%= action %>" method="post">
+<%# multipart để gửi kèm ảnh bìa; uploadCover (multer) đọc cả các ô chữ %>
+<form action="<%= action %>" method="post" enctype="multipart/form-data">
   <div class="mb-3">
     <label class="form-label" for="title">Tiêu đề</label>
     <input class="form-control" id="title" name="title" value="<%= values.title %>">
@@ -42,6 +43,21 @@
       <option value="draft" <%= values.status === 'draft' ? 'selected' : '' %>>Nháp</option>
       <option value="published" <%= values.status === 'published' ? 'selected' : '' %>>Đăng</option>
     </select>
+  </div>
+  <%# Ô ảnh bìa đặt cuối form: trình duyệt gửi các ô chữ trước, ảnh lỗi thì các ô chữ vẫn đọc được để hiện lại %>
+  <div class="mb-3">
+    <label class="form-label" for="coverImage">Ảnh bìa (không bắt buộc)</label>
+    <% if (locals.coverImage) { %>
+      <div class="mb-2">
+        <img class="cover-preview" src="/uploads/<%= coverImage %>" alt="Ảnh bìa hiện tại">
+      </div>
+      <div class="form-check mb-2">
+        <input class="form-check-input" type="checkbox" id="removeCover" name="removeCover" value="1" <%= locals.removeChecked ? 'checked' : '' %>>
+        <label class="form-check-label" for="removeCover">Xoá ảnh bìa</label>
+      </div>
+    <% } %>
+    <input class="form-control" type="file" id="coverImage" name="coverImage" accept="image/jpeg,image/png,image/webp">
+    <div class="form-text">JPG, PNG hoặc WEBP, tối đa 2 MB.<% if (locals.coverImage) { %> Chọn ảnh mới để thay ảnh hiện tại.<% } %></div>
   </div>
   <button class="btn btn-primary">Lưu</button>
 </form>

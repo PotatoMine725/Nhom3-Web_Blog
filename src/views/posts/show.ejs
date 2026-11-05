@@ -8,6 +8,9 @@
 </nav>
 
 <article>
+  <% if (post.coverImage) { %>
+    <img class="post-cover mb-3" src="/uploads/<%= post.coverImage %>" alt="Ảnh bìa bài viết">
+  <% } %>
   <h1 class="h3 mb-2">
     <%= post.title %>
     <% if (post.status === 'draft') { %><span class="badge text-bg-secondary fs-6">Nháp</span><% } %>
@@ -75,7 +78,7 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
         </div>
         <div class="modal-body">
-          Bài viết cùng toàn bộ bình luận, lượt thích và lượt lưu của nó sẽ bị xoá, không khôi phục được.
+          Bài viết cùng toàn bộ bình luận, lượt thích, lượt lưu và ảnh bìa của nó sẽ bị xoá, không khôi phục được.
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Huỷ</button>

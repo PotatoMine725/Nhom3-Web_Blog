@@ -28,4 +28,11 @@
       </div>
     </div>
   </div>
+
+  <%# Ảnh bìa nhỏ (nếu có) ở bên phải %>
+  <% if (post.coverImage) { %>
+    <a class="post-row__cover" href="/posts/<%= post.slug %>" tabindex="-1" aria-hidden="true">
+      <img src="/uploads/<%= post.coverImage %>" alt="" loading="lazy">
+    </a>
+  <% } %>
 </article>

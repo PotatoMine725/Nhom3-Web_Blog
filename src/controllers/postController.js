@@ -4,6 +4,7 @@ const Comment = require('../models/Comment');
 const Like = require('../models/Like');
 const Bookmark = require('../models/Bookmark');
 const Category = require('../models/Category');
+const { removeCover } = require('../middlewares/uploadCover');
 
 const PAGE_SIZE = 10;
 
@@ -37,11 +38,15 @@ async function readCategory(value) {
   return (await Category.exists({ _id: id })) ? id : undefined;
 }
 
-function renderForm(res, status, { data, errors, action, isEdit }) {
+// coverImage: ảnh bìa đang lưu của bài (form sửa hiện ảnh này + ô "Xoá ảnh bìa")
+function renderForm(res, status, { data, errors, action, isEdit, coverImage = null, removeChecked = false }) {
   res.status(status).render('posts/form', {
     title: isEdit ? 'Sửa bài' : 'Viết bài',
     errors,
     action,
+    isEdit,
+    coverImage,
+    removeChecked,
     // category luôn là chuỗi id ('' = Chưa phân loại) để view so với option
     values: { ...data, tags: data.tags.join(', '), category: data.category ? String(data.category) : '' },
   });
@@ -188,27 +193,40 @@ function showNew(req, res) {
   });
 }
 
-// UC08, BR1, BR4
+// UC08, BR1, BR4, BR11
 async function create(req, res, next) {
+  // Tên file ảnh vừa upload (uploadCover đặt), không có thì null
+  const newCover = req.file ? req.file.filename : null;
   try {
     const data = readForm(req.body);
     data.category = await readCategory(req.body.category);
+    // Lỗi nào cũng hiện lại form; đã lưu file thì xoá đi (bài không được tạo)
+    const reject = async (errors) => {
+      await removeCover(newCover);
+      renderForm(res, 400, { data, errors, action: '/posts', isEdit: false });
+    };
+    // 4b: ảnh sai loại / quá 2 MB, uploadCover không lưu file
+    if (req.uploadError) {
+      if (data.category === undefined) data.category = null;
+      return reject([req.uploadError]);
+    }
     if (data.category === undefined) {
       data.category = null;
-      return renderForm(res, 400, { data, errors: ['Danh mục không tồn tại'], action: '/posts', isEdit: false });
+      return reject(['Danh mục không tồn tại']);
     }
-    // author lấy từ session, không lấy từ form
-    const post = new Post({ ...data, author: res.locals.currentUser._id });
+    // author lấy từ session, coverImage lấy từ file server đã lưu; cả hai không lấy từ form
+    const post = new Post({ ...data, author: res.locals.currentUser._id, coverImage: newCover });
     try {
       await post.save();
     } catch (err) {
       const errors = validationMessages(err);
       if (!errors) throw err;
-      return renderForm(res, 400, { data, errors, action: '/posts', isEdit: false });
+      return reject(errors);
     }
     req.session.flash = { type: 'success', message: 'Đã tạo bài viết' };
     res.redirect(`/posts/${post.slug}`);
   } catch (err) {
+    await removeCover(newCover);
     next(err);
   }
 }
@@ -221,42 +239,63 @@ function showEdit(req, res) {
     errors: [],
     action: `/posts/${post.slug}/edit`,
     isEdit: true,
+    coverImage: post.coverImage,
   });
 }
 
-// UC09, BR2, BR4
+// UC09, BR2, BR4, BR11
 async function update(req, res, next) {
+  const newCover = req.file ? req.file.filename : null;
   try {
     const post = req.doc;
-    // Giữ slug cũ trước khi save vì hook có thể đổi post.slug trong bộ nhớ dù validate lỗi
+    // Giữ slug, ảnh cũ trước khi save vì hook có thể đổi post.slug trong bộ nhớ dù validate lỗi
     const oldSlug = post.slug;
+    const oldCover = post.coverImage;
+    const wantRemove = req.body.removeCover === '1';
     const data = readForm(req.body);
     data.category = await readCategory(req.body.category);
-    if (data.category === undefined) {
-      data.category = null;
-      return renderForm(res, 400, {
+    // Lưu lỗi: xoá file vừa upload, giữ ảnh cũ, hiện lại form
+    const reject = async (errors) => {
+      await removeCover(newCover);
+      renderForm(res, 400, {
         data,
-        errors: ['Danh mục không tồn tại'],
+        errors,
         action: `/posts/${oldSlug}/edit`,
         isEdit: true,
+        coverImage: oldCover,
+        removeChecked: wantRemove,
       });
+    };
+    if (req.uploadError) {
+      if (data.category === undefined) data.category = null;
+      return reject([req.uploadError]);
+    }
+    if (data.category === undefined) {
+      data.category = null;
+      return reject(['Danh mục không tồn tại']);
     }
     Object.assign(post, data); // không đụng author
+    // Chọn ảnh mới thì thay ảnh (kể cả khi tick "Xoá ảnh bìa"); chỉ tick thì bỏ ảnh
+    if (newCover) post.coverImage = newCover;
+    else if (wantRemove) post.coverImage = null;
     try {
       await post.save();
     } catch (err) {
       const errors = validationMessages(err);
       if (!errors) throw err;
-      return renderForm(res, 400, { data, errors, action: `/posts/${oldSlug}/edit`, isEdit: true });
+      return reject(errors);
     }
+    // Lưu bài thành công rồi mới xoá file ảnh cũ (spec 03)
+    if (oldCover && oldCover !== post.coverImage) await removeCover(oldCover);
     req.session.flash = { type: 'success', message: 'Đã cập nhật bài viết' };
     res.redirect(`/posts/${post.slug}`);
   } catch (err) {
+    await removeCover(newCover);
     next(err);
   }
 }
 
-// UC10, BR2
+// UC10, BR2, BR6
 async function remove(req, res, next) {
   try {
     await req.doc.deleteOne();
@@ -264,6 +303,8 @@ async function remove(req, res, next) {
     await Comment.deleteMany({ post: req.doc._id });
     await Like.deleteMany({ post: req.doc._id });
     await Bookmark.deleteMany({ post: req.doc._id });
+    // BR6: xoá file ảnh bìa (sau khi đã xoá bài trong DB)
+    await removeCover(req.doc.coverImage);
     req.session.flash = { type: 'success', message: 'Đã xoá bài viết' };
     // Admin xoá bài người khác (UC16, từ trang kiểm duyệt) thì quay lại /admin/posts
     const isAuthor = req.doc.author.equals(res.locals.currentUser._id);
