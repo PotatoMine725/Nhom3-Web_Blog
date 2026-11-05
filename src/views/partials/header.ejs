@@ -54,8 +54,14 @@
             <li><span class="dropdown-item-text fw-semibold"><%= currentUser.username %></span></li>
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" href="/me/posts">Bài của tôi</a></li>
+            <li><a class="dropdown-item" href="/profile">Hồ sơ</a></li>
             <% if (currentUser.role === 'admin') { %>
+              <li><hr class="dropdown-divider"></li>
+              <li><h6 class="dropdown-header">Quản trị</h6></li>
+              <li><a class="dropdown-item" href="/admin/users">Người dùng</a></li>
+              <li><a class="dropdown-item" href="/admin/posts">Kiểm duyệt bài</a></li>
               <li><a class="dropdown-item" href="/admin/categories">Quản lý danh mục</a></li>
+              <li><hr class="dropdown-divider"></li>
             <% } %>
             <li>
               <form action="/logout" method="post">

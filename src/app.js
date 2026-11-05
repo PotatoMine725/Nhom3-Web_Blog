@@ -9,6 +9,8 @@ const viewHelpers = require('./utils/viewHelpers');
 const postRoutes = require('./routes/posts');
 const authRoutes = require('./routes/auth');
 const commentRoutes = require('./routes/comments');
+const userRoutes = require('./routes/users');
+const adminRoutes = require('./routes/admin');
 const categoryRoutes = require('./routes/categories');
 const loadCategories = require('./middlewares/loadCategories');
 
@@ -51,6 +53,8 @@ function createApp({ sessionSecret }) {
   app.use('/', postRoutes);
   app.use('/', commentRoutes);
   app.use('/', authRoutes);
+  app.use('/', userRoutes);
+  app.use('/', adminRoutes);
   app.use('/', categoryRoutes);
 
   app.use((req, res) => {

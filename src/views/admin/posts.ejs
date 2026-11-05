@@ -1,0 +1,41 @@
+<%- include('../partials/header') %>
+
+<h1 class="h3 mb-3"><%= title %></h1>
+
+<%# Lọc theo trạng thái: ?status=draft|published, bỏ trống = tất cả %>
+<ul class="nav nav-pills mb-3">
+  <% [['', 'Tất cả'], ['published', 'Đã đăng'], ['draft', 'Nháp']].forEach(function (opt) { %>
+    <li class="nav-item">
+      <a class="nav-link <%= status === opt[0] ? 'active' : '' %>" href="/admin/posts<%= opt[0] ? '?status=' + opt[0] : '' %>"><%= opt[1] %></a>
+    </li>
+  <% }) %>
+</ul>
+
+<% if (posts.length === 0) { %>
+  <p class="text-secondary">Không có bài viết nào.</p>
+<% } else { %>
+  <p class="text-secondary small"><%= total %> bài</p>
+  <table class="table table-sm align-middle">
+    <thead>
+      <tr><th>Tiêu đề</th><th>Tác giả</th><th>Trạng thái</th><th class="d-none d-md-table-cell">Ngày tạo</th><th></th></tr>
+    </thead>
+    <tbody>
+      <% posts.forEach(function (post) { %>
+        <tr>
+          <td><a href="/posts/<%= post.slug %>"><%= post.title %></a></td>
+          <td><%= post.author ? post.author.username : '(không rõ)' %></td>
+          <td><%= post.status === 'draft' ? 'Nháp' : 'Đã đăng' %></td>
+          <td class="d-none d-md-table-cell"><%= post.createdAt.toLocaleDateString('vi-VN') %></td>
+          <td class="text-end">
+            <form action="/posts/<%= post.slug %>/delete" method="post" onsubmit="return confirm('Xoá bài viết này và toàn bộ bình luận?')">
+              <button class="btn btn-sm btn-outline-danger">Xoá</button>
+            </form>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+  <%- include('../partials/pagination') %>
+<% } %>
+
+<%- include('../partials/footer') %>
