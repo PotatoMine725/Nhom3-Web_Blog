@@ -17,7 +17,9 @@ async function startApp() {
   try {
     await mongoose.connect(TEST_URI, { serverSelectionTimeoutMS: 2000 });
   } catch (err) {
-    return false;
+    // Chỉ skip khi không có MongoDB chạy. Lỗi khác (sai URI, sai mật khẩu DB) thì báo fail.
+    if (err.name === 'MongooseServerSelectionError') return false;
+    throw err;
   }
   const app = createApp({ mongoUri: TEST_URI, sessionSecret: 'test-secret' });
   server = app.listen(0, '127.0.0.1');
