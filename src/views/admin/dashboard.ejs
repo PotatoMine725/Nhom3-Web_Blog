@@ -1,0 +1,98 @@
+<%- include('../partials/header') %>
+
+<h1 class="h3 mb-4"><%= title %></h1>
+
+<%# Thẻ số liệu tổng %>
+<div class="row g-3 mb-4">
+  <% [
+    ['Người dùng', stats.userCount, stats.lockedCount + ' bị khoá'],
+    ['Bài viết', stats.postCount, stats.postsByStatus.published + ' đã đăng, ' + stats.postsByStatus.draft + ' nháp'],
+    ['Bình luận', stats.commentCount, ''],
+    ['Lượt thích', stats.likeCount, ''],
+  ].forEach(function (card) { %>
+    <div class="col-6 col-md-3">
+      <div class="card h-100">
+        <div class="card-body">
+          <div class="text-secondary small"><%= card[0] %></div>
+          <div class="fs-3 fw-semibold"><%= card[1] %></div>
+          <% if (card[2]) { %><div class="text-secondary small"><%= card[2] %></div><% } %>
+        </div>
+      </div>
+    </div>
+  <% }) %>
+</div>
+
+<%# Bài đã đăng theo tháng: thanh ngang bằng CSS, độ rộng = % so với tháng nhiều bài nhất %>
+<h2 class="h5">Bài đã đăng theo tháng (6 tháng gần nhất)</h2>
+<% if (stats.months.every(function (m) { return m.count === 0; })) { %>
+  <p class="text-secondary mb-4">Chưa có dữ liệu</p>
+<% } else { %>
+  <table class="table table-sm align-middle mb-4">
+    <thead>
+      <tr><th style="width: 6rem">Tháng</th><th>Số bài</th></tr>
+    </thead>
+    <tbody>
+      <% stats.months.forEach(function (m) { %>
+        <tr>
+          <td><%= m.label %></td>
+          <td>
+            <div class="d-flex align-items-center gap-2">
+              <%# Thanh chỉ để nhìn, con số bên cạnh mới là dữ liệu nên ẩn với trình đọc màn hình %>
+              <div class="progress flex-grow-1" aria-hidden="true">
+                <div class="progress-bar" style="width: <%= m.percent %>%"></div>
+              </div>
+              <span style="min-width: 2rem" class="text-end"><%= m.count %></span>
+            </div>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+<% } %>
+
+<div class="row g-4">
+  <div class="col-md-6">
+    <h2 class="h5">Top 5 tác giả nhiều bài đã đăng</h2>
+    <% if (stats.topAuthors.length === 0) { %>
+      <p class="text-secondary">Chưa có dữ liệu</p>
+    <% } else { %>
+      <table class="table table-sm align-middle">
+        <thead><tr><th>Tác giả</th><th class="text-end">Số bài</th></tr></thead>
+        <tbody>
+          <% stats.topAuthors.forEach(function (a) { %>
+            <tr><td><%= a.username %></td><td class="text-end"><%= a.count %></td></tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } %>
+  </div>
+
+  <%# Ba bảng top bài cùng dạng: tiêu đề (link bài) + một con số %>
+  <% [
+    { heading: 'Top 5 bài nhiều lượt thích', unit: 'Lượt thích', rows: stats.topLiked },
+    { heading: 'Top 5 bài nhiều bình luận', unit: 'Bình luận', rows: stats.topCommented },
+    { heading: 'Top 5 bài nhiều lượt xem', unit: 'Lượt xem',
+      rows: stats.topViewed.map(function (p) { return { title: p.title, slug: p.slug, count: p.views || 0 }; }) },
+  ].forEach(function (table) { %>
+    <div class="col-md-6">
+      <h2 class="h5"><%= table.heading %></h2>
+      <% if (table.rows.length === 0) { %>
+        <p class="text-secondary">Chưa có dữ liệu</p>
+      <% } else { %>
+        <table class="table table-sm align-middle">
+          <thead><tr><th>Bài viết</th><th class="text-end"><%= table.unit %></th></tr></thead>
+          <tbody>
+            <% table.rows.forEach(function (p) { %>
+              <tr>
+                <td><a href="/posts/<%= p.slug %>"><%= p.title %></a></td>
+                <td class="text-end"><%= p.count %></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      <% } %>
+    </div>
+  <% }) %>
+</div>
+
+<%- include('../partials/footer') %>
