@@ -18,7 +18,7 @@ beforeEach(async (t) => {
 // Tạo 1 admin + 1 member, trả về client đã đăng nhập
 async function setup() {
   const admin = await h.createUser({ username: 'quantri', email: 'admin@test.local', role: 'admin' });
-  const member = await h.createUser({ username: 'an', email: 'an@test.local' });
+  const member = await h.createUser({ username: 'anne', email: 'an@test.local' });
   return {
     admin,
     member,
