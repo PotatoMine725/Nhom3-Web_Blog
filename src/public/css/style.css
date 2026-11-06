@@ -601,10 +601,22 @@ a.tag-chip:hover {
   display: block;
 }
 
+/* Không JS: avatar và hộp đăng nhập cùng một hàng (ô giả bị ẩn) */
+.comment-guest {
+  align-items: center;
+}
+
 .comment-login-box {
-  flex: 1 1 100%;
-  padding: 8px 12px 8px 44px;
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 6px 0;
   color: var(--bs-body-color);
+}
+
+/* Có JS: ô giả chiếm hàng đầu cạnh avatar, hộp đăng nhập xuống hàng dưới, thẳng với ô giả */
+.js .comment-login-box {
+  flex-basis: 100%;
+  padding: 8px 12px 8px 40px; /* 32px avatar + 8px gap */
 }
 
 .js .comment-login-box:not(.is-open) {
