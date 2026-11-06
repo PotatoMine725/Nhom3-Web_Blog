@@ -74,7 +74,8 @@ npm run create-admin -- <email>
 
 | View | Dùng cho | Nội dung chính |
 | --- | --- | --- |
-| `partials/header`, `partials/footer` | Mọi trang | Header: logo, link "Nổi bật", menu danh mục, ô tìm kiếm, nút đăng nhập/đăng ký hoặc menu người dùng ("Bài của tôi", "Đã lưu"; admin thêm "Thống kê"); footer; vùng thông báo lỗi/thành công |
+| `partials/header`, `partials/footer` | Mọi trang | Header: logo; ô tìm kiếm (gửi `GET /search?q=`, giữ lại từ khoá; màn hình nhỏ thu gọn, mở bằng nút kính lúp); menu "Danh mục"; nút đổi giao diện sáng/tối (chỉ hiện khi có JS); khách: nút đăng nhập, đăng ký; thành viên: nút "Viết bài" và menu avatar ("Bài của tôi", "Đã lưu", "Hồ sơ", "Đăng xuất"; admin thêm "Thống kê", "Người dùng", "Kiểm duyệt bài", "Quản lý danh mục"); màn hình nhỏ có nút ☰ mở menu trái. Footer; vùng thông báo thành công/lỗi (`flash`) ở đầu nội dung |
+| `partials/left-nav` | Mọi trang | Menu trái (màn hình nhỏ mở bằng nút ☰ ở header): "Trang chủ", "Nổi bật" (`/popular`); thành viên thêm "Bài của tôi", "Đã lưu", "Viết bài". Mục của trang đang mở được đánh dấu |
 | `posts/index` | `/`, `/search`, `/categories/:slug`, `/tags/:tag`, `/popular`, `/me/bookmarks` | Tiêu đề trang, thẻ bài (ảnh bìa nhỏ nếu có, tiêu đề, tác giả, ngày, danh mục, lượt xem, đoạn trích), phân trang (không có ở `/popular`). Trang `/search` có form lọc: từ khoá, chọn danh mục, tag, giữ lại giá trị đã nhập |
 | `posts/show` | `/posts/:slug` | Ảnh bìa (nếu có), nội dung bài, tag, lượt xem, số like; nút Like / Lưu (đã đăng nhập, đổi chữ theo trạng thái) hoặc link đăng nhập (khách); nút sửa/xoá (nếu có quyền), danh sách bình luận, form bình luận |
 | `posts/form` | Tạo và sửa bài | Tiêu đề, nội dung, chọn danh mục, tag (cách nhau dấu phẩy), trạng thái nháp/đăng, chọn ảnh bìa; form sửa hiện ảnh hiện tại + ô "Xoá ảnh bìa". Form dùng `enctype="multipart/form-data"` |
