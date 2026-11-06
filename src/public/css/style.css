@@ -32,7 +32,15 @@ body {
   --tag-color: #2c5f86;
   --count-has-color: #2f6f44;
   --comment-bubble-bg: #f0f2f5;
-  --shadow-color: rgba(0, 0, 0, 0.05);
+  --nav-bg: #f8f9f9;
+  --nav-border: #b4bbc1;
+  --side-bg: #f8f9f9;
+  --side-active-bg: #e3e6e8;
+  --card-bg: #ffffff;
+  --card-head-bg: #f1f2f3;
+  --shadow-nav: 0 2px 6px rgba(0, 0, 0, 0.12);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --header-h: 59px; /* chiều cao navbar ở desktop (đo bằng DevTools), dùng cho top của menu trái; đổi navbar thì đo lại */
 
   --bs-primary: var(--brand-blue);
   --bs-primary-rgb: var(--brand-blue-rgb);
@@ -67,6 +75,14 @@ body {
   --tag-color: #9fc5e8;
   --count-has-color: #5fb37c;
   --comment-bubble-bg: #3a3b3c;
+  --nav-bg: #2b3035;
+  --nav-border: #495057;
+  --side-bg: #2b3035;
+  --side-active-bg: #3a4046;
+  --card-bg: #2b3035;
+  --card-head-bg: #343a40;
+  --shadow-nav: 0 2px 8px rgba(0, 0, 0, 0.5);
+  --shadow-card: 0 1px 4px rgba(0, 0, 0, 0.5);
 }
 
 /* Nút đổi giao diện: trăng ở sáng, mặt trời ở tối */
@@ -112,10 +128,10 @@ body {
   position: sticky;
   top: 0;
   z-index: 1030;
-  background: var(--bs-body-bg);
-  border-top: 3px solid var(--brand-orange);
-  border-bottom: 1px solid var(--bs-border-color);
-  box-shadow: 0 1px 4px var(--shadow-color);
+  background: var(--nav-bg);
+  border-top: 4px solid var(--brand-orange);
+  border-bottom: 1px solid var(--nav-border);
+  box-shadow: var(--shadow-nav);
 }
 
 .site-header__inner {
@@ -208,30 +224,35 @@ body {
   padding: 24px 16px;
 }
 
+/* Cột menu giãn hết hàng lưới nên nền và viền phủ kín chiều cao, trang ngắn không bị cuộn thừa */
 .layout__left {
-  position: sticky;
-  top: 60px;
-  align-self: start;
   padding-top: 24px;
-  border-right: 1px solid var(--bs-border-color);
+  background: var(--side-bg);
+  border-right: 1px solid var(--nav-border);
+}
+
+/* Chỉ danh sách menu dính khi cuộn; không đụng .left-nav trong offcanvas mobile */
+.layout__left .left-nav {
+  position: sticky;
+  top: var(--header-h);
+  max-height: calc(100vh - var(--header-h));
+  overflow-y: auto;
 }
 
 .left-nav__link {
   display: block;
   padding: 8px 12px;
-  color: var(--bs-secondary-color);
+  color: var(--text);
   text-decoration: none;
 }
 
 .left-nav__link:hover {
-  color: var(--bs-body-color);
-  background: var(--surface-2);
+  background: var(--side-active-bg);
 }
 
 .left-nav__link.active {
   font-weight: 700;
-  color: var(--bs-body-color);
-  background: var(--surface-2);
+  background: var(--side-active-bg);
   border-right: 3px solid var(--brand-orange);
 }
 
@@ -496,15 +517,19 @@ a.tag-chip:hover {
 /* Thẻ trong sidebar phải */
 .sidebar-card {
   margin-bottom: 16px;
-  border: 1px solid var(--bs-border-color);
-  border-radius: 4px;
+  overflow: hidden;
+  background: var(--card-bg);
+  border: 1px solid var(--nav-border);
+  border-top: 3px solid var(--brand-orange);
+  border-radius: 6px;
+  box-shadow: var(--shadow-card);
 }
 
 .sidebar-card__title {
   margin: 0;
   padding: 10px 12px;
-  background: var(--surface-2);
-  border-bottom: 1px solid var(--bs-border-color);
+  background: var(--card-head-bg);
+  border-bottom: 1px solid var(--nav-border);
   font-size: 0.9rem;
   font-weight: 600;
 }
