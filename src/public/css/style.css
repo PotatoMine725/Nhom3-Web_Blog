@@ -556,6 +556,29 @@ a.tag-chip:hover {
   }
 }
 
+/* Thẻ Bắt đầu nhanh: tick tự cập nhật theo data-done */
+.quick-start__item {
+  display: flex;
+  gap: 8px;
+  padding: 4px 0;
+}
+
+.quick-start__item::before {
+  content: '○';
+  color: var(--text-muted);
+}
+
+.quick-start__item[data-done="true"] {
+  color: var(--text-muted);
+  text-decoration: line-through;
+}
+
+.quick-start__item[data-done="true"]::before {
+  content: '✓';
+  color: var(--count-has-color);
+  font-weight: 700;
+}
+
 /* Trang lỗi 403 / 404 / 500 */
 .error-page {
   max-width: 480px;
