@@ -41,7 +41,7 @@ body {
   --card-head-bg: #f1f2f3;
   --shadow-nav: 0 2px 6px rgba(0, 0, 0, 0.12);
   --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.1);
-  --header-h: 59px; /* chiều cao navbar ở desktop (đo bằng DevTools), dùng cho top của menu trái; đổi navbar thì đo lại */
+  --header-h: 59px; /* chiều cao navbar desktop (>= 992px): navbar bị ép đúng bằng giá trị này, menu trái dính theo */
 
   --bs-primary: var(--brand-blue);
   --bs-primary-rgb: var(--brand-blue-rgb);
@@ -272,6 +272,17 @@ body {
 }
 
 @media (min-width: 992px) {
+  /* Navbar desktop cao đúng --header-h (gồm viền); menu trái dính theo cùng biến này */
+  .site-header {
+    height: var(--header-h);
+  }
+
+  .site-header__inner {
+    height: 100%;
+    padding-block: 0;
+    flex-wrap: nowrap;
+  }
+
   .site-header__search {
     order: 0;
     flex: 1 1 auto;
