@@ -23,7 +23,7 @@ test('ô tìm kiếm có nút kính lúp và vẫn giữ #searchInput', async ()
   assert.match(html, /id="searchInput"/);
 });
 
-for (const [view, code, text] of [['errors/403', '403', 'không có quyền'], ['errors/404', '404', 'không tồn tại'], ['errors/500', '500', 'Có lỗi xảy ra']]) {
+for (const [view, code, text] of [['errors/400', '400', 'không hợp lệ'], ['errors/403', '403', 'không có quyền'], ['errors/404', '404', 'không tồn tại'], ['errors/500', '500', 'Có lỗi xảy ra']]) {
   test(`${view}: khung trang lỗi, mã ${code}, nút về trang chủ`, async () => {
     const html = await h.renderView(view);
     assert.match(html, /class="error-page"/);
@@ -64,6 +64,37 @@ test('lỗi 500: trang lỗi đẹp, không lộ chi tiết, render được khi
   }
 });
 
+// Express ném URIError có status 400 khi tham số URL hỏng (vd /posts/%): phải trả 400, không phải 500
+test('lỗi có status 400: trả 400, không lộ chi tiết, không log như lỗi máy chủ', async (t) => {
+  const { errorHandler } = require('../src/middlewares/errorHandler');
+  const logged = t.mock.method(console, 'error', () => {});
+  const app = express();
+  app.set('view engine', 'ejs');
+  app.set('views', viewsDir);
+  Object.assign(app.locals, viewHelpers);
+  app.get('/bad', () => { throw Object.assign(new Error('chi tiết nội bộ'), { status: 400 }); });
+  app.get('/teapot', () => { throw Object.assign(new Error('bí mật khác'), { status: 418 }); });
+  app.use(errorHandler);
+  const server = app.listen(0, '127.0.0.1');
+  await new Promise((resolve) => server.once('listening', resolve));
+  try {
+    const base = `http://127.0.0.1:${server.address().port}`;
+    const res = await fetch(`${base}/bad`);
+    const text = await res.text();
+    assert.strictEqual(res.status, 400);
+    assert.match(text, /class="error-page"/);
+    assert.ok(text.includes('>400<'));
+    assert.match(text, /Về trang chủ/);
+    assert.doesNotMatch(text, /chi tiết nội bộ/);
+    assert.strictEqual(logged.mock.callCount(), 0); // lỗi do client, không phải lỗi máy chủ
+    // Chỉ 400 được đổi; status khác vẫn là 500 như trước (phạm vi của PR này)
+    const other = await fetch(`${base}/teapot`);
+    assert.strictEqual(other.status, 500);
+  } finally {
+    await new Promise((resolve) => server.close(resolve));
+  }
+});
+
 // Chặn quay lại màu cứng: ngoài khối :root và [data-bs-theme="dark"], style.css chỉ được có #fff (chữ avatar)
 test('style.css không còn màu cứng ngoài khối biến', () => {
   const css = fs.readFileSync(path.join(__dirname, '..', 'src', 'public', 'css', 'style.css'), 'utf8')
@@ -93,4 +124,27 @@ test('403 và 404 thật dùng khung trang lỗi mới', async (t) => {
   const missing = await h.client().get('/khong-co-trang-nay');
   assert.strictEqual(missing.status, 404);
   assert.match(missing.text, /class="error-page"/);
+});
+
+test('URL có tham số hỏng (%) trả 400; slug đúng mã hoá nhưng không tồn tại vẫn 404', async (t) => {
+  if (!ok) return t.skip('Cần MongoDB');
+  await h.clearDb();
+  const an = await h.createUser({ username: 'an_test', email: 'an@test.local' });
+  const post = await Post.create({ title: 'Bài của An', content: 'Nội dung bài viết đủ dài để qua validate.', status: 'published', author: an._id });
+  const member = await h.loginAs('an@test.local');
+
+  for (const path of ['/posts/%', '/posts/%zz', '/tags/%', '/categories/%', '/posts/%/edit']) {
+    const res = await h.client().get(path);
+    assert.strictEqual(res.status, 400, path);
+    assert.match(res.text, /class="error-page"/, path);
+    assert.doesNotMatch(res.text, /URIError|decodeURIComponent/, path);
+  }
+  // Đã đăng nhập: cũng 400, header vẫn hiện đúng người dùng
+  const loggedIn = await member.get('/posts/%');
+  assert.strictEqual(loggedIn.status, 400);
+  assert.match(loggedIn.text, /an_test/);
+
+  // Không bắt nhầm: mã hoá đúng nhưng không có bài thì vẫn 404
+  const missing = await h.client().get('/posts/khong%20co');
+  assert.strictEqual(missing.status, 404);
 });
