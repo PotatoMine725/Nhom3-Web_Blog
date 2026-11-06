@@ -497,6 +497,32 @@ a.tag-chip:hover {
   }
 }
 
+/* Trang lỗi 403 / 404 / 500 */
+.error-page {
+  max-width: 480px;
+  margin: 48px auto;
+  text-align: center;
+}
+
+.error-page__code {
+  font-size: 5rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--brand-orange-text);
+}
+
+.error-page__text {
+  margin: 8px 0 24px;
+  color: var(--text-muted);
+}
+
+.error-page__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
 /* Ảnh bìa (BR11) */
 .post-cover {
   display: block;
