@@ -54,3 +54,5 @@ Hệ thống là một blog nhiều tác giả. Thành viên đăng bài, ngư�
 | 2026-10-29 | Ghi rõ `loadUser` xoá `userId`, `role` khỏi session khi user bị xoá hoặc bị khoá (specs/04) | Hoang |
 | 2026-10-30 | Thêm tính năng mở rộng: like, bookmark, lượt xem + bài nổi bật, ảnh bìa, thống kê admin, tìm kiếm full-text kết hợp lọc (BR6 mở rộng, BR9–BR11, UC17–UC20) | Hoang |
 | 2026-10-30 | Cookie session `sameSite: 'lax'`; chấp nhận ảnh bìa bài nháp xem được nếu có link (specs/04) | Hoang |
+| 2026-11-06 | Cập nhật mô tả header và thêm menu trái trong specs/04 cho khớp giao diện sau UI/UX PR 1–4b (chỉ mô tả, không đổi route/quyền/dữ liệu) | Hoang |
+| 2026-11-06 | Cập nhật mô tả trang lỗi (thêm errors/400, errors/500, khung `partials/error-page`) và thêm `partials/right-sidebar` trong specs/04 cho khớp giao diện (chỉ mô tả, không đổi route/quyền/dữ liệu) | Hoang |
