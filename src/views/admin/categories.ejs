@@ -41,7 +41,7 @@
                 <button class="btn btn-sm btn-outline-primary">Lưu</button>
               </form>
             </td>
-            <td><a href="/categories/<%= c.slug %>">/categories/<%= c.slug %></a></td>
+            <td class="text-break"><a href="/categories/<%= c.slug %>">/categories/<%= c.slug %></a></td>
             <td class="text-end"><%= c.postCount %></td>
             <td class="text-end">
               <form action="/admin/categories/<%= c._id %>/delete" method="post" onsubmit="return confirm('Xoá danh mục này? Các bài của nó sẽ chuyển về Chưa phân loại.')">

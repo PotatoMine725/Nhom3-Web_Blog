@@ -332,6 +332,23 @@ body {
   overflow-wrap: anywhere;
 }
 
+/* Từ dài không dấu cách trong dữ liệu người dùng (tiêu đề, tag, tên danh mục, username, từ khoá tìm kiếm) phải xuống dòng,
+   không được đẩy cả trang cuộn ngang. anywhere chỉ cắt khi thật sự không vừa nên chữ bình thường không đổi */
+.layout__main h1,
+.post-row__title,
+.post-row__meta,
+.post-meta,
+.comment__author,
+.tag-chip,
+.category-chip {
+  overflow-wrap: anywhere;
+}
+
+/* Ô chọn có w-auto (danh mục ở form bài) rộng theo tên danh mục dài nhất: không vượt khỏi cột */
+.form-select.w-auto {
+  max-width: 100%;
+}
+
 /* Chip tag kiểu Stack Overflow */
 .tag-chip {
   display: inline-block;

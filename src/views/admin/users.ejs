@@ -10,8 +10,8 @@
     <% users.forEach(function (user) { %>
       <% var isMe = user._id.equals(currentUser._id); %>
       <tr>
-        <td><%= user.username %><% if (isMe) { %> <span class="text-secondary">(bạn)</span><% } %></td>
-        <td><%= user.email %></td>
+        <td class="text-break"><%= user.username %><% if (isMe) { %> <span class="text-secondary">(bạn)</span><% } %></td>
+        <td class="text-break"><%= user.email %></td>
         <td><%= user.role === 'admin' ? 'Admin' : 'Thành viên' %></td>
         <td>
           <% if (user.isLocked) { %>
