@@ -419,6 +419,11 @@ a.tag-chip:hover {
   padding: 12px;
 }
 
+/* Bình luận có từ dài không dấu cách (vd 80 chữ "a" liền nhau) không được đẩy cả trang cuộn ngang */
+.sidebar-comment {
+  overflow-wrap: anywhere;
+}
+
 .sidebar-comment + .sidebar-comment {
   margin-top: 12px;
   padding-top: 12px;
