@@ -1,0 +1,19 @@
+<%# Một bình luận kiểu Facebook. Truyền: c (đã populate author, có canDelete) %>
+<% var authorName = c.author ? c.author.username : 'Không rõ'; %>
+<div class="comment">
+  <%- include('avatar', { name: c.author ? c.author.username : '?', size: 32 }) %>
+  <div class="comment__body">
+    <div class="comment__bubble">
+      <strong class="comment__author"><%= authorName %></strong>
+      <div class="comment-content"><%= c.content %></div>
+    </div>
+    <div class="comment__meta">
+      <span title="<%= c.createdAt.toLocaleString('vi-VN') %>"><%= timeAgo(c.createdAt) %></span>
+      <% if (c.canDelete) { %>
+        <form action="/comments/<%= c._id %>/delete" method="post" data-comment-delete>
+          <button class="comment__delete-btn" title="Xoá bình luận này" aria-label="Xoá bình luận của <%= authorName %>">Xoá</button>
+        </form>
+      <% } %>
+    </div>
+  </div>
+</div>

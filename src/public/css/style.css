@@ -465,3 +465,143 @@ a.tag-chip:hover {
     display: none;
   }
 }
+
+/* Bình luận kiểu Facebook (UI/UX PR 3) */
+:root {
+  --comment-bubble-bg: #f0f2f5;
+}
+
+/* Header dính đầu trang: chừa chỗ để neo #comments và ô nhập không bị che */
+#comments,
+#commentForm,
+.comment-guest {
+  scroll-margin-top: 80px;
+}
+
+.comment {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.comment__body {
+  min-width: 0;
+}
+
+.comment__bubble {
+  display: inline-block;
+  max-width: 100%;
+  padding: 8px 12px;
+  border-radius: 18px;
+  background: var(--comment-bubble-bg);
+}
+
+.comment__author {
+  display: block;
+  font-size: 0.8125rem;
+}
+
+.comment__meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-left: 12px;
+  color: var(--bs-secondary-color);
+  font-size: 0.75rem;
+}
+
+.comment__delete-btn {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font-weight: 600;
+}
+
+.comment__delete-btn:hover {
+  color: var(--bs-danger);
+  text-decoration: underline;
+}
+
+.comment-form,
+.comment-guest {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.comment-form__field {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.comment-form__input {
+  display: block;
+  width: 100%;
+  padding: 8px 14px;
+  border: 1px solid var(--bs-border-color);
+  border-radius: 18px;
+  background: var(--comment-bubble-bg);
+  color: var(--bs-body-color);
+}
+
+.comment-form__input:focus {
+  outline: 0;
+  border-color: #0074cc;
+  box-shadow: 0 0 0 0.25rem rgba(0, 116, 204, 0.25);
+}
+
+.comment-form__actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 6px;
+  color: var(--bs-secondary-color);
+  font-size: 0.8125rem;
+}
+
+/* Có JS: ô nhập thu gọn thành một hàng, bấm vào mới mở rộng (JS tự giãn chiều cao) */
+.js .comment-form__input {
+  resize: none;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.js .comment-form:not(.is-open) .comment-form__input {
+  height: 38px;
+  overflow: hidden;
+}
+
+.js .comment-form:not(.is-open) .comment-form__actions {
+  display: none;
+}
+
+/* Khách: ô giả chỉ hiện khi có JS; không có JS thì hộp đăng nhập luôn hiện */
+.comment-guest {
+  flex-wrap: wrap;
+}
+
+.comment-pill {
+  display: none;
+  flex: 1 1 0;
+  padding: 8px 14px;
+  border: 1px solid var(--bs-border-color);
+  border-radius: 18px;
+  background: var(--comment-bubble-bg);
+  color: var(--bs-secondary-color);
+  text-align: left;
+}
+
+.js .comment-pill {
+  display: block;
+}
+
+.comment-login-box {
+  flex: 1 1 100%;
+  padding: 8px 12px 8px 44px;
+  color: var(--bs-body-color);
+}
+
+.js .comment-login-box:not(.is-open) {
+  display: none;
+}
