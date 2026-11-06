@@ -22,7 +22,7 @@ async function start() {
     process.exit(1);
   }
 
-  const app = createApp({ mongoUri: MONGODB_URI, sessionSecret: SESSION_SECRET });
+  const app = createApp({ sessionSecret: SESSION_SECRET });
   app.listen(PORT, HOST, () => {
     console.log(`Server chạy tại http://localhost:${PORT}`);
   });

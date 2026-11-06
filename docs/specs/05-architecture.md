@@ -12,6 +12,7 @@ Mô hình MVC render phía server, một project duy nhất, không tách fronte
 | Đăng nhập | express-session + connect-mongo + bcryptjs | Session lưu trong MongoDB, đơn giản hơn JWT |
 | Giao diện | Bootstrap 5 (CDN) | Có sẵn layout, ít CSS tự viết |
 | Cấu hình | dotenv (`.env`) | Giữ chuỗi kết nối DB và secret ngoài code |
+| Upload ảnh bìa | multer (bản 2.x) | Đọc form `multipart/form-data`, Express không tự đọc được; chỉ dùng ở route tạo/sửa bài |
 
 `bcryptjs` là bản viết bằng JavaScript thuần của bcrypt: cùng thuật toán, không cần build native nên cài được trên Windows mà không lỗi.
 
@@ -22,13 +23,14 @@ src/
   server.js         # đọc .env, kết nối DB, chạy server
   app.js            # tạo Express app: view engine, session, route, lỗi
   config/db.js      # kết nối MongoDB
-  models/           # User, Post, Category, Comment
-  routes/           # auth, posts, comments, admin
+  models/           # User, Post, Category, Comment, Like, Bookmark
+  routes/           # auth, posts (gồm cả like, bookmark), comments, admin
   controllers/      # xử lý từng use case
-  middlewares/      # loadUser, requireLogin, requireOwnerOrAdmin, requireAdmin
+  middlewares/      # loadUser, requireLogin, requireOwnerOrAdmin, requireAdmin, uploadCover
   utils/            # hàm dùng chung (slugify, ...)
   views/            # EJS: partials, posts, auth, users, admin, errors
   public/           # css, js tĩnh
+uploads/            # ảnh bìa người dùng upload (có trong .gitignore, giữ thư mục bằng .gitkeep)
 scripts/
   create-admin.js   # nâng một user đã đăng ký lên admin (specs/04)
 ```
@@ -39,6 +41,10 @@ scripts/
 2. Đăng ký / đăng nhập / đăng xuất (UC04–UC06) + middleware + script `create-admin`.
 3. CRUD bài viết (UC01, UC02, UC08–UC11).
 4. Bình luận (UC12, UC13).
-5. Danh mục, tag, tìm kiếm (UC03, UC14).
+5. Danh mục, tag, tìm kiếm full-text kết hợp lọc danh mục + tag (UC03, UC14).
 6. Trang admin (UC15, UC16), hồ sơ (UC07).
-7. Kiểm thử thủ công theo từng use case UC01–UC16.
+7. Like và lưu bài (UC17, UC18), mở rộng BR6 cho Like, Bookmark.
+8. Lượt xem và bài nổi bật (UC19, BR10).
+9. Ảnh bìa (BR11, phần ảnh của UC08, UC09), mở rộng BR6 cho file ảnh.
+10. Trang thống kê admin (UC20). Làm cuối vì cần đủ dữ liệu like, bình luận, lượt xem.
+11. Kiểm thử thủ công theo từng use case UC01–UC20.

@@ -1,0 +1,13 @@
+<%# Khung trang lỗi dùng chung. Truyền: code, heading, message. Nút Đăng nhập chỉ hiện với khách ở trang 403 %>
+<section class="error-page">
+  <div class="error-page__code" aria-hidden="true"><%= code %></div>
+  <h1 class="error-page__title h3"><%= code %> · <%= heading %></h1>
+  <p class="error-page__text"><%= message %></p>
+  <div class="error-page__actions">
+    <a class="btn btn-primary" href="/">Về trang chủ</a>
+    <a class="btn btn-outline-primary" href="/search">Tìm bài viết</a>
+    <% if (code === '403' && !currentUser) { %>
+      <a class="btn btn-outline-primary" href="/login">Đăng nhập</a>
+    <% } %>
+  </div>
+</section>

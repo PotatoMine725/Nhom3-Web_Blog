@@ -1,0 +1,38 @@
+<%# Một hàng bài viết kiểu Stack Overflow. Nhận post (đã populate author, có commentCount). Mọi dữ liệu người dùng được escape %>
+<article class="post-row">
+  <div class="post-row__stats">
+    <span class="post-row__count <%= post.commentCount > 0 ? 'post-row__count--has' : '' %>"><%= post.commentCount %></span>
+    <span class="post-row__count-label">bình luận</span>
+  </div>
+
+  <div class="post-row__main">
+    <h2 class="post-row__title"><a href="/posts/<%= post.slug %>"><%= post.title %></a></h2>
+    <p class="post-row__excerpt"><%= post.content.slice(0, 200) %><%= post.content.length > 200 ? '…' : '' %></p>
+
+    <div class="post-row__footer">
+      <div class="post-row__tags">
+        <%# Danh mục chỉ hiện khi đã populate (có name); bài chưa phân loại không hiện gì %>
+        <% if (post.category && post.category.name) { %>
+          <a class="category-chip" href="/categories/<%= post.category.slug %>" title="Danh mục"><%= post.category.name %></a>
+        <% } %>
+        <% post.tags.forEach(function (tag) { %>
+          <a class="tag-chip" href="/tags/<%= encodeURIComponent(tag) %>"><%= tag %></a>
+        <% }) %>
+      </div>
+      <div class="post-row__meta">
+        <%- include('avatar', { name: post.author ? post.author.username : '?', size: 20 }) %>
+        <span><%= post.author ? post.author.username : 'Không rõ' %></span>
+        <span class="text-secondary" title="<%= post.createdAt.toLocaleString('vi-VN') %>"><%= timeAgo(post.createdAt) %></span>
+        <span class="text-secondary">· ~<%= readingTime(post.content) %> phút đọc</span>
+        <span class="text-secondary">· <%= post.views || 0 %> lượt xem</span>
+      </div>
+    </div>
+  </div>
+
+  <%# Ảnh bìa nhỏ (nếu có) ở bên phải %>
+  <% if (post.coverImage) { %>
+    <a class="post-row__cover" href="/posts/<%= post.slug %>" tabindex="-1" aria-hidden="true">
+      <img src="/uploads/<%= post.coverImage %>" alt="" loading="lazy">
+    </a>
+  <% } %>
+</article>

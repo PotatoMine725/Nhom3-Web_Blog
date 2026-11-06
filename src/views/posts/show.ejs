@@ -1,0 +1,127 @@
+<%- include('../partials/header') %>
+
+<nav aria-label="breadcrumb" class="small mb-2">
+  <ol class="breadcrumb mb-0">
+    <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Bài viết</li>
+  </ol>
+</nav>
+
+<article>
+  <% if (post.coverImage) { %>
+    <img class="post-cover mb-3" src="/uploads/<%= post.coverImage %>" alt="Ảnh bìa bài viết">
+  <% } %>
+  <h1 class="h3 mb-2">
+    <%= post.title %>
+    <% if (post.status === 'draft') { %><span class="badge text-bg-secondary fs-6">Nháp</span><% } %>
+  </h1>
+
+  <div class="post-meta mb-3">
+    <%- include('../partials/avatar', { name: post.author ? post.author.username : '?', size: 28 }) %>
+    <strong><%= post.author ? post.author.username : 'Không rõ' %></strong>
+    <span class="text-secondary" title="<%= post.createdAt.toLocaleString('vi-VN') %>"><%= timeAgo(post.createdAt) %></span>
+    <% if (post.updatedAt.getTime() !== post.createdAt.getTime()) { %>
+      <span class="text-secondary" title="<%= post.updatedAt.toLocaleString('vi-VN') %>">· đã sửa <%= timeAgo(post.updatedAt) %></span>
+    <% } %>
+    <span class="text-secondary">· ~<%= readingTime(post.content) %> phút đọc</span>
+    <span class="text-secondary">· <%= post.views %> lượt xem</span>
+    <span class="text-secondary">· Danh mục:
+      <% if (post.category && post.category.name) { %>
+        <a href="/categories/<%= post.category.slug %>"><%= post.category.name %></a>
+      <% } else { %>
+        Chưa phân loại
+      <% } %>
+    </span>
+  </div>
+
+  <% if (post.tags.length) { %>
+    <div class="mb-3">
+      <% post.tags.forEach(function (tag) { %>
+        <a class="tag-chip" href="/tags/<%= encodeURIComponent(tag) %>"><%= tag %></a>
+      <% }) %>
+    </div>
+  <% } %>
+
+  <div class="post-content mb-3"><%= post.content %></div>
+
+  <%# Thanh hành động. Nút sao chép chỉ hiện khi có JS (xem app.js), tránh nút chết %>
+  <div class="post-actions">
+    <%# Like / Lưu (UC17, UC18): chỉ bài đã đăng; khách thấy link đăng nhập %>
+    <% if (post.status !== 'published') { %>
+      <span class="post-actions__item"><%= likeCount %> lượt thích</span>
+    <% } else if (currentUser) { %>
+      <form class="d-inline" action="/posts/<%= post.slug %>/like" method="post">
+        <button class="post-actions__item" aria-pressed="<%= liked %>" title="<%= liked ? 'Bỏ thích bài này' : 'Thích bài này' %>"><%= liked ? 'Bỏ thích' : 'Thích' %> (<%= likeCount %>)</button>
+      </form>
+      <form class="d-inline" action="/posts/<%= post.slug %>/bookmark" method="post">
+        <button class="post-actions__item" aria-pressed="<%= bookmarked %>" title="<%= bookmarked ? 'Bỏ lưu bài này' : 'Lưu bài để đọc sau' %>"><%= bookmarked ? 'Bỏ lưu' : 'Lưu' %></button>
+      </form>
+    <% } else { %>
+      <a class="post-actions__item" href="/login" title="Đăng nhập để thích bài">Thích (<%= likeCount %>)</a>
+      <a class="post-actions__item" href="/login" title="Đăng nhập để lưu bài">Lưu</a>
+    <% } %>
+    <a class="post-actions__item" id="commentJump" href="#comments" title="Xem và viết bình luận">Bình luận (<%= comments.length %>)</a>
+    <button type="button" class="post-actions__item" id="copyLinkBtn" hidden title="Sao chép liên kết bài viết">Sao chép liên kết</button>
+    <% if (canEdit) { %>
+      <a class="post-actions__item" href="/posts/<%= post.slug %>/edit">Sửa</a>
+      <button type="button" class="post-actions__item post-actions__item--danger" data-bs-toggle="modal" data-bs-target="#deletePostModal">Xoá</button>
+    <% } %>
+  </div>
+</article>
+
+<% if (canEdit) { %>
+  <div class="modal fade" id="deletePostModal" tabindex="-1" aria-labelledby="deletePostModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title h5" id="deletePostModalLabel">Xoá bài viết?</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+        </div>
+        <div class="modal-body">
+          Bài viết cùng toàn bộ bình luận, lượt thích, lượt lưu và ảnh bìa của nó sẽ bị xoá, không khôi phục được.
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Huỷ</button>
+          <form action="/posts/<%= post.slug %>/delete" method="post">
+            <button class="btn btn-danger">Xoá bài</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+<% } %>
+
+<section id="comments" class="mt-5">
+  <h2 class="h5 mb-3">Bình luận (<%= comments.length %>)</h2>
+
+  <% if (!comments.length) { %>
+    <p class="text-secondary">Chưa có bình luận nào. Hãy là người đầu tiên!</p>
+  <% } %>
+  <% comments.forEach(function (c) { %>
+    <%- include('../partials/comment-item', { c: c }) %>
+  <% }) %>
+
+  <div class="mt-4">
+    <%- include('../partials/comment-form') %>
+  </div>
+</section>
+
+<% if (comments.some(function (c) { return c.canDelete; })) { %>
+  <div class="modal fade" id="deleteCommentModal" tabindex="-1" aria-labelledby="deleteCommentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title h5" id="deleteCommentModalLabel">Xoá bình luận?</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+        </div>
+        <div class="modal-body">Bình luận sẽ bị xoá, không khôi phục được.</div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Huỷ</button>
+          <button type="button" class="btn btn-danger" id="deleteCommentConfirm">Xoá bình luận</button>
+        </div>
+      </div>
+    </div>
+  </div>
+<% } %>
+
+<%- include('../partials/footer') %>

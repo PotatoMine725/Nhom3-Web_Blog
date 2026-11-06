@@ -1,0 +1,3 @@
+<%# Avatar chữ cái đầu. Truyền: name (bắt buộc), size (px, mặc định 32) %>
+<% var avatarSize = locals.size || 32; %>
+<span class="avatar" style="width: <%= avatarSize %>px; height: <%= avatarSize %>px; font-size: <%= Math.round(avatarSize * 0.45) %>px; background: <%= avatarColor(name) %>" aria-hidden="true"><%= initials(name) %></span>

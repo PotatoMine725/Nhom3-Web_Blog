@@ -1,11 +1,23 @@
 const path = require('path');
 const express = require('express');
 const session = require('express-session');
+const mongoose = require('mongoose');
 const MongoStore = require('connect-mongo');
 
-const indexRoutes = require('./routes/index');
+const { loadUser } = require('./middlewares/auth');
+const viewHelpers = require('./utils/viewHelpers');
+const postRoutes = require('./routes/posts');
+const authRoutes = require('./routes/auth');
+const commentRoutes = require('./routes/comments');
+const userRoutes = require('./routes/users');
+const adminRoutes = require('./routes/admin');
+const categoryRoutes = require('./routes/categories');
+const loadCategories = require('./middlewares/loadCategories');
+const { errorHandler } = require('./middlewares/errorHandler');
+const { UPLOAD_DIR } = require('./middlewares/uploadCover');
 
-function createApp({ mongoUri, sessionSecret }) {
+// Gọi sau khi mongoose đã kết nối: session store dùng chung kết nối đó
+function createApp({ sessionSecret }) {
   const app = express();
 
   app.set('view engine', 'ejs');
@@ -13,6 +25,13 @@ function createApp({ mongoUri, sessionSecret }) {
 
   app.use(express.urlencoded({ extended: false }));
   app.use(express.static(path.join(__dirname, 'public')));
+  // Ảnh bìa (BR11), công khai. nosniff để trình duyệt chỉ coi file là ảnh theo đuôi, không đoán loại khác
+  app.use(
+    '/uploads',
+    express.static(UPLOAD_DIR, {
+      setHeaders: (res) => res.setHeader('X-Content-Type-Options', 'nosniff'),
+    })
+  );
 
   // Session lưu trong MongoDB (collection "sessions"), sống 7 ngày
   app.use(
@@ -20,27 +39,38 @@ function createApp({ mongoUri, sessionSecret }) {
       secret: sessionSecret,
       resave: false,
       saveUninitialized: false,
-      store: MongoStore.create({ mongoUrl: mongoUri }),
-      cookie: { httpOnly: true, maxAge: 7 * 24 * 60 * 60 * 1000 },
+      store: MongoStore.create({ client: mongoose.connection.getClient() }),
+      cookie: { httpOnly: true, sameSite: 'lax', maxAge: 7 * 24 * 60 * 60 * 1000 },
     })
   );
 
-  // Biến dùng chung cho mọi view. loadUser sẽ gán currentUser thật (xem specs/04).
+  // Hàm nhỏ cho view: initials, avatarColor, timeAgo, readingTime
+  Object.assign(app.locals, viewHelpers);
+
+  // Biến dùng chung cho mọi view: currentUser (loadUser), flash (thông báo hiện một lần)
+  // và currentPath (để tô đậm mục menu đang mở)
+  app.use(loadUser);
   app.use((req, res, next) => {
-    res.locals.currentUser = null;
+    res.locals.flash = req.session.flash || null;
+    delete req.session.flash;
+    res.locals.currentPath = req.path;
     next();
   });
+  // Danh mục cho menu header, form bài, form lọc (mọi trang render đều có header)
+  app.use(loadCategories);
 
-  app.use('/', indexRoutes);
+  app.use('/', postRoutes);
+  app.use('/', commentRoutes);
+  app.use('/', authRoutes);
+  app.use('/', userRoutes);
+  app.use('/', adminRoutes);
+  app.use('/', categoryRoutes);
 
   app.use((req, res) => {
     res.status(404).render('errors/404', { title: 'Không tìm thấy trang' });
   });
 
-  app.use((err, req, res, next) => {
-    console.error(err);
-    res.status(500).send('Lỗi máy chủ');
-  });
+  app.use(errorHandler);
 
   return app;
 }

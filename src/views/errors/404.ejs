@@ -1,6 +1,5 @@
 <%- include('../partials/header') %>
 
-<h1 class="h3">404 - Không tìm thấy trang</h1>
-<p><a href="/">Về trang chủ</a></p>
+<%- include('../partials/error-page', { code: '404', heading: 'Không tìm thấy trang', message: 'Trang bạn tìm không tồn tại hoặc đã bị xoá.' }) %>
 
 <%- include('../partials/footer') %>

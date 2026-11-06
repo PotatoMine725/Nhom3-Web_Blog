@@ -1,4 +1,815 @@
 /* CSS riêng của blog, bổ sung cho Bootstrap */
 body {
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
+  min-height: 100dvh; /* thanh địa chỉ mobile co giãn */
+}
+
+/* Bảng màu kiểu Stack Overflow. Mọi màu của trang nằm ở khối này; các biến --bs-* của Bootstrap 5.3 chỉ trỏ tới token.
+   Ngoại lệ có chủ ý ngoài khối: chữ #fff của .avatar (trên màu nền cố định trong viewHelpers.js) */
+:root {
+  --brand-orange: #f48024;
+  --brand-orange-text: #c2410c; /* cam khi làm chữ: #f48024 trên trắng chỉ ~2.6:1 */
+  --brand-blue: #0074cc;
+  --brand-blue-hover: #0063bf;
+  --brand-blue-active: #0057a8;
+  --brand-blue-rgb: 0, 116, 204;
+  --brand-link: #0074cc;
+  --brand-link-rgb: 0, 116, 204;
+  --brand-link-hover: #0063bf;
+  --brand-link-hover-rgb: 0, 99, 191;
+  --focus-ring: rgba(0, 116, 204, 0.25);
+  --focus-ring-strong: rgba(0, 116, 204, 0.4);
+  --text: #232629;
+  --text-rgb: 35, 38, 41;
+  --text-muted: #5c656d;
+  --text-muted-rgb: 92, 101, 109;
+  --border: #d6d9dc;
+  --surface-2-rgb: 248, 249, 249;
+  --surface-2: rgb(var(--surface-2-rgb)); /* nền hover / dải tiêu đề; đọc lại --surface-2-rgb nên tự đổi theo giao diện */
+  --tag-bg: #e1ecf4;
+  --tag-color: #2c5f86;
+  --count-has-color: #2f6f44;
+  --comment-bubble-bg: #f0f2f5;
+  --danger-outline: #dc3545; /* chữ/viền .btn-outline-danger (giá trị mặc định của Bootstrap) */
+  --nav-bg: #f8f9f9;
+  --nav-border: #b4bbc1;
+  --side-bg: #f8f9f9;
+  --side-active-bg: #e3e6e8;
+  --card-bg: #ffffff;
+  --card-head-bg: #f1f2f3;
+  --shadow-nav: 0 2px 6px rgba(0, 0, 0, 0.12);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --header-h: 59px; /* chiều cao navbar ở desktop (đo bằng DevTools), dùng cho top của menu trái; đổi navbar thì đo lại */
+
+  --bs-primary: var(--brand-blue);
+  --bs-primary-rgb: var(--brand-blue-rgb);
+  --bs-link-color: var(--brand-link);
+  --bs-link-color-rgb: var(--brand-link-rgb);
+  --bs-link-hover-color: var(--brand-link-hover);
+  --bs-link-hover-color-rgb: var(--brand-link-hover-rgb);
+  --bs-body-color: var(--text);
+  --bs-body-color-rgb: var(--text-rgb);
+  --bs-secondary-color: var(--text-muted);
+  --bs-secondary-rgb: var(--text-muted-rgb);
+  --bs-border-color: var(--border);
+  --bs-tertiary-bg-rgb: var(--surface-2-rgb);
+}
+
+/* Giao diện tối: chỉ đổi giá trị token, không đụng --bs-* (đã trỏ tới token). Phải đặt SAU :root (cùng độ ưu tiên) */
+[data-bs-theme="dark"] {
+  --brand-link: #6ea8fe;
+  --brand-link-rgb: 110, 168, 254;
+  --brand-link-hover: #8bb9fe;
+  --brand-link-hover-rgb: 139, 185, 254;
+  --brand-orange-text: #f48024;
+  --focus-ring: rgba(110, 168, 254, 0.35);
+  --focus-ring-strong: rgba(110, 168, 254, 0.55);
+  --text: #dee2e6;
+  --text-rgb: 222, 226, 230;
+  --text-muted: #adb5bd;
+  --text-muted-rgb: 173, 181, 189;
+  --border: #495057;
+  --surface-2-rgb: 43, 48, 53;
+  --tag-bg: #1f3a52;
+  --tag-color: #9fc5e8;
+  --count-has-color: #5fb37c;
+  --comment-bubble-bg: #3a3b3c;
+  --danger-outline: #ea868f; /* #dc3545 trên nền tối chỉ ~3.4:1 */
+  --nav-bg: #2b3035;
+  --nav-border: #495057;
+  --side-bg: #2b3035;
+  --side-active-bg: #3a4046;
+  --card-bg: #2b3035;
+  --card-head-bg: #343a40;
+  --shadow-nav: 0 2px 8px rgba(0, 0, 0, 0.5);
+  --shadow-card: 0 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Nút đổi giao diện: trăng ở sáng, mặt trời ở tối */
+.theme-icon--sun {
+  display: none;
+}
+
+[data-bs-theme="dark"] .theme-icon--moon {
+  display: none;
+}
+
+[data-bs-theme="dark"] .theme-icon--sun {
+  display: inline;
+}
+
+/* Nút xanh: .btn-primary và .btn-outline-primary đọc biến riêng, không đọc --bs-primary */
+.btn-primary {
+  --bs-btn-bg: var(--brand-blue);
+  --bs-btn-border-color: var(--brand-blue);
+  --bs-btn-hover-bg: var(--brand-blue-hover);
+  --bs-btn-hover-border-color: var(--brand-blue-hover);
+  --bs-btn-active-bg: var(--brand-blue-active);
+  --bs-btn-active-border-color: var(--brand-blue-active);
+  --bs-btn-disabled-bg: var(--brand-blue);
+  --bs-btn-disabled-border-color: var(--brand-blue);
+  --bs-btn-focus-shadow-rgb: var(--brand-blue-rgb);
+}
+
+.btn-outline-primary {
+  --bs-btn-color: var(--brand-link);
+  --bs-btn-border-color: var(--brand-link);
+  --bs-btn-hover-bg: var(--brand-blue-hover);
+  --bs-btn-hover-border-color: var(--brand-blue-hover);
+  --bs-btn-active-bg: var(--brand-blue-active);
+  --bs-btn-active-border-color: var(--brand-blue-active);
+  --bs-btn-disabled-color: var(--brand-link);
+  --bs-btn-disabled-border-color: var(--brand-link);
+  --bs-btn-focus-shadow-rgb: var(--brand-blue-rgb);
+}
+
+/* Nút Xoá/Khoá: Bootstrap không làm sáng màu đỏ ở giao diện tối nên chữ chỉ ~3.4:1; hover giữ nền đỏ mặc định */
+.btn-outline-danger {
+  --bs-btn-color: var(--danger-outline);
+  --bs-btn-border-color: var(--danger-outline);
+  --bs-btn-disabled-color: var(--danger-outline);
+  --bs-btn-disabled-border-color: var(--danger-outline);
+}
+
+/* Thanh trên cùng: dính đầu trang, viền cam ở trên */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+  background: var(--nav-bg);
+  border-top: 4px solid var(--brand-orange);
+  border-bottom: 1px solid var(--nav-border);
+  box-shadow: var(--shadow-nav);
+}
+
+.site-header__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  max-width: 1264px;
+  margin: 0 auto;
+  padding: 8px 16px;
+}
+
+.site-header__brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: var(--bs-body-color);
+  text-decoration: none;
+}
+
+.site-header__brand:hover {
+  color: var(--brand-orange-text);
+}
+
+.brand-logo__bg {
+  fill: var(--brand-orange);
+}
+
+.site-header__icon-btn {
+  padding: 6px 8px;
+  color: var(--bs-body-color);
+}
+
+/* Bootstrap không vẽ vòng focus cho .btn trơn (nút ☰, tìm kiếm, avatar): tự thêm để dùng được bằng bàn phím */
+.site-header .btn:focus-visible {
+  box-shadow: 0 0 0 0.25rem var(--focus-ring-strong);
+}
+
+/* Màn hình nhỏ: ô tìm kiếm nằm hàng riêng bên dưới, mở bằng nút biểu tượng */
+.site-header__search {
+  order: 3;
+  flex: 1 1 100%;
+}
+
+/* Ô tìm kiếm có kính lúp ở bên trái; bấm kính lúp = gửi form */
+.search-box {
+  position: relative;
+}
+
+.search-box__btn {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  border: 0;
+  background: none;
+  color: var(--text-muted);
+}
+
+.search-box__btn:hover {
+  color: var(--text);
+}
+
+.search-box__input {
+  padding-left: 34px;
+}
+
+.site-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+/* Bố cục chính: menu trái | nội dung | (sidebar phải) */
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  flex: 1 0 auto;
+  width: 100%; /* trong flex column, margin: 0 auto làm phần tử co lại theo nội dung */
+  max-width: 1264px;
+  margin: 0 auto;
+}
+
+.layout__main {
+  padding: 24px 16px;
+}
+
+/* Cột menu giãn hết hàng lưới nên nền và viền phủ kín chiều cao, trang ngắn không bị cuộn thừa */
+.layout__left {
+  padding-top: 24px;
+  background: var(--side-bg);
+  border-right: 1px solid var(--nav-border);
+}
+
+/* Chỉ danh sách menu dính khi cuộn; không đụng .left-nav trong offcanvas mobile */
+.layout__left .left-nav {
+  position: sticky;
+  top: var(--header-h);
+  max-height: calc(100vh - var(--header-h));
+  overflow-y: auto;
+}
+
+.left-nav__link {
+  display: block;
+  padding: 8px 12px;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.left-nav__link:hover {
+  background: var(--side-active-bg);
+}
+
+.left-nav__link.active {
+  font-weight: 700;
+  background: var(--side-active-bg);
+  border-right: 3px solid var(--brand-orange);
+}
+
+/* Trang form / đăng nhập: cột nội dung hẹp ở giữa */
+.content-narrow {
+  max-width: 560px;
+}
+
+@media (min-width: 992px) {
+  .site-header__search {
+    order: 0;
+    flex: 1 1 auto;
+    max-width: 720px;
+  }
+
+  .layout {
+    grid-template-columns: 164px minmax(0, 1fr);
+  }
+
+  .layout--sidebar {
+    grid-template-columns: 164px minmax(0, 1fr) 300px;
+  }
+
+  .layout__right {
+    padding-top: 24px;
+  }
+
+  .layout__main {
+    padding: 24px;
+  }
+}
+
+/* Avatar chữ cái: màu nền đặt inline theo tên người dùng */
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: 50%;
+  color: #fff;
+  font-weight: 600;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+.site-footer {
+  width: 100%;
+  flex-shrink: 0;
+  max-width: 1264px;
+  margin: 0 auto;
+  padding: 24px 16px;
+  border-top: 1px solid var(--bs-border-color);
+  color: var(--bs-secondary-color);
+  font-size: 0.875rem;
+}
+
+/* Viền focus của ô nhập theo màu chính */
+.form-control:focus {
+  border-color: var(--brand-link);
+  box-shadow: 0 0 0 0.25rem var(--focus-ring);
+}
+
+/* Nội dung bài và bình luận: giữ xuống dòng nhưng vẫn in text đã escape (không render HTML/Markdown) */
+.post-content,
+.comment-content {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* Từ dài không dấu cách trong dữ liệu người dùng (tiêu đề, tag, tên danh mục, username, từ khoá tìm kiếm) phải xuống dòng,
+   không được đẩy cả trang cuộn ngang. anywhere chỉ cắt khi thật sự không vừa nên chữ bình thường không đổi */
+.layout__main h1,
+.post-row__title,
+.post-row__meta,
+.post-meta,
+.comment__author,
+.tag-chip,
+.category-chip {
+  overflow-wrap: anywhere;
+}
+
+/* Ô chọn có w-auto (danh mục ở form bài) rộng theo tên danh mục dài nhất: không vượt khỏi cột */
+.form-select.w-auto {
+  max-width: 100%;
+}
+
+/* Chip tag kiểu Stack Overflow */
+.tag-chip {
+  display: inline-block;
+  margin: 0 4px 4px 0;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: var(--tag-bg);
+  color: var(--tag-color);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+.tag-chip__count {
+  opacity: 0.7;
+}
+
+/* Chip tag là link tới /tags/:tag */
+a.tag-chip {
+  text-decoration: none;
+}
+
+a.tag-chip:hover {
+  filter: brightness(0.95);
+}
+
+/* Chip danh mục: viền, phân biệt với tag */
+.category-chip {
+  display: inline-block;
+  margin: 0 4px 4px 0;
+  padding: 1px 8px;
+  border: 1px solid var(--tag-color);
+  border-radius: 4px;
+  color: var(--tag-color);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  text-decoration: none;
+}
+
+/* Nút "Danh mục" trên header */
+.site-header__menu-btn {
+  color: var(--bs-body-color);
+}
+
+/* Hàng bài viết trong danh sách */
+.post-row {
+  display: flex;
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--bs-border-color);
+}
+
+.post-row__stats {
+  flex: 0 0 72px;
+  text-align: center;
+}
+
+/* Ô số bình luận: xám khi 0, viền xanh lá khi có */
+.post-row__count {
+  display: block;
+  padding: 4px 0;
+  border: 1px solid var(--bs-border-color);
+  border-radius: 4px;
+  color: var(--bs-secondary-color);
+  font-weight: 600;
+}
+
+.post-row__count--has {
+  border-color: var(--count-has-color);
+  color: var(--count-has-color);
+}
+
+.post-row__count-label {
+  font-size: 0.75rem;
+  color: var(--bs-secondary-color);
+}
+
+.post-row__main {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.post-row__title {
+  margin: 0 0 4px;
+  font-size: 1.1rem;
+}
+
+.post-row__excerpt {
+  margin: 0 0 8px;
+  color: var(--bs-body-color);
+  font-size: 0.9rem;
+  overflow-wrap: anywhere;
+  /* Trích đoạn tối đa 2 dòng */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.post-row__footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.post-row__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  font-size: 0.8125rem;
+}
+
+/* Hai tab trên danh sách bài */
+.post-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--bs-border-color);
+}
+
+.post-tabs__link {
+  padding: 8px 12px;
+  margin-bottom: -1px;
+  border-bottom: 2px solid transparent;
+  color: var(--bs-secondary-color);
+  text-decoration: none;
+}
+
+.post-tabs__link:hover {
+  color: var(--bs-body-color);
+}
+
+.post-tabs__link.active {
+  border-bottom-color: var(--brand-orange);
+  color: var(--bs-body-color);
+  font-weight: 600;
+}
+
+/* Trạng thái rỗng */
+.empty-state {
+  padding: 48px 16px;
+  text-align: center;
+  color: var(--bs-secondary-color);
+}
+
+.empty-state__text {
+  margin: 12px 0 16px;
+  font-size: 1.05rem;
+}
+
+/* Trang bài viết */
+.post-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+}
+
+.post-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 4px 0;
+  border-top: 1px solid var(--bs-border-color);
+  border-bottom: 1px solid var(--bs-border-color);
+}
+
+.post-actions__item {
+  padding: 6px 12px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--bs-secondary-color);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.post-actions__item:hover {
+  background: var(--surface-2);
+  color: var(--bs-body-color);
+}
+
+.post-actions__item--danger:hover {
+  color: var(--bs-danger);
+}
+
+/* Thẻ trong sidebar phải */
+.sidebar-card {
+  margin-bottom: 16px;
+  overflow: hidden;
+  background: var(--card-bg);
+  border: 1px solid var(--nav-border);
+  border-top: 3px solid var(--brand-orange);
+  border-radius: 6px;
+  box-shadow: var(--shadow-card);
+}
+
+.sidebar-card__title {
+  margin: 0;
+  padding: 10px 12px;
+  background: var(--card-head-bg);
+  border-bottom: 1px solid var(--nav-border);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.sidebar-card__body {
+  padding: 12px;
+}
+
+/* Bình luận có từ dài không dấu cách (vd 80 chữ "a" liền nhau) không được đẩy cả trang cuộn ngang */
+.sidebar-comment {
+  overflow-wrap: anywhere;
+}
+
+.sidebar-comment + .sidebar-comment {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--bs-border-color);
+}
+
+/* Màn hình nhỏ: sidebar nằm dưới nội dung, cần lề như vùng nội dung */
+@media (max-width: 991.98px) {
+  .layout__right {
+    padding: 0 16px 24px;
+  }
+}
+
+/* Thẻ Bắt đầu nhanh: tick tự cập nhật theo data-done */
+.quick-start__item {
+  display: flex;
+  gap: 8px;
+  padding: 4px 0;
+}
+
+.quick-start__item::before {
+  content: '○';
+  color: var(--text-muted);
+}
+
+.quick-start__item[data-done="true"] {
+  color: var(--text-muted);
+  text-decoration: line-through;
+}
+
+.quick-start__item[data-done="true"]::before {
+  content: '✓';
+  color: var(--count-has-color);
+  font-weight: 700;
+}
+
+/* Trang lỗi 403 / 404 / 500 */
+.error-page {
+  max-width: 480px;
+  margin: 48px auto;
+  text-align: center;
+}
+
+.error-page__code {
+  font-size: 5rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--brand-orange-text);
+}
+
+.error-page__text {
+  margin: 8px 0 24px;
+  color: var(--text-muted);
+}
+
+.error-page__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* Ảnh bìa (BR11) */
+.post-cover {
+  display: block;
+  width: 100%;
+  max-height: 360px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.cover-preview {
+  max-width: 240px;
+  max-height: 140px;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid var(--bs-border-color);
+}
+
+.post-row__cover {
+  flex: 0 0 120px;
+}
+
+.post-row__cover img {
+  width: 120px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+@media (max-width: 575.98px) {
+  .post-row__cover {
+    display: none;
+  }
+}
+
+/* Bình luận kiểu Facebook (UI/UX PR 3) */
+/* Header dính đầu trang: chừa chỗ để neo #comments và ô nhập không bị che */
+#comments,
+#commentForm,
+.comment-guest {
+  scroll-margin-top: 80px;
+}
+
+.comment {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.comment__body {
+  min-width: 0;
+}
+
+.comment__bubble {
+  display: inline-block;
+  max-width: 100%;
+  padding: 8px 12px;
+  border-radius: 18px;
+  background: var(--comment-bubble-bg);
+}
+
+.comment__author {
+  display: block;
+  font-size: 0.8125rem;
+}
+
+.comment__meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-left: 12px;
+  color: var(--bs-secondary-color);
+  font-size: 0.75rem;
+}
+
+.comment__delete-btn {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font-weight: 600;
+}
+
+.comment__delete-btn:hover {
+  color: var(--bs-danger);
+  text-decoration: underline;
+}
+
+.comment-form,
+.comment-guest {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.comment-form__field {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.comment-form__input {
+  display: block;
+  width: 100%;
+  padding: 8px 14px;
+  border: 1px solid var(--bs-border-color);
+  border-radius: 18px;
+  background: var(--comment-bubble-bg);
+  color: var(--bs-body-color);
+}
+
+.comment-form__input:focus {
+  outline: 0;
+  border-color: var(--brand-link);
+  box-shadow: 0 0 0 0.25rem var(--focus-ring);
+}
+
+.comment-form__actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 6px;
+  color: var(--bs-secondary-color);
+  font-size: 0.8125rem;
+}
+
+/* Có JS: ô nhập thu gọn thành một hàng, bấm vào mới mở rộng (JS tự giãn chiều cao) */
+.js .comment-form__input {
+  resize: none;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.js .comment-form:not(.is-open) .comment-form__input {
+  height: 38px;
+  overflow: hidden;
+}
+
+.js .comment-form:not(.is-open) .comment-form__actions {
+  display: none;
+}
+
+/* Khách: ô giả chỉ hiện khi có JS; không có JS thì hộp đăng nhập luôn hiện */
+.comment-guest {
+  flex-wrap: wrap;
+}
+
+.comment-pill {
+  display: none;
+  flex: 1 1 0;
+  padding: 8px 14px;
+  border: 1px solid var(--bs-border-color);
+  border-radius: 18px;
+  background: var(--comment-bubble-bg);
+  color: var(--bs-secondary-color);
+  text-align: left;
+}
+
+.js .comment-pill {
+  display: block;
+}
+
+/* Không JS: avatar và hộp đăng nhập cùng một hàng (ô giả bị ẩn) */
+.comment-guest {
+  align-items: center;
+}
+
+.comment-login-box {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 6px 0;
+  color: var(--bs-body-color);
+}
+
+/* Có JS: ô giả chiếm hàng đầu cạnh avatar, hộp đăng nhập xuống hàng dưới, thẳng với ô giả */
+.js .comment-login-box {
+  flex-basis: 100%;
+  padding: 8px 12px 8px 40px; /* 32px avatar + 8px gap */
+}
+
+.js .comment-login-box:not(.is-open) {
+  display: none;
 }
