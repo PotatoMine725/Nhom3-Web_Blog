@@ -23,6 +23,19 @@ async function loadSidebar(req, res, next) {
       .populate('post', 'title slug')
       .lean();
 
+    // Thẻ "Bắt đầu nhanh": chỉ thành viên; đủ 3 bước thì null (thẻ tự ẩn). Bài nháp cũng tính là đã viết bài
+    res.locals.quickStart = null;
+    const user = res.locals.currentUser;
+    if (user) {
+      const [posted, commented] = await Promise.all([
+        Post.exists({ author: user._id }),
+        Comment.exists({ author: user._id }),
+      ]);
+      if (!posted || !commented) {
+        res.locals.quickStart = { posted: !!posted, commented: !!commented };
+      }
+    }
+
     res.locals.sidebar = true;
     res.locals.popularTags = popularTags;
     res.locals.recentComments = recentComments;

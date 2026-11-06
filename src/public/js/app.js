@@ -34,6 +34,28 @@ document.addEventListener('keydown', function (e) {
   input.focus();
 });
 
+// ---- Chế độ tối (UI/UX PR 4) ----
+// Script trong <head> đã áp theme đã lưu; ở đây chỉ gắn nút đổi. Không có JS thì nút ẩn và giao diện luôn sáng
+var themeToggle = document.getElementById('themeToggle');
+if (themeToggle) {
+  var themeRoot = document.documentElement;
+
+  function refreshThemeToggle() {
+    var dark = themeRoot.getAttribute('data-bs-theme') === 'dark';
+    themeToggle.setAttribute('aria-pressed', dark ? 'true' : 'false');
+    themeToggle.title = dark ? 'Chuyển sang giao diện sáng' : 'Chuyển sang giao diện tối';
+  }
+
+  themeToggle.hidden = false;
+  refreshThemeToggle();
+  themeToggle.addEventListener('click', function () {
+    var next = themeRoot.getAttribute('data-bs-theme') === 'dark' ? 'light' : 'dark';
+    themeRoot.setAttribute('data-bs-theme', next);
+    try { localStorage.setItem('theme', next); } catch (e) {}
+    refreshThemeToggle();
+  });
+}
+
 // ---- Bình luận (UI/UX PR 3) ----
 var commentForm = document.getElementById('commentForm');
 var commentInput = document.getElementById('commentInput');

@@ -1,5 +1,27 @@
 <%# Sidebar phải. Cần popularTags, recentComments (do middleware loadSidebar nạp). Mọi dữ liệu người dùng được escape %>
 <aside class="layout__right" aria-label="Thanh bên">
+  <% if (!currentUser) { %>
+    <section class="sidebar-card sidebar-card--accent" id="welcomeCard">
+      <h2 class="sidebar-card__title">Chào mừng đến Nhom3 Blog</h2>
+      <div class="sidebar-card__body">
+        <p class="small mb-2">Một nơi để <strong>đọc</strong>, <strong>viết</strong> và <strong>trò chuyện</strong> về những gì bạn quan tâm.</p>
+        <a class="btn btn-sm btn-primary" href="/register">Đăng ký miễn phí</a>
+        <a class="btn btn-sm btn-outline-primary" href="/login">Đăng nhập</a>
+      </div>
+    </section>
+  <% } else if (locals.quickStart) { %>
+    <section class="sidebar-card sidebar-card--accent" id="quickStart">
+      <h2 class="sidebar-card__title">Bắt đầu nhanh</h2>
+      <div class="sidebar-card__body">
+        <ul class="list-unstyled mb-0">
+          <li class="quick-start__item" data-done="true">Tạo tài khoản <span class="visually-hidden">(đã xong)</span></li>
+          <li class="quick-start__item" data-done="<%= quickStart.posted %>"><a href="/posts/new">Viết bài đầu tiên</a> <span class="visually-hidden">(<%= quickStart.posted ? 'đã xong' : 'chưa làm' %>)</span></li>
+          <li class="quick-start__item" data-done="<%= quickStart.commented %>">Bình luận đầu tiên <span class="visually-hidden">(<%= quickStart.commented ? 'đã xong' : 'chưa làm' %>)</span></li>
+        </ul>
+      </div>
+    </section>
+  <% } %>
+
   <section class="sidebar-card">
     <h2 class="sidebar-card__title">Thẻ phổ biến</h2>
     <div class="sidebar-card__body">

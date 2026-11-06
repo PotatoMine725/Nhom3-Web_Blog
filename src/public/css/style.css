@@ -32,7 +32,16 @@ body {
   --tag-color: #2c5f86;
   --count-has-color: #2f6f44;
   --comment-bubble-bg: #f0f2f5;
-  --shadow-color: rgba(0, 0, 0, 0.05);
+  --danger-outline: #dc3545; /* chữ/viền .btn-outline-danger (giá trị mặc định của Bootstrap) */
+  --nav-bg: #f8f9f9;
+  --nav-border: #b4bbc1;
+  --side-bg: #f8f9f9;
+  --side-active-bg: #e3e6e8;
+  --card-bg: #ffffff;
+  --card-head-bg: #f1f2f3;
+  --shadow-nav: 0 2px 6px rgba(0, 0, 0, 0.12);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --header-h: 59px; /* chiều cao navbar ở desktop (đo bằng DevTools), dùng cho top của menu trái; đổi navbar thì đo lại */
 
   --bs-primary: var(--brand-blue);
   --bs-primary-rgb: var(--brand-blue-rgb);
@@ -46,6 +55,49 @@ body {
   --bs-secondary-rgb: var(--text-muted-rgb);
   --bs-border-color: var(--border);
   --bs-tertiary-bg-rgb: var(--surface-2-rgb);
+}
+
+/* Giao diện tối: chỉ đổi giá trị token, không đụng --bs-* (đã trỏ tới token). Phải đặt SAU :root (cùng độ ưu tiên) */
+[data-bs-theme="dark"] {
+  --brand-link: #6ea8fe;
+  --brand-link-rgb: 110, 168, 254;
+  --brand-link-hover: #8bb9fe;
+  --brand-link-hover-rgb: 139, 185, 254;
+  --brand-orange-text: #f48024;
+  --focus-ring: rgba(110, 168, 254, 0.35);
+  --focus-ring-strong: rgba(110, 168, 254, 0.55);
+  --text: #dee2e6;
+  --text-rgb: 222, 226, 230;
+  --text-muted: #adb5bd;
+  --text-muted-rgb: 173, 181, 189;
+  --border: #495057;
+  --surface-2-rgb: 43, 48, 53;
+  --tag-bg: #1f3a52;
+  --tag-color: #9fc5e8;
+  --count-has-color: #5fb37c;
+  --comment-bubble-bg: #3a3b3c;
+  --danger-outline: #ea868f; /* #dc3545 trên nền tối chỉ ~3.4:1 */
+  --nav-bg: #2b3035;
+  --nav-border: #495057;
+  --side-bg: #2b3035;
+  --side-active-bg: #3a4046;
+  --card-bg: #2b3035;
+  --card-head-bg: #343a40;
+  --shadow-nav: 0 2px 8px rgba(0, 0, 0, 0.5);
+  --shadow-card: 0 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Nút đổi giao diện: trăng ở sáng, mặt trời ở tối */
+.theme-icon--sun {
+  display: none;
+}
+
+[data-bs-theme="dark"] .theme-icon--moon {
+  display: none;
+}
+
+[data-bs-theme="dark"] .theme-icon--sun {
+  display: inline;
 }
 
 /* Nút xanh: .btn-primary và .btn-outline-primary đọc biến riêng, không đọc --bs-primary */
@@ -73,15 +125,23 @@ body {
   --bs-btn-focus-shadow-rgb: var(--brand-blue-rgb);
 }
 
+/* Nút Xoá/Khoá: Bootstrap không làm sáng màu đỏ ở giao diện tối nên chữ chỉ ~3.4:1; hover giữ nền đỏ mặc định */
+.btn-outline-danger {
+  --bs-btn-color: var(--danger-outline);
+  --bs-btn-border-color: var(--danger-outline);
+  --bs-btn-disabled-color: var(--danger-outline);
+  --bs-btn-disabled-border-color: var(--danger-outline);
+}
+
 /* Thanh trên cùng: dính đầu trang, viền cam ở trên */
 .site-header {
   position: sticky;
   top: 0;
   z-index: 1030;
-  background: var(--bs-body-bg);
-  border-top: 3px solid var(--brand-orange);
-  border-bottom: 1px solid var(--bs-border-color);
-  box-shadow: 0 1px 4px var(--shadow-color);
+  background: var(--nav-bg);
+  border-top: 4px solid var(--brand-orange);
+  border-bottom: 1px solid var(--nav-border);
+  box-shadow: var(--shadow-nav);
 }
 
 .site-header__inner {
@@ -174,30 +234,35 @@ body {
   padding: 24px 16px;
 }
 
+/* Cột menu giãn hết hàng lưới nên nền và viền phủ kín chiều cao, trang ngắn không bị cuộn thừa */
 .layout__left {
-  position: sticky;
-  top: 60px;
-  align-self: start;
   padding-top: 24px;
-  border-right: 1px solid var(--bs-border-color);
+  background: var(--side-bg);
+  border-right: 1px solid var(--nav-border);
+}
+
+/* Chỉ danh sách menu dính khi cuộn; không đụng .left-nav trong offcanvas mobile */
+.layout__left .left-nav {
+  position: sticky;
+  top: var(--header-h);
+  max-height: calc(100vh - var(--header-h));
+  overflow-y: auto;
 }
 
 .left-nav__link {
   display: block;
   padding: 8px 12px;
-  color: var(--bs-secondary-color);
+  color: var(--text);
   text-decoration: none;
 }
 
 .left-nav__link:hover {
-  color: var(--bs-body-color);
-  background: var(--surface-2);
+  background: var(--side-active-bg);
 }
 
 .left-nav__link.active {
   font-weight: 700;
-  color: var(--bs-body-color);
-  background: var(--surface-2);
+  background: var(--side-active-bg);
   border-right: 3px solid var(--brand-orange);
 }
 
@@ -462,15 +527,19 @@ a.tag-chip:hover {
 /* Thẻ trong sidebar phải */
 .sidebar-card {
   margin-bottom: 16px;
-  border: 1px solid var(--bs-border-color);
-  border-radius: 4px;
+  overflow: hidden;
+  background: var(--card-bg);
+  border: 1px solid var(--nav-border);
+  border-top: 3px solid var(--brand-orange);
+  border-radius: 6px;
+  box-shadow: var(--shadow-card);
 }
 
 .sidebar-card__title {
   margin: 0;
   padding: 10px 12px;
-  background: var(--surface-2);
-  border-bottom: 1px solid var(--bs-border-color);
+  background: var(--card-head-bg);
+  border-bottom: 1px solid var(--nav-border);
   font-size: 0.9rem;
   font-weight: 600;
 }
@@ -495,6 +564,29 @@ a.tag-chip:hover {
   .layout__right {
     padding: 0 16px 24px;
   }
+}
+
+/* Thẻ Bắt đầu nhanh: tick tự cập nhật theo data-done */
+.quick-start__item {
+  display: flex;
+  gap: 8px;
+  padding: 4px 0;
+}
+
+.quick-start__item::before {
+  content: '○';
+  color: var(--text-muted);
+}
+
+.quick-start__item[data-done="true"] {
+  color: var(--text-muted);
+  text-decoration: line-through;
+}
+
+.quick-start__item[data-done="true"]::before {
+  content: '✓';
+  color: var(--count-has-color);
+  font-weight: 700;
 }
 
 /* Trang lỗi 403 / 404 / 500 */
