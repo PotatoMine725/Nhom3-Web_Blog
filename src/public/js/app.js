@@ -138,7 +138,10 @@ if (deleteModalEl && window.bootstrap) {
     pendingDelete.submit(); // form.submit() không kích hoạt lại sự kiện submit
   });
   deleteModalEl.addEventListener('hidden.bs.modal', function () {
+    // Mở modal bằng JS nên Bootstrap không tự trả focus; đưa về nút "Xoá" để dùng bàn phím liền mạch
+    var opener = pendingDelete && pendingDelete.querySelector('button');
     pendingDelete = null;
+    if (opener) opener.focus();
     deleteConfirm.disabled = false;
   });
   // Quay lại bằng nút Back (bfcache): nút xác nhận không được kẹt ở trạng thái vô hiệu
