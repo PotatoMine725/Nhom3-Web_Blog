@@ -1,0 +1,32 @@
+<%# Ô bình luận (UC12). Cần: post, currentUser, errors, commentContent (từ posts/show) %>
+<% if (post.status !== 'published') { %>
+  <p class="text-secondary">Bài nháp chưa nhận bình luận.</p>
+<% } else if (currentUser) { %>
+  <% if (errors.length) { %>
+    <div class="alert alert-danger" id="commentErrors">
+      <ul class="mb-0">
+        <% errors.forEach(function (msg) { %>
+          <li><%= msg %></li>
+        <% }) %>
+      </ul>
+    </div>
+  <% } %>
+  <form id="commentForm" class="comment-form<%= (errors.length || commentContent) ? ' is-open' : '' %>" action="/posts/<%= post.slug %>/comments" method="post">
+    <%- include('avatar', { name: currentUser.username, size: 32 }) %>
+    <div class="comment-form__field">
+      <textarea id="commentInput" class="comment-form__input" name="content" rows="2" placeholder="Viết bình luận…" aria-label="Viết bình luận" aria-describedby="commentCounter"><%= commentContent %></textarea>
+      <div class="comment-form__actions">
+        <span id="commentCounter" class="comment-form__counter"><%= commentContent.length %>/1000</span>
+        <button id="commentSubmit" class="btn btn-primary btn-sm">Bình luận</button>
+      </div>
+    </div>
+  </form>
+<% } else { %>
+  <div class="comment-guest">
+    <%- include('avatar', { name: '?', size: 32 }) %>
+    <button type="button" class="comment-pill" id="commentGuestPill">Viết bình luận…</button>
+    <div class="comment-login-box" id="commentLoginBox">
+      Hãy <a href="/login">đăng nhập</a> để bình luận.
+    </div>
+  </div>
+<% } %>

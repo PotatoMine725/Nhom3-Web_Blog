@@ -60,7 +60,7 @@
       <a class="post-actions__item" href="/login" title="Đăng nhập để thích bài">Thích (<%= likeCount %>)</a>
       <a class="post-actions__item" href="/login" title="Đăng nhập để lưu bài">Lưu</a>
     <% } %>
-    <a class="post-actions__item" href="#comments" title="Xem và viết bình luận">Bình luận (<%= comments.length %>)</a>
+    <a class="post-actions__item" id="commentJump" href="#comments" title="Xem và viết bình luận">Bình luận (<%= comments.length %>)</a>
     <button type="button" class="post-actions__item" id="copyLinkBtn" hidden title="Sao chép liên kết bài viết">Sao chép liên kết</button>
     <% if (canEdit) { %>
       <a class="post-actions__item" href="/posts/<%= post.slug %>/edit">Sửa</a>
@@ -95,47 +95,33 @@
   <h2 class="h5 mb-3">Bình luận (<%= comments.length %>)</h2>
 
   <% if (!comments.length) { %>
-    <p class="text-secondary">Chưa có bình luận nào.</p>
+    <p class="text-secondary">Chưa có bình luận nào. Hãy là người đầu tiên!</p>
   <% } %>
   <% comments.forEach(function (c) { %>
-    <div class="border-bottom py-2">
-      <div class="small text-secondary">
-        <strong><%= c.author ? c.author.username : 'Không rõ' %></strong>
-        · <%= c.createdAt.toLocaleString('vi-VN') %>
-      </div>
-      <div class="comment-content"><%= c.content %></div>
-      <% if (c.canDelete) { %>
-        <form action="/comments/<%= c._id %>/delete" method="post" onsubmit="return confirm('Xoá bình luận này?')">
-          <button class="btn btn-sm btn-outline-danger mt-1">Xoá</button>
-        </form>
-      <% } %>
-    </div>
+    <%- include('../partials/comment-item', { c: c }) %>
   <% }) %>
 
   <div class="mt-4">
-    <% if (post.status !== 'published') { %>
-      <p class="text-secondary">Bài nháp chưa nhận bình luận.</p>
-    <% } else if (currentUser) { %>
-      <% if (errors.length) { %>
-        <div class="alert alert-danger">
-          <ul class="mb-0">
-            <% errors.forEach(function (msg) { %>
-              <li><%= msg %></li>
-            <% }) %>
-          </ul>
-        </div>
-      <% } %>
-      <form action="/posts/<%= post.slug %>/comments" method="post">
-        <div class="mb-2">
-          <textarea class="form-control" name="content" rows="3" aria-label="Bình luận"><%= commentContent %></textarea>
-          <div class="form-text">Tối đa 1000 ký tự.</div>
-        </div>
-        <button class="btn btn-primary">Gửi</button>
-      </form>
-    <% } else { %>
-      <p>Hãy <a href="/login">đăng nhập</a> để bình luận.</p>
-    <% } %>
+    <%- include('../partials/comment-form') %>
   </div>
 </section>
+
+<% if (comments.some(function (c) { return c.canDelete; })) { %>
+  <div class="modal fade" id="deleteCommentModal" tabindex="-1" aria-labelledby="deleteCommentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title h5" id="deleteCommentModalLabel">Xoá bình luận?</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+        </div>
+        <div class="modal-body">Bình luận sẽ bị xoá, không khôi phục được.</div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Huỷ</button>
+          <button type="button" class="btn btn-danger" id="deleteCommentConfirm">Xoá bình luận</button>
+        </div>
+      </div>
+    </div>
+  </div>
+<% } %>
 
 <%- include('../partials/footer') %>
