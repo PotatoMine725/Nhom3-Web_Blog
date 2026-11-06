@@ -1,6 +1,9 @@
 /* CSS riêng của blog, bổ sung cho Bootstrap */
 body {
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
+  min-height: 100dvh; /* thanh địa chỉ mobile co giãn */
 }
 
 /* Bảng màu kiểu Stack Overflow. Mọi màu của trang nằm ở khối này; các biến --bs-* của Bootstrap 5.3 chỉ trỏ tới token.
@@ -135,6 +138,8 @@ body {
 .layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
+  flex: 1 0 auto;
+  width: 100%; /* trong flex column, margin: 0 auto làm phần tử co lại theo nội dung */
   max-width: 1264px;
   margin: 0 auto;
 }
@@ -213,6 +218,8 @@ body {
 }
 
 .site-footer {
+  width: 100%;
+  flex-shrink: 0;
   max-width: 1264px;
   margin: 0 auto;
   padding: 24px 16px;
