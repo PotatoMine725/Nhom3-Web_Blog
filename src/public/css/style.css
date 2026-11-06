@@ -48,6 +48,40 @@ body {
   --bs-tertiary-bg-rgb: var(--surface-2-rgb);
 }
 
+/* Giao diện tối: chỉ đổi giá trị token, không đụng --bs-* (đã trỏ tới token). Phải đặt SAU :root (cùng độ ưu tiên) */
+[data-bs-theme="dark"] {
+  --brand-link: #6ea8fe;
+  --brand-link-rgb: 110, 168, 254;
+  --brand-link-hover: #8bb9fe;
+  --brand-link-hover-rgb: 139, 185, 254;
+  --brand-orange-text: #f48024;
+  --focus-ring: rgba(110, 168, 254, 0.35);
+  --focus-ring-strong: rgba(110, 168, 254, 0.55);
+  --text: #dee2e6;
+  --text-rgb: 222, 226, 230;
+  --text-muted: #adb5bd;
+  --text-muted-rgb: 173, 181, 189;
+  --border: #495057;
+  --surface-2-rgb: 43, 48, 53;
+  --tag-bg: #1f3a52;
+  --tag-color: #9fc5e8;
+  --count-has-color: #5fb37c;
+  --comment-bubble-bg: #3a3b3c;
+}
+
+/* Nút đổi giao diện: trăng ở sáng, mặt trời ở tối */
+.theme-icon--sun {
+  display: none;
+}
+
+[data-bs-theme="dark"] .theme-icon--moon {
+  display: none;
+}
+
+[data-bs-theme="dark"] .theme-icon--sun {
+  display: inline;
+}
+
 /* Nút xanh: .btn-primary và .btn-outline-primary đọc biến riêng, không đọc --bs-primary */
 .btn-primary {
   --bs-btn-bg: var(--brand-blue);
