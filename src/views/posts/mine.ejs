@@ -12,7 +12,7 @@
     <tbody>
       <% posts.forEach(function (post) { %>
         <tr>
-          <td><a href="/posts/<%= post.slug %>"><%= post.title %></a></td>
+          <td class="text-break"><a href="/posts/<%= post.slug %>"><%= post.title %></a></td>
           <td><%= post.status === 'draft' ? 'Nháp' : 'Đã đăng' %></td>
           <td class="d-none d-md-table-cell"><%= post.createdAt.toLocaleDateString('vi-VN') %></td>
           <td class="text-end">
