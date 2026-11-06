@@ -3,48 +3,71 @@ body {
   min-height: 100vh;
 }
 
-/* Bảng màu kiểu Stack Overflow: ghi đè biến của Bootstrap 5.3 */
+/* Bảng màu kiểu Stack Overflow. Mọi màu của trang nằm ở khối này; các biến --bs-* của Bootstrap 5.3 chỉ trỏ tới token.
+   Ngoại lệ có chủ ý ngoài khối: chữ #fff của .avatar (trên màu nền cố định trong viewHelpers.js) */
 :root {
-  --bs-primary: #0074cc;
-  --bs-primary-rgb: 0, 116, 204;
-  --bs-link-color: #0074cc;
-  --bs-link-color-rgb: 0, 116, 204;
-  --bs-link-hover-color: #0063bf;
-  --bs-link-hover-color-rgb: 0, 99, 191;
-  --bs-body-color: #232629;
-  --bs-body-color-rgb: 35, 38, 41;
-  --bs-secondary-color: #6a737c;
-  --bs-secondary-rgb: 106, 115, 124;
-  --bs-border-color: #d6d9dc;
-  --bs-tertiary-bg-rgb: 248, 249, 249;
+  --brand-orange: #f48024;
+  --brand-orange-text: #c2410c; /* cam khi làm chữ: #f48024 trên trắng chỉ ~2.6:1 */
+  --brand-blue: #0074cc;
+  --brand-blue-hover: #0063bf;
+  --brand-blue-active: #0057a8;
+  --brand-blue-rgb: 0, 116, 204;
+  --brand-link: #0074cc;
+  --brand-link-rgb: 0, 116, 204;
+  --brand-link-hover: #0063bf;
+  --brand-link-hover-rgb: 0, 99, 191;
+  --focus-ring: rgba(0, 116, 204, 0.25);
+  --focus-ring-strong: rgba(0, 116, 204, 0.4);
+  --text: #232629;
+  --text-rgb: 35, 38, 41;
+  --text-muted: #5c656d;
+  --text-muted-rgb: 92, 101, 109;
+  --border: #d6d9dc;
+  --surface-2-rgb: 248, 249, 249;
+  --surface-2: rgb(var(--surface-2-rgb)); /* nền hover / dải tiêu đề; đọc lại --surface-2-rgb nên tự đổi theo giao diện */
   --tag-bg: #e1ecf4;
-  --tag-color: #39739d;
+  --tag-color: #2c5f86;
   --count-has-color: #2f6f44;
+  --comment-bubble-bg: #f0f2f5;
+  --shadow-color: rgba(0, 0, 0, 0.05);
+
+  --bs-primary: var(--brand-blue);
+  --bs-primary-rgb: var(--brand-blue-rgb);
+  --bs-link-color: var(--brand-link);
+  --bs-link-color-rgb: var(--brand-link-rgb);
+  --bs-link-hover-color: var(--brand-link-hover);
+  --bs-link-hover-color-rgb: var(--brand-link-hover-rgb);
+  --bs-body-color: var(--text);
+  --bs-body-color-rgb: var(--text-rgb);
+  --bs-secondary-color: var(--text-muted);
+  --bs-secondary-rgb: var(--text-muted-rgb);
+  --bs-border-color: var(--border);
+  --bs-tertiary-bg-rgb: var(--surface-2-rgb);
 }
 
 /* Nút xanh: .btn-primary và .btn-outline-primary đọc biến riêng, không đọc --bs-primary */
 .btn-primary {
-  --bs-btn-bg: #0074cc;
-  --bs-btn-border-color: #0074cc;
-  --bs-btn-hover-bg: #0063bf;
-  --bs-btn-hover-border-color: #0063bf;
-  --bs-btn-active-bg: #0057a8;
-  --bs-btn-active-border-color: #0057a8;
-  --bs-btn-disabled-bg: #0074cc;
-  --bs-btn-disabled-border-color: #0074cc;
-  --bs-btn-focus-shadow-rgb: 0, 116, 204;
+  --bs-btn-bg: var(--brand-blue);
+  --bs-btn-border-color: var(--brand-blue);
+  --bs-btn-hover-bg: var(--brand-blue-hover);
+  --bs-btn-hover-border-color: var(--brand-blue-hover);
+  --bs-btn-active-bg: var(--brand-blue-active);
+  --bs-btn-active-border-color: var(--brand-blue-active);
+  --bs-btn-disabled-bg: var(--brand-blue);
+  --bs-btn-disabled-border-color: var(--brand-blue);
+  --bs-btn-focus-shadow-rgb: var(--brand-blue-rgb);
 }
 
 .btn-outline-primary {
-  --bs-btn-color: #0074cc;
-  --bs-btn-border-color: #0074cc;
-  --bs-btn-hover-bg: #0063bf;
-  --bs-btn-hover-border-color: #0063bf;
-  --bs-btn-active-bg: #0057a8;
-  --bs-btn-active-border-color: #0057a8;
-  --bs-btn-disabled-color: #0074cc;
-  --bs-btn-disabled-border-color: #0074cc;
-  --bs-btn-focus-shadow-rgb: 0, 116, 204;
+  --bs-btn-color: var(--brand-link);
+  --bs-btn-border-color: var(--brand-link);
+  --bs-btn-hover-bg: var(--brand-blue-hover);
+  --bs-btn-hover-border-color: var(--brand-blue-hover);
+  --bs-btn-active-bg: var(--brand-blue-active);
+  --bs-btn-active-border-color: var(--brand-blue-active);
+  --bs-btn-disabled-color: var(--brand-link);
+  --bs-btn-disabled-border-color: var(--brand-link);
+  --bs-btn-focus-shadow-rgb: var(--brand-blue-rgb);
 }
 
 /* Thanh trên cùng: dính đầu trang, viền cam ở trên */
@@ -53,9 +76,9 @@ body {
   top: 0;
   z-index: 1030;
   background: var(--bs-body-bg);
-  border-top: 3px solid #f48024;
+  border-top: 3px solid var(--brand-orange);
   border-bottom: 1px solid var(--bs-border-color);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 4px var(--shadow-color);
 }
 
 .site-header__inner {
@@ -78,7 +101,11 @@ body {
 }
 
 .site-header__brand:hover {
-  color: #f48024;
+  color: var(--brand-orange-text);
+}
+
+.brand-logo__bg {
+  fill: var(--brand-orange);
 }
 
 .site-header__icon-btn {
@@ -88,7 +115,7 @@ body {
 
 /* Bootstrap không vẽ vòng focus cho .btn trơn (nút ☰, tìm kiếm, avatar): tự thêm để dùng được bằng bàn phím */
 .site-header .btn:focus-visible {
-  box-shadow: 0 0 0 0.25rem rgba(0, 116, 204, 0.4);
+  box-shadow: 0 0 0 0.25rem var(--focus-ring-strong);
 }
 
 /* Màn hình nhỏ: ô tìm kiếm nằm hàng riêng bên dưới, mở bằng nút biểu tượng */
@@ -133,14 +160,14 @@ body {
 
 .left-nav__link:hover {
   color: var(--bs-body-color);
-  background: rgba(var(--bs-tertiary-bg-rgb), 1);
+  background: var(--surface-2);
 }
 
 .left-nav__link.active {
   font-weight: 700;
   color: var(--bs-body-color);
-  background: rgba(var(--bs-tertiary-bg-rgb), 1);
-  border-right: 3px solid #f48024;
+  background: var(--surface-2);
+  border-right: 3px solid var(--brand-orange);
 }
 
 /* Trang form / đăng nhập: cột nội dung hẹp ở giữa */
@@ -196,8 +223,8 @@ body {
 
 /* Viền focus của ô nhập theo màu chính */
 .form-control:focus {
-  border-color: #0074cc;
-  box-shadow: 0 0 0 0.25rem rgba(0, 116, 204, 0.25);
+  border-color: var(--brand-link);
+  box-shadow: 0 0 0 0.25rem var(--focus-ring);
 }
 
 /* Nội dung bài và bình luận: giữ xuống dòng nhưng vẫn in text đã escape (không render HTML/Markdown) */
@@ -344,7 +371,7 @@ a.tag-chip:hover {
 }
 
 .post-tabs__link.active {
-  border-bottom-color: #f48024;
+  border-bottom-color: var(--brand-orange);
   color: var(--bs-body-color);
   font-weight: 600;
 }
@@ -391,7 +418,7 @@ a.tag-chip:hover {
 }
 
 .post-actions__item:hover {
-  background: rgba(var(--bs-tertiary-bg-rgb), 1);
+  background: var(--surface-2);
   color: var(--bs-body-color);
 }
 
@@ -409,7 +436,7 @@ a.tag-chip:hover {
 .sidebar-card__title {
   margin: 0;
   padding: 10px 12px;
-  background: rgba(var(--bs-tertiary-bg-rgb), 1);
+  background: var(--surface-2);
   border-bottom: 1px solid var(--bs-border-color);
   font-size: 0.9rem;
   font-weight: 600;
@@ -472,10 +499,6 @@ a.tag-chip:hover {
 }
 
 /* Bình luận kiểu Facebook (UI/UX PR 3) */
-:root {
-  --comment-bubble-bg: #f0f2f5;
-}
-
 /* Header dính đầu trang: chừa chỗ để neo #comments và ô nhập không bị che */
 #comments,
 #commentForm,
@@ -552,8 +575,8 @@ a.tag-chip:hover {
 
 .comment-form__input:focus {
   outline: 0;
-  border-color: #0074cc;
-  box-shadow: 0 0 0 0.25rem rgba(0, 116, 204, 0.25);
+  border-color: var(--brand-link);
+  box-shadow: 0 0 0 0.25rem var(--focus-ring);
 }
 
 .comment-form__actions {
