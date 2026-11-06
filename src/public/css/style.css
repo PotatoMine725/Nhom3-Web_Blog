@@ -32,6 +32,7 @@ body {
   --tag-color: #2c5f86;
   --count-has-color: #2f6f44;
   --comment-bubble-bg: #f0f2f5;
+  --danger-outline: #dc3545; /* chữ/viền .btn-outline-danger (giá trị mặc định của Bootstrap) */
   --nav-bg: #f8f9f9;
   --nav-border: #b4bbc1;
   --side-bg: #f8f9f9;
@@ -75,6 +76,7 @@ body {
   --tag-color: #9fc5e8;
   --count-has-color: #5fb37c;
   --comment-bubble-bg: #3a3b3c;
+  --danger-outline: #ea868f; /* #dc3545 trên nền tối chỉ ~3.4:1 */
   --nav-bg: #2b3035;
   --nav-border: #495057;
   --side-bg: #2b3035;
@@ -121,6 +123,14 @@ body {
   --bs-btn-disabled-color: var(--brand-link);
   --bs-btn-disabled-border-color: var(--brand-link);
   --bs-btn-focus-shadow-rgb: var(--brand-blue-rgb);
+}
+
+/* Nút Xoá/Khoá: Bootstrap không làm sáng màu đỏ ở giao diện tối nên chữ chỉ ~3.4:1; hover giữ nền đỏ mặc định */
+.btn-outline-danger {
+  --bs-btn-color: var(--danger-outline);
+  --bs-btn-border-color: var(--danger-outline);
+  --bs-btn-disabled-color: var(--danger-outline);
+  --bs-btn-disabled-border-color: var(--danger-outline);
 }
 
 /* Thanh trên cùng: dính đầu trang, viền cam ở trên */
