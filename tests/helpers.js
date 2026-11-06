@@ -1,9 +1,12 @@
 // Hàm dùng chung cho test. Chỉ dùng thư viện có sẵn của Node (node:test, fetch).
 // Test cần MongoDB đang bật. DB test tách riêng khỏi DB thật: tên phải kết thúc bằng "_test".
 require('dotenv').config();
+const path = require('path');
+const ejs = require('ejs');
 const mongoose = require('mongoose');
 const createApp = require('../src/app');
 const User = require('../src/models/User');
+const viewHelpers = require('../src/utils/viewHelpers');
 
 const TEST_URI = process.env.MONGODB_URI_TEST || 'mongodb://127.0.0.1:27017/nhom3_blog_test';
 
@@ -91,4 +94,10 @@ async function loginAs(email, password = 'matkhau123') {
   return c;
 }
 
-module.exports = { startApp, stopApp, clearDb, client, multipartForm, createUser, loginAs, TEST_URI };
+// Render một view EJS không cần DB. Cho sẵn các biến header cần, data ghi đè được.
+function renderView(view, data = {}) {
+  const file = path.join(__dirname, '..', 'src', 'views', view + '.ejs');
+  return ejs.renderFile(file, { title: 'Thử', currentUser: null, flash: null, currentPath: '/', ...viewHelpers, ...data });
+}
+
+module.exports = { startApp, stopApp, clearDb, client, multipartForm, createUser, loginAs, renderView, TEST_URI };

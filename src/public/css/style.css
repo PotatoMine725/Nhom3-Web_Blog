@@ -1,50 +1,76 @@
 /* CSS riêng của blog, bổ sung cho Bootstrap */
 body {
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
+  min-height: 100dvh; /* thanh địa chỉ mobile co giãn */
 }
 
-/* Bảng màu kiểu Stack Overflow: ghi đè biến của Bootstrap 5.3 */
+/* Bảng màu kiểu Stack Overflow. Mọi màu của trang nằm ở khối này; các biến --bs-* của Bootstrap 5.3 chỉ trỏ tới token.
+   Ngoại lệ có chủ ý ngoài khối: chữ #fff của .avatar (trên màu nền cố định trong viewHelpers.js) */
 :root {
-  --bs-primary: #0074cc;
-  --bs-primary-rgb: 0, 116, 204;
-  --bs-link-color: #0074cc;
-  --bs-link-color-rgb: 0, 116, 204;
-  --bs-link-hover-color: #0063bf;
-  --bs-link-hover-color-rgb: 0, 99, 191;
-  --bs-body-color: #232629;
-  --bs-body-color-rgb: 35, 38, 41;
-  --bs-secondary-color: #6a737c;
-  --bs-secondary-rgb: 106, 115, 124;
-  --bs-border-color: #d6d9dc;
-  --bs-tertiary-bg-rgb: 248, 249, 249;
+  --brand-orange: #f48024;
+  --brand-orange-text: #c2410c; /* cam khi làm chữ: #f48024 trên trắng chỉ ~2.6:1 */
+  --brand-blue: #0074cc;
+  --brand-blue-hover: #0063bf;
+  --brand-blue-active: #0057a8;
+  --brand-blue-rgb: 0, 116, 204;
+  --brand-link: #0074cc;
+  --brand-link-rgb: 0, 116, 204;
+  --brand-link-hover: #0063bf;
+  --brand-link-hover-rgb: 0, 99, 191;
+  --focus-ring: rgba(0, 116, 204, 0.25);
+  --focus-ring-strong: rgba(0, 116, 204, 0.4);
+  --text: #232629;
+  --text-rgb: 35, 38, 41;
+  --text-muted: #5c656d;
+  --text-muted-rgb: 92, 101, 109;
+  --border: #d6d9dc;
+  --surface-2-rgb: 248, 249, 249;
+  --surface-2: rgb(var(--surface-2-rgb)); /* nền hover / dải tiêu đề; đọc lại --surface-2-rgb nên tự đổi theo giao diện */
   --tag-bg: #e1ecf4;
-  --tag-color: #39739d;
+  --tag-color: #2c5f86;
   --count-has-color: #2f6f44;
+  --comment-bubble-bg: #f0f2f5;
+  --shadow-color: rgba(0, 0, 0, 0.05);
+
+  --bs-primary: var(--brand-blue);
+  --bs-primary-rgb: var(--brand-blue-rgb);
+  --bs-link-color: var(--brand-link);
+  --bs-link-color-rgb: var(--brand-link-rgb);
+  --bs-link-hover-color: var(--brand-link-hover);
+  --bs-link-hover-color-rgb: var(--brand-link-hover-rgb);
+  --bs-body-color: var(--text);
+  --bs-body-color-rgb: var(--text-rgb);
+  --bs-secondary-color: var(--text-muted);
+  --bs-secondary-rgb: var(--text-muted-rgb);
+  --bs-border-color: var(--border);
+  --bs-tertiary-bg-rgb: var(--surface-2-rgb);
 }
 
 /* Nút xanh: .btn-primary và .btn-outline-primary đọc biến riêng, không đọc --bs-primary */
 .btn-primary {
-  --bs-btn-bg: #0074cc;
-  --bs-btn-border-color: #0074cc;
-  --bs-btn-hover-bg: #0063bf;
-  --bs-btn-hover-border-color: #0063bf;
-  --bs-btn-active-bg: #0057a8;
-  --bs-btn-active-border-color: #0057a8;
-  --bs-btn-disabled-bg: #0074cc;
-  --bs-btn-disabled-border-color: #0074cc;
-  --bs-btn-focus-shadow-rgb: 0, 116, 204;
+  --bs-btn-bg: var(--brand-blue);
+  --bs-btn-border-color: var(--brand-blue);
+  --bs-btn-hover-bg: var(--brand-blue-hover);
+  --bs-btn-hover-border-color: var(--brand-blue-hover);
+  --bs-btn-active-bg: var(--brand-blue-active);
+  --bs-btn-active-border-color: var(--brand-blue-active);
+  --bs-btn-disabled-bg: var(--brand-blue);
+  --bs-btn-disabled-border-color: var(--brand-blue);
+  --bs-btn-focus-shadow-rgb: var(--brand-blue-rgb);
 }
 
 .btn-outline-primary {
-  --bs-btn-color: #0074cc;
-  --bs-btn-border-color: #0074cc;
-  --bs-btn-hover-bg: #0063bf;
-  --bs-btn-hover-border-color: #0063bf;
-  --bs-btn-active-bg: #0057a8;
-  --bs-btn-active-border-color: #0057a8;
-  --bs-btn-disabled-color: #0074cc;
-  --bs-btn-disabled-border-color: #0074cc;
-  --bs-btn-focus-shadow-rgb: 0, 116, 204;
+  --bs-btn-color: var(--brand-link);
+  --bs-btn-border-color: var(--brand-link);
+  --bs-btn-hover-bg: var(--brand-blue-hover);
+  --bs-btn-hover-border-color: var(--brand-blue-hover);
+  --bs-btn-active-bg: var(--brand-blue-active);
+  --bs-btn-active-border-color: var(--brand-blue-active);
+  --bs-btn-disabled-color: var(--brand-link);
+  --bs-btn-disabled-border-color: var(--brand-link);
+  --bs-btn-focus-shadow-rgb: var(--brand-blue-rgb);
 }
 
 /* Thanh trên cùng: dính đầu trang, viền cam ở trên */
@@ -53,9 +79,9 @@ body {
   top: 0;
   z-index: 1030;
   background: var(--bs-body-bg);
-  border-top: 3px solid #f48024;
+  border-top: 3px solid var(--brand-orange);
   border-bottom: 1px solid var(--bs-border-color);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 4px var(--shadow-color);
 }
 
 .site-header__inner {
@@ -78,7 +104,11 @@ body {
 }
 
 .site-header__brand:hover {
-  color: #f48024;
+  color: var(--brand-orange-text);
+}
+
+.brand-logo__bg {
+  fill: var(--brand-orange);
 }
 
 .site-header__icon-btn {
@@ -88,13 +118,39 @@ body {
 
 /* Bootstrap không vẽ vòng focus cho .btn trơn (nút ☰, tìm kiếm, avatar): tự thêm để dùng được bằng bàn phím */
 .site-header .btn:focus-visible {
-  box-shadow: 0 0 0 0.25rem rgba(0, 116, 204, 0.4);
+  box-shadow: 0 0 0 0.25rem var(--focus-ring-strong);
 }
 
 /* Màn hình nhỏ: ô tìm kiếm nằm hàng riêng bên dưới, mở bằng nút biểu tượng */
 .site-header__search {
   order: 3;
   flex: 1 1 100%;
+}
+
+/* Ô tìm kiếm có kính lúp ở bên trái; bấm kính lúp = gửi form */
+.search-box {
+  position: relative;
+}
+
+.search-box__btn {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  border: 0;
+  background: none;
+  color: var(--text-muted);
+}
+
+.search-box__btn:hover {
+  color: var(--text);
+}
+
+.search-box__input {
+  padding-left: 34px;
 }
 
 .site-header__actions {
@@ -108,6 +164,8 @@ body {
 .layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
+  flex: 1 0 auto;
+  width: 100%; /* trong flex column, margin: 0 auto làm phần tử co lại theo nội dung */
   max-width: 1264px;
   margin: 0 auto;
 }
@@ -133,14 +191,14 @@ body {
 
 .left-nav__link:hover {
   color: var(--bs-body-color);
-  background: rgba(var(--bs-tertiary-bg-rgb), 1);
+  background: var(--surface-2);
 }
 
 .left-nav__link.active {
   font-weight: 700;
   color: var(--bs-body-color);
-  background: rgba(var(--bs-tertiary-bg-rgb), 1);
-  border-right: 3px solid #f48024;
+  background: var(--surface-2);
+  border-right: 3px solid var(--brand-orange);
 }
 
 /* Trang form / đăng nhập: cột nội dung hẹp ở giữa */
@@ -186,6 +244,8 @@ body {
 }
 
 .site-footer {
+  width: 100%;
+  flex-shrink: 0;
   max-width: 1264px;
   margin: 0 auto;
   padding: 24px 16px;
@@ -196,8 +256,8 @@ body {
 
 /* Viền focus của ô nhập theo màu chính */
 .form-control:focus {
-  border-color: #0074cc;
-  box-shadow: 0 0 0 0.25rem rgba(0, 116, 204, 0.25);
+  border-color: var(--brand-link);
+  box-shadow: 0 0 0 0.25rem var(--focus-ring);
 }
 
 /* Nội dung bài và bình luận: giữ xuống dòng nhưng vẫn in text đã escape (không render HTML/Markdown) */
@@ -344,7 +404,7 @@ a.tag-chip:hover {
 }
 
 .post-tabs__link.active {
-  border-bottom-color: #f48024;
+  border-bottom-color: var(--brand-orange);
   color: var(--bs-body-color);
   font-weight: 600;
 }
@@ -391,7 +451,7 @@ a.tag-chip:hover {
 }
 
 .post-actions__item:hover {
-  background: rgba(var(--bs-tertiary-bg-rgb), 1);
+  background: var(--surface-2);
   color: var(--bs-body-color);
 }
 
@@ -409,7 +469,7 @@ a.tag-chip:hover {
 .sidebar-card__title {
   margin: 0;
   padding: 10px 12px;
-  background: rgba(var(--bs-tertiary-bg-rgb), 1);
+  background: var(--surface-2);
   border-bottom: 1px solid var(--bs-border-color);
   font-size: 0.9rem;
   font-weight: 600;
@@ -417,6 +477,11 @@ a.tag-chip:hover {
 
 .sidebar-card__body {
   padding: 12px;
+}
+
+/* Bình luận có từ dài không dấu cách (vd 80 chữ "a" liền nhau) không được đẩy cả trang cuộn ngang */
+.sidebar-comment {
+  overflow-wrap: anywhere;
 }
 
 .sidebar-comment + .sidebar-comment {
@@ -430,6 +495,32 @@ a.tag-chip:hover {
   .layout__right {
     padding: 0 16px 24px;
   }
+}
+
+/* Trang lỗi 403 / 404 / 500 */
+.error-page {
+  max-width: 480px;
+  margin: 48px auto;
+  text-align: center;
+}
+
+.error-page__code {
+  font-size: 5rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--brand-orange-text);
+}
+
+.error-page__text {
+  margin: 8px 0 24px;
+  color: var(--text-muted);
+}
+
+.error-page__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
 }
 
 /* Ảnh bìa (BR11) */
@@ -467,10 +558,6 @@ a.tag-chip:hover {
 }
 
 /* Bình luận kiểu Facebook (UI/UX PR 3) */
-:root {
-  --comment-bubble-bg: #f0f2f5;
-}
-
 /* Header dính đầu trang: chừa chỗ để neo #comments và ô nhập không bị che */
 #comments,
 #commentForm,
@@ -547,8 +634,8 @@ a.tag-chip:hover {
 
 .comment-form__input:focus {
   outline: 0;
-  border-color: #0074cc;
-  box-shadow: 0 0 0 0.25rem rgba(0, 116, 204, 0.25);
+  border-color: var(--brand-link);
+  box-shadow: 0 0 0 0.25rem var(--focus-ring);
 }
 
 .comment-form__actions {
@@ -596,10 +683,22 @@ a.tag-chip:hover {
   display: block;
 }
 
+/* Không JS: avatar và hộp đăng nhập cùng một hàng (ô giả bị ẩn) */
+.comment-guest {
+  align-items: center;
+}
+
 .comment-login-box {
-  flex: 1 1 100%;
-  padding: 8px 12px 8px 44px;
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 6px 0;
   color: var(--bs-body-color);
+}
+
+/* Có JS: ô giả chiếm hàng đầu cạnh avatar, hộp đăng nhập xuống hàng dưới, thẳng với ô giả */
+.js .comment-login-box {
+  flex-basis: 100%;
+  padding: 8px 12px 8px 40px; /* 32px avatar + 8px gap */
 }
 
 .js .comment-login-box:not(.is-open) {

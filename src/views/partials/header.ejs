@@ -17,14 +17,19 @@
 
     <a class="site-header__brand" href="/">
       <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true">
-        <rect width="28" height="28" rx="6" fill="#f48024"/>
+        <rect class="brand-logo__bg" width="28" height="28" rx="6"/>
         <path d="M8 9h12M8 14h12M8 19h7" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>
       </svg>
       <span class="d-none d-sm-inline">Nhom3 Blog</span>
     </a>
 
     <form id="searchForm" class="site-header__search collapse d-lg-block" action="/search" method="get" role="search">
-      <input id="searchInput" class="form-control" type="search" name="q" value="<%= locals.q || '' %>" placeholder="Tìm bài viết…" aria-label="Tìm bài viết" title="Nhấn / để tìm nhanh">
+      <div class="search-box">
+        <button class="search-box__btn" type="submit" aria-label="Tìm kiếm" title="Tìm kiếm">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"/><path d="M13 13l4 4"/></svg>
+        </button>
+        <input id="searchInput" class="form-control search-box__input" type="search" name="q" value="<%= locals.q || '' %>" placeholder="Tìm bài viết…" aria-label="Tìm bài viết" title="Nhấn / để tìm nhanh">
+      </div>
     </form>
 
     <div class="site-header__actions">
