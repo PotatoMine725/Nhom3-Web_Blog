@@ -86,6 +86,7 @@ npm run create-admin -- <email>
 | `admin/users` | Quản lý người dùng | Bảng user: username, email, vai trò, trạng thái, nút khoá/đổi vai trò |
 | `admin/posts` | Kiểm duyệt | Bảng mọi bài, lọc theo trạng thái, nút xoá |
 | `admin/dashboard` | `/admin` | Thẻ số liệu tổng, các bảng thống kê; bảng theo tháng có thanh ngang vẽ bằng CSS (độ rộng theo %), không dùng thư viện biểu đồ |
-| `errors/404`, `errors/403` | Lỗi | Thông báo + link về trang chủ |
+| `errors/400`, `errors/403`, `errors/404`, `errors/500` | Lỗi | Dùng khung chung `partials/error-page`: mã lỗi, tiêu đề, thông báo, nút "Về trang chủ" và "Tìm bài viết"; trang 403 cho khách có thêm nút "Đăng nhập". 400: đường dẫn có tham số hỏng (vd `/posts/%`); 500 không lộ chi tiết lỗi |
+| `partials/right-sidebar` | `/`, `/popular`, `/posts/:slug` | Sidebar phải: "Thẻ phổ biến", "Bình luận mới" (chỉ tính bài đã đăng); khách có thẻ chào mừng (link đăng ký, đăng nhập); thành viên chưa đủ bước có thẻ "Bắt đầu nhanh" (viết bài đầu tiên, bình luận đầu tiên), đủ bước thì ẩn |
 
 Phần lặp lại (thẻ bài, phân trang, header, footer) tách thành partial trong `views/partials/`. Không dùng thư viện layout: mỗi view tự `include` header và footer.
