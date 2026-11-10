@@ -97,7 +97,7 @@ Thêm: `npm run create-admin` với email không có thì báo "Không tìm th�
 
 ## Chưa kiểm thử
 
-- Giao diện điện thoại (menu ☰, ô tìm kiếm thu gọn).
+- Giao diện điện thoại (menu ☰, ô tìm kiếm thu gọn). **Không phát triển** (quyết định của Hoang ngày 2026-11-10: mọi nội dung liên quan đến điện thoại không phát triển tiếp, xem `specs/01` mục Phạm vi).
 - Lỗi 500 thật (chỉ kiểm được 400/403/404 không lộ chi tiết).
 - Hai người bấm like cùng lúc (unique index): không giả lập được request song song đúng nghĩa.
 - Upload ảnh qua hộp chọn file của trình duyệt (đã kiểm bằng request multipart giống trình duyệt gửi).

@@ -26,6 +26,7 @@ Hệ thống là một blog nhiều tác giả. Thành viên đăng bài, ngư�
 | Đếm lượt xem, trang bài nổi bật | Đếm lượt xem không trùng theo người / IP |
 | Một ảnh bìa cho mỗi bài, lưu thư mục local | Nhiều ảnh trong nội dung, resize ảnh, lưu ảnh trên cloud |
 | Trang quản trị đơn giản cho admin, có trang thống kê | Biểu đồ bằng thư viện JS, deploy lên internet |
+| Giao diện cho máy tính (màn hình ≥ 992px) | Tối ưu và kiểm thử giao diện điện thoại / màn hình nhỏ: phần đã có (menu ☰, ô tìm kiếm thu gọn) giữ nguyên, không sửa hay kiểm thêm |
 
 ## Quy tắc nghiệp vụ
 
@@ -57,3 +58,4 @@ Hệ thống là một blog nhiều tác giả. Thành viên đăng bài, ngư�
 | 2026-11-06 | Cập nhật mô tả header và thêm menu trái trong specs/04 cho khớp giao diện sau UI/UX PR 1–4b (chỉ mô tả, không đổi route/quyền/dữ liệu) | Hoang |
 | 2026-11-06 | Cập nhật mô tả trang lỗi (thêm errors/400, errors/500, khung `partials/error-page`) và thêm `partials/right-sidebar` trong specs/04 cho khớp giao diện (chỉ mô tả, không đổi route/quyền/dữ liệu) | Hoang |
 | 2026-11-10 | Tên danh mục duy nhất không phân biệt hoa thường (specs/03) | Hoang |
+| 2026-11-10 | Giao diện điện thoại / màn hình nhỏ đưa ra ngoài phạm vi: không phát triển, không kiểm thử thêm | Hoang |
