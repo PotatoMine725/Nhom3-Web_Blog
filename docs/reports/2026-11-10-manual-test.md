@@ -8,7 +8,7 @@
 
 ## Kết luận ngắn
 
-- 52/52 dòng trong plan đạt (kịch bản chạy 67 phép kiểm, tách nhỏ một số dòng, cả 67 đạt).
+- 51/52 dòng trong plan đạt, 1 dòng đạt một phần (dòng 51: chưa kiểm được trang 500). Kịch bản chạy 67 phép kiểm, tách nhỏ một số dòng, cả 67 đạt.
 - Không tìm thấy lỗi nào trái spec, nên không mở branch `fix/...` nào.
 - Có 1 quan sát nhỏ không trái spec (tên danh mục chỉ duy nhất khi viết đúng hoa thường), ghi ở cuối để nhóm quyết.
 - Bước 11 trong `specs/05` **chưa đánh dấu xong**: chờ nhóm xem report này và tự bấm thử những luồng muốn chắc chắn.
@@ -86,8 +86,8 @@ Cột "Cách kiểm": **HTTP** = kịch bản; **TD** = thao tác trên trình d
 | 48 | UC19, BR10 | Người khác mở bài 3 lần; tác giả mở; admin mở bài nháp | 0 → 3; tác giả không tăng; nháp không tăng | HTTP, TD | Đạt |
 | 49 | UC19 | `/popular` | 10 bài, bài nhiều lượt xem nhất đứng đầu, không phân trang | HTTP | Đạt |
 | 50 | UC20 | Admin mở `/admin` | Số liệu khớp DB (3 user, 13 bài: 12 đăng + 1 nháp, 1 bình luận); bảng 6 tháng có thanh ngang CSS | HTTP, TD | Đạt |
-| 51 | Chung | Trang 403, 404, 400 | Khung chung, có "Về trang chủ", "Tìm bài viết", không lộ stack | HTTP, TD | Đạt |
-| 52 | Giao diện | Chế độ tối, header, menu admin | Tối giữ khi chuyển trang; menu avatar admin: Bài của tôi, Đã lưu, Hồ sơ, Thống kê, Người dùng, Kiểm duyệt bài, Quản lý danh mục, Đăng xuất (khớp `specs/04`) | TD | Đạt |
+| 51 | Chung | Trang 403, 404, 400 | Khung chung, có "Về trang chủ", "Tìm bài viết", không lộ stack. Trang 500 chưa kiểm (không gây được lỗi 500 thật) | HTTP, TD | Đạt một phần |
+| 52 | Giao diện | Chế độ tối, header, menu trái, sidebar phải | Tối giữ khi chuyển trang; menu avatar admin: Bài của tôi, Đã lưu, Hồ sơ, Thống kê, Người dùng, Kiểm duyệt bài, Quản lý danh mục, Đăng xuất; menu trái thành viên: Trang chủ, Nổi bật, Bài của tôi, Đã lưu, Viết bài; sidebar phải: khách có thẻ chào mừng, có "Thẻ phổ biến", "Bình luận mới", thẻ "Bắt đầu nhanh" ẩn khi đủ bước (khớp `specs/04`) | TD | Đạt |
 
 Thêm: `npm run create-admin` với email không có thì báo "Không tìm thấy user", không tạo user mới (đạt).
 

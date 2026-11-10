@@ -8,7 +8,7 @@
 
 - Repo local: `D:\Code\CSDLPQH` (remote `PotatoMine725/Nhom3-Web_Blog`).
 - Ghi chú giao việc nói "tiếp theo là bước 3 (CRUD bài viết)", nhưng repo thực tế đã xa hơn nhiều: **bước 1–10 của `specs/05` đều đã merge vào `dev`** (PR #4 đến #36). Bước duy nhất còn lại là **bước 11: kiểm thử thủ công UC01–UC20**.
-- Đã làm bước 11: plan, chạy kiểm thử 52 dòng (67 phép kiểm), tất cả đạt, không tìm thấy lỗi trái spec. Chi tiết: `reports/2026-11-10-manual-test.md`.
+- Đã làm bước 11: plan, chạy kiểm thử 52 dòng (67 phép kiểm): 51 dòng đạt, 1 dòng đạt một phần (chưa kiểm trang 500), không tìm thấy lỗi trái spec. Chi tiết: `reports/2026-11-10-manual-test.md`.
 - Không có PR sửa lỗi nào vì không có lỗi.
 
 ## Đối chiếu các bước trong `specs/05`
