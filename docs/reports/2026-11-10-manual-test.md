@@ -2,7 +2,7 @@
 
 - Ngày: 2026-11-10
 - Plan: `plans/2026-11-10-manual-test.md`
-- Branch / PR: `docs/manual-test-uc01-uc20` → `dev`
+- Branch / PR: `docs/manual-test-uc01-uc20` → `dev`, [PR #38](https://github.com/PotatoMine725/Nhom3-Web_Blog/pull/38)
 - Bản được kiểm: `dev` tại commit `7446d8f` (chưa gồm PR #37 `fix/ui-nits`)
 - Người chạy: Claude, khi người dùng vắng mặt. Đây là kiểm thử tự động bằng kịch bản HTTP cộng thao tác trên trình duyệt, **không phải người dùng bấm tay**.
 

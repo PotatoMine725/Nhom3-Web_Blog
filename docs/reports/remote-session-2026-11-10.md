@@ -24,7 +24,7 @@
 | 7–8 | Like, lưu bài, lượt xem, bài nổi bật | #21 | Đã merge |
 | 9 | Ảnh bìa | #24 | Đã merge |
 | 10 | Trang thống kê admin | #23 | Đã merge |
-| 11 | Kiểm thử thủ công UC01–UC20 | PR của phiên này | Đã chạy, chờ nhóm duyệt |
+| 11 | Kiểm thử thủ công UC01–UC20 | [#38](https://github.com/PotatoMine725/Nhom3-Web_Blog/pull/38) | Đã chạy, chờ nhóm duyệt |
 
 Ngoài ra các PR giao diện (#13–#17, #27–#31), sửa lỗi (#33, #34), sửa spec 04 (#32, #36) đã merge. `dev` đã được merge vào `main` một lần ở PR #35. PR #37 (`fix/ui-nits`) đang mở, chờ duyệt.
 
@@ -51,7 +51,7 @@ Không đổi code, spec, schema.
 
 ## Việc còn lại cho nhóm
 
-- Duyệt PR bước 11 (chỉ tài liệu) vào `dev`.
+- Duyệt PR #38 bước 11 (chỉ tài liệu) vào `dev`: https://github.com/PotatoMine725/Nhom3-Web_Blog/pull/38
 - Duyệt PR #37 (`fix/ui-nits`).
 - Xem report kiểm thử, bấm lại vài luồng nếu muốn, rồi đánh dấu bước 11 trong `specs/05` là xong.
 - Quyết định về tên danh mục khác hoa thường.
