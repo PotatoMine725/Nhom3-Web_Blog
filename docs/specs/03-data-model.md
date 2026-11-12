@@ -112,7 +112,7 @@ User, Post, Category, Comment bật `timestamps: true`, Mongoose tự thêm `cre
 
 | Trường | Kiểu | Bắt buộc | Mặc định | Ràng buộc / validate |
 | --- | --- | --- | --- | --- |
-| name | String | Có | | unique, trim, tối đa 50 ký tự |
+| name | String | Có | | unique (không phân biệt hoa thường: "Lập trình" và "lập trình" coi là trùng), trim, tối đa 50 ký tự |
 | slug | String | Có | tự sinh | unique, lowercase, sinh từ name |
 
 ### Comment
