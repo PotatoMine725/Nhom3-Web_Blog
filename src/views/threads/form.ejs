@@ -1,0 +1,35 @@
+<%- include('../partials/header') %>
+<%# UC23: form tạo thread %>
+
+<div class="content-narrow">
+<h1 class="h3 mb-3"><%= title %></h1>
+
+<% if (errors.length) { %>
+  <div class="alert alert-danger">
+    <ul class="mb-0">
+      <% errors.forEach(function (msg) { %>
+        <li><%= msg %></li>
+      <% }) %>
+    </ul>
+  </div>
+<% } %>
+
+<form action="/threads" method="post">
+  <div class="mb-3">
+    <label class="form-label" for="name">Tên thread</label>
+    <input class="form-control" id="name" name="name" value="<%= values.name %>" maxlength="50">
+    <div class="form-text">Từ 3 đến 50 ký tự, không trùng thread khác.</div>
+  </div>
+  <div class="mb-3">
+    <label class="form-label" for="description">Mô tả (không bắt buộc)</label>
+    <textarea class="form-control" id="description" name="description" rows="4" maxlength="500"><%= values.description %></textarea>
+  </div>
+  <div class="mb-3">
+    <label class="form-label" for="tag">Tag chủ đề (không bắt buộc)</label>
+    <input class="form-control" id="tag" name="tag" value="<%= values.tag %>" maxlength="30">
+  </div>
+  <button class="btn btn-primary">Tạo</button>
+</form>
+</div>
+
+<%- include('../partials/footer') %>

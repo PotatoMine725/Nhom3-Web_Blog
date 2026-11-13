@@ -32,6 +32,16 @@
       <% }) %>
     </select>
   </div>
+  <%# Chỉ liệt kê thread tác giả bài đã tham gia (+ thread hiện tại của bài), BR12 %>
+  <div class="mb-3">
+    <label class="form-label" for="thread">Thread</label>
+    <select class="form-select w-auto" id="thread" name="thread">
+      <option value="">Không thuộc thread</option>
+      <% (locals.threads || []).forEach(function (t) { %>
+        <option value="<%= t._id %>" <%= values.thread === String(t._id) ? 'selected' : '' %>><%= t.name %></option>
+      <% }) %>
+    </select>
+  </div>
   <div class="mb-3">
     <label class="form-label" for="tags">Tag</label>
     <input class="form-control" id="tags" name="tags" value="<%= values.tags %>">

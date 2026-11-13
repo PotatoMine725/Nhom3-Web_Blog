@@ -11,6 +11,12 @@
   <% if (post.coverImage) { %>
     <img class="post-cover mb-3" src="/uploads/<%= post.coverImage %>" alt="Ảnh bìa bài viết">
   <% } %>
+  <%# Nhãn thread (BR14), link tới trang thread %>
+  <% if (post.thread && post.thread.name) { %>
+    <div class="mb-2">
+      <a class="category-chip thread-chip" href="/threads/<%= post.thread.slug %>" title="Thread">Thread: <%= post.thread.name %></a>
+    </div>
+  <% } %>
   <h1 class="h3 mb-2">
     <%= post.title %>
     <% if (post.status === 'draft') { %><span class="badge text-bg-secondary fs-6">Nháp</span><% } %>

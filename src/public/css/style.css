@@ -398,6 +398,11 @@ a.tag-chip:hover {
   text-decoration: none;
 }
 
+/* Nhãn thread: giống chip danh mục, viền đứt để phân biệt */
+.thread-chip {
+  border-style: dashed;
+}
+
 /* Nút "Danh mục" trên header */
 .site-header__menu-btn {
   color: var(--bs-body-color);

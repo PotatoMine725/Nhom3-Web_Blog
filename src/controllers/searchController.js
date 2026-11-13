@@ -46,6 +46,7 @@ async function renderList(req, res, { filter, sort = NEWEST, projection, view })
     .limit(PAGE_SIZE)
     .populate('author', 'username')
     .populate('category', 'name slug')
+    .populate('thread', 'name slug')
     .lean();
   await attachCommentCounts(posts);
 

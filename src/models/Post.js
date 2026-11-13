@@ -27,6 +27,8 @@ const postSchema = new mongoose.Schema(
     author: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     // null = "Chưa phân loại". Xoá danh mục thì bài về null (categoryController.remove)
     category: { type: mongoose.Schema.Types.ObjectId, ref: 'Category', default: null },
+    // null = không thuộc thread. Kiểm thành viên trong controller (BR12); xoá thread thì bài về null (BR13)
+    thread: { type: mongoose.Schema.Types.ObjectId, ref: 'Thread', default: null },
     // Lượt xem: chỉ tăng bằng $inc trong controller (BR10), không lấy từ form
     views: { type: Number, default: 0, min: 0 },
     // Tên file ảnh bìa trong uploads/ do server đặt (BR11), không lấy từ form; null = không có ảnh
@@ -39,6 +41,8 @@ postSchema.index({ status: 1, createdAt: -1 });
 postSchema.index({ author: 1 });
 postSchema.index({ category: 1 });
 postSchema.index({ tags: 1 });
+// Trang thread: bài đã đăng trong thread, mới nhất trước; cũng dùng khi xoá thread
+postSchema.index({ thread: 1, status: 1, createdAt: -1 });
 // Bài nổi bật (UC19)
 postSchema.index({ status: 1, views: -1 });
 // default_language: 'none' để MongoDB không bỏ stop word / cắt đuôi từ theo tiếng Anh

@@ -1,0 +1,65 @@
+<%- include('../partials/header') %>
+<%# UC22: thông tin thread + bài đã đăng trong thread. Nút tham gia / rời / viết bài / xoá theo quyền %>
+
+<nav aria-label="breadcrumb" class="small mb-2">
+  <ol class="breadcrumb mb-0">
+    <li class="breadcrumb-item"><a href="/threads">Threads</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Thread</li>
+  </ol>
+</nav>
+
+<h1 class="h3 mb-2">
+  <%= thread.name %>
+  <% if (isMember) { %><span class="badge text-bg-success fs-6 align-middle">Đã tham gia</span><% } %>
+</h1>
+
+<% if (thread.description) { %>
+  <p class="mb-2"><%= thread.description %></p>
+<% } %>
+
+<div class="post-meta mb-3">
+  <% if (thread.tag) { %>
+    <a class="tag-chip" href="/tags/<%= encodeURIComponent(thread.tag) %>"><%= thread.tag %></a>
+  <% } %>
+  <span class="text-secondary">Tạo bởi <strong><%= thread.author ? thread.author.username : 'Không rõ' %></strong></span>
+  <span class="text-secondary">· <%= memberCount %> thành viên</span>
+</div>
+
+<div class="d-flex flex-wrap gap-2 mb-4">
+  <% if (!currentUser) { %>
+    <a class="btn btn-outline-primary" href="/login">Đăng nhập để tham gia</a>
+  <% } else if (!isMember) { %>
+    <form action="/threads/<%= thread.slug %>/join" method="post">
+      <button class="btn btn-primary">Tham gia</button>
+    </form>
+  <% } else { %>
+    <a class="btn btn-primary" href="/posts/new?thread=<%= encodeURIComponent(thread.slug) %>">Viết bài trong thread</a>
+    <%# Người tạo không rời được thread của mình (BR12) %>
+    <% if (!isCreator) { %>
+      <form action="/threads/<%= thread.slug %>/leave" method="post">
+        <button class="btn btn-outline-secondary">Rời thread</button>
+      </form>
+    <% } %>
+  <% } %>
+  <% if (canDelete) { %>
+    <form action="/threads/<%= thread.slug %>/delete" method="post" onsubmit="return confirm('Xoá thread này? Bài viết trong thread vẫn còn nhưng không thuộc thread nào.')">
+      <button class="btn btn-outline-danger">Xoá thread</button>
+    </form>
+  <% } %>
+</div>
+
+<h2 class="h5 mb-2">Bài viết trong thread</h2>
+
+<% if (posts.length === 0) { %>
+  <div class="empty-state">
+    <p class="empty-state__text">Thread chưa có bài nào.</p>
+  </div>
+<% } %>
+
+<% posts.forEach(function (post) { %>
+  <%- include('../partials/post-card', { post: post }) %>
+<% }) %>
+
+<%- include('../partials/pagination') %>
+
+<%- include('../partials/footer') %>
