@@ -50,4 +50,4 @@ Tổng: 28/30 trang×độ rộng không tràn sau khi sửa (trước: 6/30). �
 ## Việc còn lại
 
 - Người dùng duyệt và merge.
-- Quyết định có sửa `/admin/users` trên điện thoại hay không.
+- ~~Quyết định có sửa `/admin/users` trên điện thoại hay không.~~ **Không phát triển** (quyết định của Hoang ngày 2026-11-10: mọi nội dung liên quan đến điện thoại không phát triển tiếp, xem `specs/01` mục Phạm vi).

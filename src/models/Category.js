@@ -16,9 +16,24 @@ const categorySchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Sinh slug khi tạo mới hoặc đổi tên; trùng thì thêm -2, -3, ... (giống Post)
+// Escape ký tự đặc biệt để tên như "C++", "Node.js" được so khớp đúng từng chữ
+function escapeRegex(text) {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+// Khi tạo mới hoặc đổi tên: chặn tên trùng không phân biệt hoa thường ("Lập trình" và "lập trình"),
+// rồi sinh slug; slug trùng thì thêm -2, -3, ... (giống Post)
 categorySchema.pre('validate', async function () {
   if (!this.name || !(this.isNew || this.isModified('name'))) return;
+
+  const sameName = await this.constructor.exists({
+    name: new RegExp(`^${escapeRegex(this.name)}$`, 'i'),
+    _id: { $ne: this._id },
+  });
+  if (sameName) {
+    this.invalidate('name', 'Tên danh mục đã tồn tại');
+    return;
+  }
 
   const base = slugify(this.name) || 'danh-muc';
   let slug = base;

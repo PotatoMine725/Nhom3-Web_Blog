@@ -1,7 +1,7 @@
 <%# Sidebar phải. Cần popularTags, recentComments (do middleware loadSidebar nạp). Mọi dữ liệu người dùng được escape %>
 <aside class="layout__right" aria-label="Thanh bên">
   <% if (!currentUser) { %>
-    <section class="sidebar-card sidebar-card--accent" id="welcomeCard">
+    <section class="sidebar-card" id="welcomeCard">
       <h2 class="sidebar-card__title">Chào mừng đến Nhom3 Blog</h2>
       <div class="sidebar-card__body">
         <p class="small mb-2">Một nơi để <strong>đọc</strong>, <strong>viết</strong> và <strong>trò chuyện</strong> về những gì bạn quan tâm.</p>
@@ -10,7 +10,7 @@
       </div>
     </section>
   <% } else if (locals.quickStart) { %>
-    <section class="sidebar-card sidebar-card--accent" id="quickStart">
+    <section class="sidebar-card" id="quickStart">
       <h2 class="sidebar-card__title">Bắt đầu nhanh</h2>
       <div class="sidebar-card__body">
         <ul class="list-unstyled mb-0">

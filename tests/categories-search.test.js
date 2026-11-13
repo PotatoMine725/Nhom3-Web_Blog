@@ -147,6 +147,37 @@ test('UC14: thêm danh mục, sinh slug, chặn trùng tên, rỗng, quá 50 ký
   assert.match(page.text, /lap-trinh-web/);
 });
 
+test('UC14: tên danh mục không phân biệt hoa thường, ký tự đặc biệt so khớp đúng chữ', async (t) => {
+  if (needDb(t)) return;
+  await setupUsers();
+  const admin = await h.loginAs('admin@test.local');
+  await admin.post('/admin/categories', { name: 'Lập trình Web' });
+
+  for (const name of ['LẬP TRÌNH WEB', 'lập trình web']) {
+    const res = await admin.post('/admin/categories', { name });
+    assert.strictEqual(res.status, 400);
+    assert.match(res.text, /Tên danh mục đã tồn tại/);
+  }
+
+  await admin.post('/admin/categories', { name: 'C++' });
+  assert.strictEqual((await admin.post('/admin/categories', { name: 'c++' })).status, 400);
+  await admin.post('/admin/categories', { name: 'Node.js' });
+  // Dấu "." không được hiểu là ký tự bất kỳ
+  assert.strictEqual((await admin.post('/admin/categories', { name: 'Nodexjs' })).status, 302);
+  assert.strictEqual(await Category.countDocuments(), 4);
+
+  // Đổi tên trùng (khác hoa thường) với danh mục khác: bị chặn
+  const other = await Category.findOne({ name: 'C++' });
+  const bad = await admin.post(`/admin/categories/${other._id}/edit`, { name: 'lập trình web' });
+  assert.strictEqual(bad.status, 302);
+  assert.strictEqual((await Category.findById(other._id)).name, 'C++');
+
+  // Đổi tên chính nó sang cách viết hoa khác: được
+  const web = await Category.findOne({ name: 'Lập trình Web' });
+  await admin.post(`/admin/categories/${web._id}/edit`, { name: 'LẬP TRÌNH WEB' });
+  assert.strictEqual((await Category.findById(web._id)).name, 'LẬP TRÌNH WEB');
+});
+
 test('UC14: đổi tên thì đổi slug; id sai 404; member không sửa được', async (t) => {
   if (needDb(t)) return;
   await setupUsers();
