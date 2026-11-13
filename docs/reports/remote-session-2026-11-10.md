@@ -57,3 +57,12 @@ Không đổi code, spec, schema.
 - Quyết định về tên danh mục khác hoa thường.
 - Tuỳ chọn: drop DB `nhom3_blog_manual_test` (dữ liệu thử, không dùng nữa).
 - Khi `dev` ổn định trên web: quyết định merge `dev` → `main` (chỉ nhóm quyết).
+
+## Cập nhật sau khi Hoang trả lời (2026-11-10, 18:08)
+
+Hoang trả lời: "duyệt 2 PR, tên danh mục không phân biệt hoa thường. Tất cả nội dung liên quan đến điện thoại đánh dấu không phát triển".
+
+- **Merge PR #37 và #38 vào `dev`** (merge commit, giống các PR trước). Hai PR không đụng cùng file. Không merge gì vào `main`.
+- **Tên danh mục không phân biệt hoa thường:** [PR #39](https://github.com/PotatoMine725/Nhom3-Web_Blog/pull/39), branch `fix/category-name-case`. Sửa `specs/03` (Hoang đã đồng ý trong tin nhắn), kiểm tra trong hook `pre('validate')` của model, thêm 1 test; `npm test` 111/111. Quyết định: kiểm ở tầng ứng dụng, không đổi index MongoDB, vì đổi tuỳ chọn index `name_1` trên DB thật cần xoá index cũ; chấp nhận khả năng hai request cùng lúc lọt (chỉ admin thêm danh mục).
+- **Điện thoại không phát triển:** PR `docs/mobile-not-developed`. Thêm một dòng "Ngoài phạm vi" ở `specs/01` và dòng lịch sử thay đổi; đánh dấu "Không phát triển" ở các mục còn mở về điện thoại trong `reports/2026-11-06-long-word-overflow.md` (`/admin/users` tràn ngang ở 375px), `reports/2026-11-06-ui-nits.md`, `reports/2026-11-10-manual-test.md`. Quyết định: **không xoá** code giao diện điện thoại đã có (menu ☰, ô tìm kiếm thu gọn), vì xoá là đổi hành vi và cần plan riêng; chỉ ngừng phát triển và kiểm thử thêm. Plan/spec cũ (`plans/2026-10-31-ui-ux.md`, `specs/04`) giữ nguyên vì là lịch sử đã làm.
+- PR này tạo từ branch của PR #39 để không xung đột ở bảng lịch sử thay đổi của `specs/01`: **merge #39 trước**, rồi PR này.
