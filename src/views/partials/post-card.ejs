@@ -15,6 +15,10 @@
         <% if (post.category && post.category.name) { %>
           <a class="category-chip" href="/categories/<%= post.category.slug %>" title="Danh mục"><%= post.category.name %></a>
         <% } %>
+        <%# Nhãn thread (BR14): chỉ khi đã populate thread %>
+        <% if (post.thread && post.thread.name) { %>
+          <a class="category-chip thread-chip" href="/threads/<%= post.thread.slug %>" title="Thread">Thread: <%= post.thread.name %></a>
+        <% } %>
         <% post.tags.forEach(function (tag) { %>
           <a class="tag-chip" href="/tags/<%= encodeURIComponent(tag) %>"><%= tag %></a>
         <% }) %>

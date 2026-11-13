@@ -6,6 +6,11 @@
   <li>
     <a class="left-nav__link <%= currentPath === '/popular' ? 'active' : '' %>" href="/popular" <%- currentPath === '/popular' ? 'aria-current="page"' : '' %>>Nổi bật</a>
   </li>
+  <%# Tô đậm ở /threads và mọi trang con /threads/... %>
+  <% var onThreads = currentPath === '/threads' || currentPath.indexOf('/threads/') === 0; %>
+  <li>
+    <a class="left-nav__link <%= onThreads ? 'active' : '' %>" href="/threads" <%- onThreads ? 'aria-current="page"' : '' %>>Threads</a>
+  </li>
   <% if (currentUser) { %>
     <li>
       <a class="left-nav__link <%= currentPath === '/me/posts' ? 'active' : '' %>" href="/me/posts" <%- currentPath === '/me/posts' ? 'aria-current="page"' : '' %>>Bài của tôi</a>

@@ -12,6 +12,7 @@ const commentRoutes = require('./routes/comments');
 const userRoutes = require('./routes/users');
 const adminRoutes = require('./routes/admin');
 const categoryRoutes = require('./routes/categories');
+const threadRoutes = require('./routes/threads');
 const loadCategories = require('./middlewares/loadCategories');
 const { errorHandler } = require('./middlewares/errorHandler');
 const { UPLOAD_DIR } = require('./middlewares/uploadCover');
@@ -65,6 +66,7 @@ function createApp({ sessionSecret }) {
   app.use('/', userRoutes);
   app.use('/', adminRoutes);
   app.use('/', categoryRoutes);
+  app.use('/', threadRoutes);
 
   app.use((req, res) => {
     res.status(404).render('errors/404', { title: 'Không tìm thấy trang' });

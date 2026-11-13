@@ -4,6 +4,8 @@ const Comment = require('../models/Comment');
 const Like = require('../models/Like');
 const Bookmark = require('../models/Bookmark');
 const Category = require('../models/Category');
+const Thread = require('../models/Thread');
+const ThreadMember = require('../models/ThreadMember');
 const { removeCover } = require('../middlewares/uploadCover');
 
 const PAGE_SIZE = 10;
@@ -38,8 +40,38 @@ async function readCategory(value) {
   return (await Category.exists({ _id: id })) ? id : undefined;
 }
 
+// Ô chọn thread (BR12): "" = không thuộc thread (null). Giữ nguyên thread đang lưu thì không kiểm lại
+// (bài vẫn sửa được sau khi tác giả rời thread, hoặc khi admin sửa). Thread khác thì phải tồn tại và
+// tác giả bài phải là thành viên. Trả về id, null, hoặc undefined nếu không hợp lệ
+async function readThread(value, authorId, currentThreadId) {
+  const id = str(value);
+  if (!id) return null;
+  if (currentThreadId && String(currentThreadId) === id) return currentThreadId;
+  if (!mongoose.isValidObjectId(id)) return undefined;
+  if (!(await Thread.exists({ _id: id }))) return undefined;
+  return (await ThreadMember.exists({ thread: id, user: authorId })) ? id : undefined;
+}
+
+// Option cho ô chọn thread: các thread tác giả bài đã tham gia, cộng thread hiện tại của bài nếu thiếu
+async function threadOptions(authorId, currentThreadId) {
+  const rows = await ThreadMember.find({ user: authorId }).populate('thread', 'name').lean();
+  // Thread vừa bị xoá thì populate ra null, bỏ đi
+  const threads = rows.map((r) => r.thread).filter(Boolean);
+  if (currentThreadId && !threads.some((t) => t._id.equals(currentThreadId))) {
+    const current = await Thread.findById(currentThreadId, 'name').lean();
+    if (current) threads.push(current);
+  }
+  return threads.sort((a, b) => a.name.localeCompare(b.name, 'vi'));
+}
+
 // coverImage: ảnh bìa đang lưu của bài (form sửa hiện ảnh này + ô "Xoá ảnh bìa")
-function renderForm(res, status, { data, errors, action, isEdit, coverImage = null, removeChecked = false }) {
+// authorId: tác giả bài (nạp danh sách thread); currentThread: thread đang lưu của bài (form sửa)
+async function renderForm(
+  res,
+  status,
+  { data, errors, action, isEdit, coverImage = null, removeChecked = false, authorId, currentThread = null }
+) {
+  const threads = await threadOptions(authorId, currentThread);
   res.status(status).render('posts/form', {
     title: isEdit ? 'Sửa bài' : 'Viết bài',
     errors,
@@ -47,8 +79,14 @@ function renderForm(res, status, { data, errors, action, isEdit, coverImage = nu
     isEdit,
     coverImage,
     removeChecked,
-    // category luôn là chuỗi id ('' = Chưa phân loại) để view so với option
-    values: { ...data, tags: data.tags.join(', '), category: data.category ? String(data.category) : '' },
+    threads,
+    // category, thread luôn là chuỗi id ('' = Chưa phân loại / không thuộc thread) để view so với option
+    values: {
+      ...data,
+      tags: data.tags.join(', '),
+      category: data.category ? String(data.category) : '',
+      thread: data.thread ? String(data.thread) : '',
+    },
   });
 }
 
@@ -137,6 +175,7 @@ async function index(req, res, next) {
       .limit(PAGE_SIZE)
       .populate('author', 'username')
       .populate('category', 'name slug')
+      .populate('thread', 'name slug')
       .lean();
 
     await addCommentCounts(posts);
@@ -162,7 +201,8 @@ async function show(req, res, next) {
     const user = res.locals.currentUser;
     const post = await Post.findOne({ slug: req.params.slug })
       .populate('author', 'username')
-      .populate('category', 'name slug');
+      .populate('category', 'name slug')
+      .populate('thread', 'name slug');
     const canEdit = post ? isOwnerOrAdmin(post, user) : false;
 
     // Bài nháp người khác mở cũng trả 404 để không lộ việc bài tồn tại
@@ -183,14 +223,26 @@ async function show(req, res, next) {
   }
 }
 
-// UC08
-function showNew(req, res) {
-  renderForm(res, 200, {
-    data: { title: '', content: '', tags: [], status: 'draft', category: '' },
-    errors: [],
-    action: '/posts',
-    isEdit: false,
-  });
+// UC08. ?thread=<slug> chọn sẵn thread nếu user đã tham gia; không thì bỏ qua tham số
+async function showNew(req, res, next) {
+  try {
+    const userId = res.locals.currentUser._id;
+    let thread = '';
+    const slug = str(req.query.thread).trim().toLowerCase();
+    if (slug) {
+      const found = await Thread.findOne({ slug });
+      if (found && (await ThreadMember.exists({ thread: found._id, user: userId }))) thread = found._id;
+    }
+    await renderForm(res, 200, {
+      data: { title: '', content: '', tags: [], status: 'draft', category: '', thread },
+      errors: [],
+      action: '/posts',
+      isEdit: false,
+      authorId: userId,
+    });
+  } catch (err) {
+    next(err);
+  }
 }
 
 // UC08, BR1, BR4, BR11
@@ -198,24 +250,25 @@ async function create(req, res, next) {
   // Tên file ảnh vừa upload (uploadCover đặt), không có thì null
   const newCover = req.file ? req.file.filename : null;
   try {
+    const authorId = res.locals.currentUser._id;
     const data = readForm(req.body);
     data.category = await readCategory(req.body.category);
+    data.thread = await readThread(req.body.thread, authorId, null);
     // Lỗi nào cũng hiện lại form; đã lưu file thì xoá đi (bài không được tạo)
     const reject = async (errors) => {
       await removeCover(newCover);
-      renderForm(res, 400, { data, errors, action: '/posts', isEdit: false });
+      // Giá trị không hợp lệ thì đưa về rỗng để form hiện lại
+      if (data.category === undefined) data.category = null;
+      if (data.thread === undefined) data.thread = null;
+      await renderForm(res, 400, { data, errors, action: '/posts', isEdit: false, authorId });
     };
     // 4b: ảnh sai loại / quá 2 MB, uploadCover không lưu file
-    if (req.uploadError) {
-      if (data.category === undefined) data.category = null;
-      return reject([req.uploadError]);
-    }
-    if (data.category === undefined) {
-      data.category = null;
-      return reject(['Danh mục không tồn tại']);
-    }
+    if (req.uploadError) return reject([req.uploadError]);
+    if (data.category === undefined) return reject(['Danh mục không tồn tại']);
+    // 4c (BR12)
+    if (data.thread === undefined) return reject(['Bạn chưa tham gia thread này']);
     // author lấy từ session, coverImage lấy từ file server đã lưu; cả hai không lấy từ form
-    const post = new Post({ ...data, author: res.locals.currentUser._id, coverImage: newCover });
+    const post = new Post({ ...data, author: authorId, coverImage: newCover });
     try {
       await post.save();
     } catch (err) {
@@ -232,15 +285,29 @@ async function create(req, res, next) {
 }
 
 // UC09 (req.doc do requireOwnerOrAdmin nạp)
-function showEdit(req, res) {
-  const post = req.doc;
-  renderForm(res, 200, {
-    data: { title: post.title, content: post.content, tags: post.tags, status: post.status, category: post.category },
-    errors: [],
-    action: `/posts/${post.slug}/edit`,
-    isEdit: true,
-    coverImage: post.coverImage,
-  });
+async function showEdit(req, res, next) {
+  try {
+    const post = req.doc;
+    await renderForm(res, 200, {
+      data: {
+        title: post.title,
+        content: post.content,
+        tags: post.tags,
+        status: post.status,
+        category: post.category,
+        thread: post.thread,
+      },
+      errors: [],
+      action: `/posts/${post.slug}/edit`,
+      isEdit: true,
+      coverImage: post.coverImage,
+      // Danh sách thread theo tác giả bài (admin sửa bài người khác cũng vậy)
+      authorId: post.author,
+      currentThread: post.thread,
+    });
+  } catch (err) {
+    next(err);
+  }
 }
 
 // UC09, BR2, BR4, BR11
@@ -251,29 +318,31 @@ async function update(req, res, next) {
     // Giữ slug, ảnh cũ trước khi save vì hook có thể đổi post.slug trong bộ nhớ dù validate lỗi
     const oldSlug = post.slug;
     const oldCover = post.coverImage;
+    const oldThread = post.thread;
     const wantRemove = req.body.removeCover === '1';
     const data = readForm(req.body);
     data.category = await readCategory(req.body.category);
+    // BR12: kiểm theo tác giả bài, không theo người đang sửa (admin)
+    data.thread = await readThread(req.body.thread, post.author, oldThread);
     // Lưu lỗi: xoá file vừa upload, giữ ảnh cũ, hiện lại form
     const reject = async (errors) => {
       await removeCover(newCover);
-      renderForm(res, 400, {
+      if (data.category === undefined) data.category = null;
+      if (data.thread === undefined) data.thread = null;
+      await renderForm(res, 400, {
         data,
         errors,
         action: `/posts/${oldSlug}/edit`,
         isEdit: true,
         coverImage: oldCover,
         removeChecked: wantRemove,
+        authorId: post.author,
+        currentThread: oldThread,
       });
     };
-    if (req.uploadError) {
-      if (data.category === undefined) data.category = null;
-      return reject([req.uploadError]);
-    }
-    if (data.category === undefined) {
-      data.category = null;
-      return reject(['Danh mục không tồn tại']);
-    }
+    if (req.uploadError) return reject([req.uploadError]);
+    if (data.category === undefined) return reject(['Danh mục không tồn tại']);
+    if (data.thread === undefined) return reject(['Bạn chưa tham gia thread này']);
     Object.assign(post, data); // không đụng author
     // Chọn ảnh mới thì thay ảnh (kể cả khi tick "Xoá ảnh bìa"); chỉ tick thì bỏ ảnh
     if (newCover) post.coverImage = newCover;
@@ -332,6 +401,7 @@ async function popular(req, res, next) {
       .limit(PAGE_SIZE)
       .populate('author', 'username')
       .populate('category', 'name slug')
+      .populate('thread', 'name slug')
       .lean();
     await addCommentCounts(posts);
     res.render('posts/index', {

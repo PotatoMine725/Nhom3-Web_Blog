@@ -60,6 +60,7 @@ async function bookmarks(req, res, next) {
         populate: [
           { path: 'author', select: 'username' },
           { path: 'category', select: 'name slug' },
+          { path: 'thread', select: 'name slug' },
         ],
       })
       .lean();
