@@ -14,6 +14,10 @@ erDiagram
   POST ||--o{ LIKE : "được like"
   USER ||--o{ BOOKMARK : "lưu"
   POST ||--o{ BOOKMARK : "được lưu"
+  USER ||--o{ THREAD : "tạo"
+  THREAD |o--o{ POST : "chứa"
+  USER ||--o{ THREAD_MEMBER : "tham gia"
+  THREAD ||--o{ THREAD_MEMBER : "có thành viên"
 
   USER {
     ObjectId _id PK
@@ -36,6 +40,7 @@ erDiagram
     ObjectId category FK "-> Category, có thể null"
     Number views "lượt xem"
     String coverImage "tên file, có thể null"
+    ObjectId thread FK "-> Thread, có thể null"
     Date createdAt
     Date updatedAt
   }
@@ -63,6 +68,22 @@ erDiagram
     ObjectId post FK "-> Post"
     Date createdAt
   }
+  THREAD {
+    ObjectId _id PK
+    String name "unique"
+    String slug "unique"
+    String description
+    String tag "tag chủ đề, có thể rỗng"
+    ObjectId author FK "-> User, người tạo"
+    Date createdAt
+    Date updatedAt
+  }
+  THREAD_MEMBER {
+    ObjectId _id PK
+    ObjectId user FK "-> User"
+    ObjectId thread FK "-> Thread"
+    Date createdAt
+  }
 ```
 
 PK là khoá chính, FK là trường ObjectId tham chiếu sang collection khác (Mongoose `ref` + `populate`).
@@ -75,14 +96,19 @@ PK là khoá chính, FK là trường ObjectId tham chiếu sang collection khá
 | Category – Post | 1 – n | `Post.category` tham chiếu Category (có thể null) |
 | User – Post (like) | n – n | Collection trung gian `likes` { user, post }, unique theo cặp |
 | User – Post (lưu) | n – n | Collection trung gian `bookmarks` { user, post }, unique theo cặp |
+| User – Thread (tạo) | 1 – n | `Thread.author` tham chiếu User |
+| Thread – Post | 1 – n | `Post.thread` tham chiếu Thread (có thể null) |
+| User – Thread (tham gia) | n – n | Collection trung gian `threadmembers` { user, thread }, unique theo cặp |
 
 **Vì sao Comment là collection riêng?** Số bình luận không giới hạn, nhúng vào sẽ làm document Post phình to (giới hạn 16 MB). Xoá hoặc phân trang bình luận cũng dễ hơn. Ngược lại, `tags` là mảng nhỏ nên nhúng luôn vào Post.
 
 **Vì sao like / bookmark là collection trung gian, không nhúng mảng `likedBy` vào Post?** Số like không giới hạn (cùng lý do với Comment). Collection trung gian với unique index `{ user, post }` cho phép DB tự chặn like trùng (BR9), lấy "bài tôi đã lưu" bằng index `user`, và đếm / xếp hạng bằng aggregation. Đây là cách biểu diễn quan hệ n – n chuẩn trong MongoDB khi một phía có thể rất lớn.
 
+**Vì sao thành viên thread là collection trung gian, không nhúng mảng `members` vào Thread?** Cùng lý do với like / bookmark: số thành viên không giới hạn; unique index `{ thread, user }` để DB tự chặn tham gia trùng (BR12); đếm thành viên bằng aggregation; lấy "thread tôi đã tham gia" bằng index `user`. **Vì sao bài trong thread vẫn là Post?** Để dùng lại toàn bộ bình luận, like, lưu, ảnh bìa, lượt xem, tìm kiếm mà không viết lại; chỉ thêm một field tham chiếu `thread` giống `category`.
+
 ## Schema chi tiết
 
-User, Post, Category, Comment bật `timestamps: true`, Mongoose tự thêm `createdAt` và `updatedAt`. Like, Bookmark không bao giờ bị sửa nên chỉ bật `timestamps: { createdAt: true, updatedAt: false }`. Collection `sessions` do connect-mongo tự tạo, không cần thiết kế.
+User, Post, Category, Comment, Thread bật `timestamps: true`, Mongoose tự thêm `createdAt` và `updatedAt`. Like, Bookmark, ThreadMember không bao giờ bị sửa nên chỉ bật `timestamps: { createdAt: true, updatedAt: false }`. Collection `sessions` do connect-mongo tự tạo, không cần thiết kế.
 
 ### User
 
@@ -107,6 +133,7 @@ User, Post, Category, Comment bật `timestamps: true`, Mongoose tự thêm `cre
 | category | ObjectId → Category | | `null` | `null` = "Chưa phân loại" |
 | views | Number | | `0` | min 0; chỉ tăng bằng `$inc` (BR10), không lấy từ form |
 | coverImage | String | | `null` | tên file trong `uploads/` (do server đặt), không lấy từ form; `null` = không có ảnh bìa |
+| thread | ObjectId → Thread | | `null` | `null` = không thuộc thread. Khi lưu: thread phải tồn tại và tác giả bài là thành viên (BR12); giữ nguyên thread cũ thì không kiểm lại |
 
 ### Category
 
@@ -132,6 +159,25 @@ Hai collection cùng cấu trúc (`likes`, `bookmarks`), mỗi document là mộ
 | user | ObjectId → User | Có | | gán từ session |
 | post | ObjectId → Post | Có | | bài phải tồn tại và đã `published` |
 
+### Thread
+
+| Trường | Kiểu | Bắt buộc | Mặc định | Ràng buộc / validate |
+| --- | --- | --- | --- | --- |
+| name | String | Có | | trim, 3–50 ký tự; duy nhất không phân biệt hoa thường (giống Category) |
+| slug | String | Có | tự sinh | unique, lowercase, sinh từ name; `new` coi như đã dùng (route `/threads/new`) |
+| description | String | | `''` | trim, tối đa 500 ký tự |
+| tag | String | | `''` | tag chủ đề: lowercase, trim, tối đa 30 ký tự; chỉ để hiển thị và link tới `/tags/:tag`, không tự gắn vào bài |
+| author | ObjectId → User | Có | | người tạo, gán từ session. Dùng tên `author` để tái dùng middleware `requireOwnerOrAdmin` |
+
+### ThreadMember
+
+Collection `threadmembers`, mỗi document là một cặp "user đã tham gia thread".
+
+| Trường | Kiểu | Bắt buộc | Mặc định | Ràng buộc / validate |
+| --- | --- | --- | --- | --- |
+| user | ObjectId → User | Có | | gán từ session |
+| thread | ObjectId → Thread | Có | | thread phải tồn tại |
+
 ## Index
 
 | Collection | Index | Mục đích |
@@ -147,6 +193,10 @@ Hai collection cùng cấu trúc (`likes`, `bookmarks`), mỗi document là mộ
 | likes, bookmarks | `{ user: 1, post: 1 }` (unique) | Chặn like / lưu trùng (BR9), kiểm tra "tôi đã like chưa", trang "Đã lưu" |
 | likes, bookmarks | `post` | Đếm like của một bài, xoá theo bài (BR6), thống kê |
 | bookmarks | `{ user: 1, createdAt: -1 }` | Trang "Đã lưu": lọc theo user, mới lưu nhất trước, phân trang |
+| posts | `{ thread: 1, status: 1, createdAt: -1 }` | Trang thread: bài đã đăng trong thread, mới nhất trước; cũng dùng khi xoá thread (`updateMany` theo `thread`) |
+| threads | `slug` (unique) | Mở thread theo URL `/threads/:slug` |
+| threadmembers | `{ thread: 1, user: 1 }` (unique) | Chặn tham gia trùng (BR12), kiểm tra "tôi đã tham gia chưa", đếm thành viên của thread |
+| threadmembers | `user` | Danh sách thread tôi đã tham gia (ô chọn thread ở form bài viết) |
 
 ## Logic gắn với schema
 
@@ -161,6 +211,13 @@ Hai collection cùng cấu trúc (`likes`, `bookmarks`), mỗi document là mộ
 | Đổi / xoá ảnh bìa | Lưu bài thành công rồi mới xoá file cũ; lưu bài lỗi thì xoá file vừa upload | Controller |
 | Xoá Category | Đặt `category = null` cho các bài thuộc danh mục | Controller |
 | Admin "xoá" User | Không xoá thật, chỉ đặt `isLocked = true` để bài/bình luận cũ không mất tác giả | Controller |
+| Lưu Thread | Tên trùng (không phân biệt hoa thường) thì báo lỗi; sinh slug, trùng thì thêm `-2`, `-3` | Hook `pre('validate')` |
+| Tạo Thread | Lưu thread rồi tạo ThreadMember cho người tạo; bước sau lỗi thì xoá thread vừa tạo | Controller |
+| Tham gia thread | `create` cặp (user, thread); lỗi 11000 (đã tham gia / bấm 2 lần) coi như thành công | Controller |
+| Rời thread | Người tạo không được rời; còn lại `deleteOne` cặp. Không đụng tới bài | Controller |
+| Xoá Thread | `ThreadMember.deleteMany({ thread })`, `Post.updateMany({ thread }, { thread: null }, { timestamps: false })`, rồi xoá thread (BR13) | Controller |
+| Lưu Post có `thread` | Thread đổi so với giá trị đang lưu (hoặc bài mới) thì kiểm thread tồn tại và có ThreadMember (tác giả bài, thread); sai thì báo lỗi form | Controller |
+| Danh sách thread | Đếm thành viên: `threadmembers` `$match` thread thuộc trang hiện tại → `$group` theo `thread`. Đếm bài: `posts` `$match` (thread thuộc trang, `published`) → `$group` theo `thread` | Controller |
 
 ## Truy vấn thống kê (UC20)
 

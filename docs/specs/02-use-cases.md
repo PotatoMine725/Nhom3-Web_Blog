@@ -9,8 +9,8 @@ Có 3 actor theo quan hệ kế thừa: Thành viên làm được mọi thứ c
 | Actor | Mô tả |
 | --- | --- |
 | Khách (Guest) | Người chưa đăng nhập. Chỉ xem và tìm bài, đăng ký, đăng nhập. |
-| Thành viên (Member) | Người đã đăng nhập. Viết bài, bình luận, like, lưu bài, quản lý nội dung của chính mình. |
-| Admin | Quản trị viên. Quản lý người dùng, danh mục, xoá bất kỳ bài/bình luận nào, xem thống kê. |
+| Thành viên (Member) | Người đã đăng nhập. Viết bài, bình luận, like, lưu bài, tạo / tham gia thread, quản lý nội dung của chính mình. |
+| Admin | Quản trị viên. Quản lý người dùng, danh mục, xoá bất kỳ bài/bình luận/thread nào, xem thống kê. |
 
 ## Danh sách use case
 
@@ -23,8 +23,8 @@ Có 3 actor theo quan hệ kế thừa: Thành viên làm được mọi thứ c
 | UC05 | Đăng nhập | Khách | BR8 |
 | UC06 | Đăng xuất | Thành viên | |
 | UC07 | Cập nhật hồ sơ / đổi mật khẩu | Thành viên | BR3 |
-| UC08 | Tạo bài viết (có thể kèm ảnh bìa) | Thành viên | BR1, BR4, BR11 |
-| UC09 | Sửa bài viết (đổi / xoá ảnh bìa) | Thành viên | BR2, BR11 |
+| UC08 | Tạo bài viết (có thể kèm ảnh bìa, chọn thread) | Thành viên | BR1, BR4, BR11, BR12 |
+| UC09 | Sửa bài viết (đổi / xoá ảnh bìa, đổi thread) | Thành viên | BR2, BR11, BR12 |
 | UC10 | Xoá bài viết | Thành viên | BR2, BR6 |
 | UC11 | Xem danh sách bài của tôi (kể cả nháp) | Thành viên | BR5 |
 | UC12 | Viết bình luận | Thành viên | BR1 |
@@ -36,8 +36,13 @@ Có 3 actor theo quan hệ kế thừa: Thành viên làm được mọi thứ c
 | UC18 | Lưu / bỏ lưu bài viết, xem danh sách đã lưu | Thành viên | BR1, BR5, BR9 |
 | UC19 | Xem bài nổi bật (nhiều lượt xem nhất) | Khách | BR5 |
 | UC20 | Xem trang thống kê | Admin | |
+| UC21 | Xem danh sách thread | Khách | |
+| UC22 | Xem chi tiết thread + bài trong thread | Khách | BR5, BR14 |
+| UC23 | Tạo thread | Thành viên | BR1, BR12 |
+| UC24 | Tham gia / rời thread | Thành viên | BR12 |
+| UC25 | Xoá thread | Thành viên (người tạo), Admin | BR13 |
 
-UC08, UC09, UC10, UC12, UC13, UC17, UC18 đều **include** "Kiểm tra đăng nhập". UC09, UC10, UC13 còn include "Kiểm tra quyền sở hữu".
+UC08, UC09, UC10, UC12, UC13, UC17, UC18, UC23, UC24, UC25 đều **include** "Kiểm tra đăng nhập". UC09, UC10, UC13, UC25 còn include "Kiểm tra quyền sở hữu" (với thread: người tạo).
 
 ## Sơ đồ use case
 
@@ -57,6 +62,8 @@ flowchart LR
       UC04((UC04 Đăng ký))
       UC05((UC05 Đăng nhập))
       UC19((UC19 Xem bài nổi bật))
+      UC21((UC21 Xem danh sách thread))
+      UC22((UC22 Xem chi tiết thread))
     end
     subgraph MEM[Cần đăng nhập]
       UC06((UC06 Đăng xuất))
@@ -69,6 +76,9 @@ flowchart LR
       UC13((UC13 Xoá bình luận))
       UC17((UC17 Like bài))
       UC18((UC18 Lưu bài))
+      UC23((UC23 Tạo thread))
+      UC24((UC24 Tham gia / rời thread))
+      UC25((UC25 Xoá thread))
     end
     subgraph ADM[Chỉ admin]
       UC14((UC14 Quản lý danh mục))
@@ -101,8 +111,8 @@ flowchart LR
 | --- | --- |
 | Actor | Thành viên |
 | Tiền điều kiện | Đã đăng nhập (BR1) |
-| Luồng chính | 1. Mở `/posts/new`. 2. Nhập tiêu đề, nội dung, chọn danh mục, tag, trạng thái, ảnh bìa (không bắt buộc). 3. Bấm Lưu. 4. Hệ thống kiểm tra dữ liệu. 5. Sinh slug từ tiêu đề (BR4). 6. Lưu bài với `author` = user hiện tại. 7. Chuyển tới trang chi tiết bài. |
-| Luồng phụ | 4a. Thiếu tiêu đề/nội dung: hiện lại form kèm lỗi. 4b. Ảnh bìa sai định dạng hoặc quá 2 MB: hiện lại form kèm lỗi, không lưu file (BR11). 5a. Slug trùng: thêm hậu tố `-2`, `-3`. Chưa đăng nhập: chuyển về `/login`. |
+| Luồng chính | 1. Mở `/posts/new` (hoặc `/posts/new?thread=<slug>` từ trang thread, chọn sẵn thread). 2. Nhập tiêu đề, nội dung, chọn danh mục, tag, trạng thái, ảnh bìa, thread (hai mục cuối không bắt buộc; ô thread chỉ liệt kê thread đã tham gia). 3. Bấm Lưu. 4. Hệ thống kiểm tra dữ liệu. 5. Sinh slug từ tiêu đề (BR4). 6. Lưu bài với `author` = user hiện tại. 7. Chuyển tới trang chi tiết bài. |
+| Luồng phụ | 4a. Thiếu tiêu đề/nội dung: hiện lại form kèm lỗi. 4b. Ảnh bìa sai định dạng hoặc quá 2 MB: hiện lại form kèm lỗi, không lưu file (BR11). 4c. Thread không tồn tại hoặc chưa tham gia: hiện lại form, báo "Bạn chưa tham gia thread này" (BR12). 5a. Slug trùng: thêm hậu tố `-2`, `-3`. Chưa đăng nhập: chuyển về `/login`. |
 | Hậu điều kiện | Bài mới nằm trong DB; nếu `published` thì hiện ở trang chủ |
 
 ### UC12 · Viết bình luận
@@ -146,6 +156,36 @@ UC18 (lưu bài) giống hệt UC17 với collection Bookmark, thêm trang `/me/
 | Luồng chính | 1. Mở `/admin`. 2. Hệ thống chạy các truy vấn đếm và aggregation pipeline (danh sách ở specs/03, mục "Truy vấn thống kê"). 3. Hiện các con số tổng và các bảng thống kê. |
 | Luồng phụ | Không phải admin: 403. Chưa có dữ liệu: bảng hiện "Chưa có dữ liệu". |
 | Hậu điều kiện | Không đổi dữ liệu |
+
+### UC23 · Tạo thread
+
+| Mục | Nội dung |
+| --- | --- |
+| Actor | Thành viên |
+| Tiền điều kiện | Đã đăng nhập |
+| Luồng chính | 1. Mở `/threads/new`. 2. Nhập tên, mô tả (không bắt buộc), tag chủ đề (không bắt buộc). 3. Bấm Tạo. 4. Hệ thống kiểm tra dữ liệu, sinh slug từ tên. 5. Lưu thread với `author` = user hiện tại. 6. Tạo bản ghi thành viên cho người tạo (BR12). 7. Chuyển tới trang thread. |
+| Luồng phụ | 4a. Tên rỗng, sai độ dài hoặc trùng tên (không phân biệt hoa thường): hiện lại form kèm lỗi. 6a. Lỗi khi tạo bản ghi thành viên: xoá thread vừa tạo, chuyển cho trang lỗi. Chưa đăng nhập: chuyển về `/login`. |
+| Hậu điều kiện | Thread mới có đúng 1 thành viên là người tạo |
+
+### UC24 · Tham gia / rời thread
+
+| Mục | Nội dung |
+| --- | --- |
+| Actor | Thành viên |
+| Tiền điều kiện | Đã đăng nhập, thread tồn tại |
+| Luồng chính | 1. Ở trang thread, bấm "Tham gia" (hoặc "Rời thread"). 2. Tham gia: tạo bản ghi (user, thread). Rời: xoá bản ghi. 3. Quay lại trang thread, nút đổi trạng thái, số thành viên cập nhật. |
+| Luồng phụ | Thread không tồn tại: 404. Đã tham gia mà bấm tham gia (hoặc bấm 2 lần cùng lúc): unique index chặn trùng, coi như đã tham gia. Người tạo bấm rời: báo "Người tạo không thể rời thread", không xoá. Chưa tham gia mà bấm rời: không làm gì. Chưa đăng nhập: chuyển về `/login`. |
+| Hậu điều kiện | Mỗi cặp (user, thread) có tối đa 1 bản ghi; bài cũ của người rời vẫn ở trong thread (BR12) |
+
+### UC25 · Xoá thread
+
+| Mục | Nội dung |
+| --- | --- |
+| Actor | Người tạo thread, Admin |
+| Tiền điều kiện | Đã đăng nhập, là người tạo hoặc admin |
+| Luồng chính | 1. Ở trang thread, bấm "Xoá thread" (form POST, có hộp xác nhận). 2. Xoá mọi bản ghi thành viên của thread. 3. Đặt `thread = null` cho các bài thuộc thread. 4. Xoá thread. 5. Về `/threads`, báo "Đã xoá thread". |
+| Luồng phụ | Không phải người tạo / admin: 403. Thread không tồn tại: 404. |
+| Hậu điều kiện | Thread và danh sách thành viên mất; bài viết còn nguyên, không thuộc thread nào (BR13) |
 
 ## Sơ đồ hoạt động · UC08 Tạo bài viết
 
