@@ -254,7 +254,8 @@ async function create(req, res, next) {
     const data = readForm(req.body);
     data.category = await readCategory(req.body.category);
     data.thread = await readThread(req.body.thread, authorId, null);
-    // Lỗi nào cũng hiện lại form; đã lưu file thì xoá đi (bài không được tạo)
+    // Lỗi nào cũng hiện lại form; đã lưu file thì xoá đi (bài không được tạo).
+    // Gọi bằng "return await reject(...)": renderForm có truy vấn DB, thiếu await thì lỗi không tới catch / next(err)
     const reject = async (errors) => {
       await removeCover(newCover);
       // Giá trị không hợp lệ thì đưa về rỗng để form hiện lại
@@ -263,10 +264,10 @@ async function create(req, res, next) {
       await renderForm(res, 400, { data, errors, action: '/posts', isEdit: false, authorId });
     };
     // 4b: ảnh sai loại / quá 2 MB, uploadCover không lưu file
-    if (req.uploadError) return reject([req.uploadError]);
-    if (data.category === undefined) return reject(['Danh mục không tồn tại']);
+    if (req.uploadError) return await reject([req.uploadError]);
+    if (data.category === undefined) return await reject(['Danh mục không tồn tại']);
     // 4c (BR12)
-    if (data.thread === undefined) return reject(['Bạn chưa tham gia thread này']);
+    if (data.thread === undefined) return await reject(['Bạn chưa tham gia thread này']);
     // author lấy từ session, coverImage lấy từ file server đã lưu; cả hai không lấy từ form
     const post = new Post({ ...data, author: authorId, coverImage: newCover });
     try {
@@ -274,7 +275,7 @@ async function create(req, res, next) {
     } catch (err) {
       const errors = validationMessages(err);
       if (!errors) throw err;
-      return reject(errors);
+      return await reject(errors);
     }
     req.session.flash = { type: 'success', message: 'Đã tạo bài viết' };
     res.redirect(`/posts/${post.slug}`);
@@ -340,9 +341,9 @@ async function update(req, res, next) {
         currentThread: oldThread,
       });
     };
-    if (req.uploadError) return reject([req.uploadError]);
-    if (data.category === undefined) return reject(['Danh mục không tồn tại']);
-    if (data.thread === undefined) return reject(['Bạn chưa tham gia thread này']);
+    if (req.uploadError) return await reject([req.uploadError]);
+    if (data.category === undefined) return await reject(['Danh mục không tồn tại']);
+    if (data.thread === undefined) return await reject(['Bạn chưa tham gia thread này']);
     Object.assign(post, data); // không đụng author
     // Chọn ảnh mới thì thay ảnh (kể cả khi tick "Xoá ảnh bìa"); chỉ tick thì bỏ ảnh
     if (newCover) post.coverImage = newCover;
@@ -352,7 +353,7 @@ async function update(req, res, next) {
     } catch (err) {
       const errors = validationMessages(err);
       if (!errors) throw err;
-      return reject(errors);
+      return await reject(errors);
     }
     // Lưu bài thành công rồi mới xoá file ảnh cũ (spec 03)
     if (oldCover && oldCover !== post.coverImage) await removeCover(oldCover);

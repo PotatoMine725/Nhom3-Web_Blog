@@ -215,7 +215,10 @@ test('#9 thành viên đăng bài vào thread: hiện ở trang thread, trang ch
   assert.ok(post.thread.equals(thread._id));
 
   const label = new RegExp(`href="/threads/${thread.slug}"[^>]*>Thread: Node\\.js<`);
-  for (const path of ['/', `/threads/${thread.slug}`, '/search?q=router', '/tags/express', `/posts/${post.slug}`]) {
+  // Lưu bài để kiểm cả /me/bookmarks (reactionController.bookmarks populate thread)
+  await c.post(`/posts/${post.slug}/bookmark`);
+  const paths = ['/', '/popular', '/me/bookmarks', `/threads/${thread.slug}`, '/search?q=router', '/tags/express', `/posts/${post.slug}`];
+  for (const path of paths) {
     const page = await c.get(path);
     assert.strictEqual(page.status, 200, path);
     assert.match(page.text, /Hướng dẫn express router/, path);
