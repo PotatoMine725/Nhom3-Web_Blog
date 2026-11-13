@@ -47,7 +47,7 @@ Hệ thống là một blog nhiều tác giả. Thành viên đăng bài, ngư�
 | BR11 | Ảnh bìa chỉ nhận JPG, PNG, WEBP, tối đa 2 MB; lưu trong thư mục `uploads/` trên máy chạy server. |
 | BR12 | Mỗi thành viên tham gia một thread tối đa 1 lần. Người tạo thread tự động là thành viên và không rời được thread của mình. Chỉ thành viên của thread mới gắn bài vào thread đó (khi tạo bài hoặc đổi thread khi sửa bài). Rời thread thì bài đã đăng vẫn ở lại trong thread. |
 | BR13 | Chỉ người tạo thread hoặc admin được xoá thread. Xoá thread thì xoá danh sách thành viên; bài trong thread không bị xoá mà chuyển về "không thuộc thread". |
-| BR14 | Bài trong thread vẫn là bài bình thường: theo BR5 (nháp chỉ tác giả / admin thấy) và hiện ở trang chủ, tìm kiếm, danh mục, tag, nổi bật, thống kê như mọi bài, kèm nhãn tên thread. Xem thread và bài trong thread không cần tham gia. |
+| BR14 | Bài trong thread vẫn là bài bình thường: theo BR5 (nháp chỉ tác giả / admin thấy) và được tính ở trang chủ, tìm kiếm, danh mục, tag, nổi bật, thống kê như mọi bài. Nhãn tên thread chỉ hiện ở thẻ bài (`partials/post-card`) và trang chi tiết bài; các bảng (Bài của tôi, kiểm duyệt, thống kê) không thêm nhãn. Xem thread và bài trong thread không cần tham gia. |
 
 ## Lịch sử thay đổi
 
