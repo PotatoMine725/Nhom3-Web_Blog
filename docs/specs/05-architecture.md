@@ -23,8 +23,8 @@ src/
   server.js         # đọc .env, kết nối DB, chạy server
   app.js            # tạo Express app: view engine, session, route, lỗi
   config/db.js      # kết nối MongoDB
-  models/           # User, Post, Category, Comment, Like, Bookmark
-  routes/           # auth, posts (gồm cả like, bookmark), comments, admin
+  models/           # User, Post, Category, Comment, Like, Bookmark, Thread, ThreadMember
+  routes/           # auth, posts (gồm cả like, bookmark), comments, admin, threads
   controllers/      # xử lý từng use case
   middlewares/      # loadUser, requireLogin, requireOwnerOrAdmin, requireAdmin, uploadCover
   utils/            # hàm dùng chung (slugify, ...)
@@ -48,3 +48,4 @@ scripts/
 9. Ảnh bìa (BR11, phần ảnh của UC08, UC09), mở rộng BR6 cho file ảnh.
 10. Trang thống kê admin (UC20). Làm cuối vì cần đủ dữ liệu like, bình luận, lượt xem.
 11. Kiểm thử thủ công theo từng use case UC01–UC20.
+12. Thread (UC21–UC25, BR12–BR14, phần chọn thread của UC08, UC09). Thêm sau khi bước 1–11 đã xong; kiểm thử thủ công UC21–UC25 trong cùng bước.

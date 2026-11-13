@@ -37,10 +37,19 @@ Form HTML chỉ gửi được GET/POST, nên sửa và xoá dùng POST tới `/
 | GET | `/admin/posts` | UC16 | Tất cả bài, kể cả nháp, kèm nút xoá | `requireAdmin` |
 | GET | `/admin` | UC20 | Trang thống kê (specs/03, mục "Truy vấn thống kê") | `requireAdmin` |
 | GET | `/uploads/<tên file>` | UC02 | File ảnh bìa, phục vụ tĩnh bằng `express.static` | Công khai |
+| GET | `/threads?page=` | UC21 | Danh sách thread, mới tạo nhất trước, 10 thread/trang, kèm số thành viên, số bài đã đăng; thành viên thấy nhãn "Đã tham gia" | Công khai |
+| GET | `/threads/new` | UC23 | Form tạo thread | `requireLogin` |
+| POST | `/threads` | UC23 | Lưu thread, người tạo thành thành viên | `requireLogin` |
+| GET | `/threads/:slug?page=` | UC22 | Thông tin thread (mô tả, tag, người tạo, số thành viên), nút tham gia / rời, bài đã đăng trong thread mới nhất trước, 10 bài/trang | Công khai |
+| POST | `/threads/:slug/join` | UC24 | Tham gia, quay lại trang thread | `requireLogin` |
+| POST | `/threads/:slug/leave` | UC24 | Rời thread (người tạo không rời được), quay lại trang thread | `requireLogin` |
+| POST | `/threads/:slug/delete` | UC25 | Xoá thread + thành viên, bài về `thread = null`, về `/threads` | `requireLogin` + `requireOwnerOrAdmin` |
 
 Lưu ý:
 
-- Khai báo `/posts/new` trước `/posts/:slug`, nếu không Express sẽ hiểu `new` là một slug.
+- Khai báo `/posts/new` trước `/posts/:slug`, nếu không Express sẽ hiểu `new` là một slug. Tương tự `/threads/new` trước `/threads/:slug`.
+- `GET /posts/new?thread=<slug>` chọn sẵn thread trong form nếu người dùng đã tham gia thread đó; không thì bỏ qua tham số.
+- `requireOwnerOrAdmin` dùng được cho thread vì Thread lưu người tạo ở field `author`.
 - Admin không tự khoá hoặc hạ quyền chính mình.
 - `POST /posts` và `POST /posts/:slug/edit` nhận form `multipart/form-data` (có ảnh bìa), nên đi qua middleware `uploadCover` (multer) trước controller. `uploadCover` luôn đặt **sau** middleware kiểm quyền (`requireLogin`, và `requireOwnerOrAdmin` ở route sửa) để khách và người không có quyền không ghi được file lên đĩa.
 - Like, bookmark trên bài nháp hoặc bài không tồn tại trả 404 (giống UC02).
@@ -75,13 +84,16 @@ npm run create-admin -- <email>
 | View | Dùng cho | Nội dung chính |
 | --- | --- | --- |
 | `partials/header`, `partials/footer` | Mọi trang | Header: logo; ô tìm kiếm (gửi `GET /search?q=`, giữ lại từ khoá; màn hình nhỏ thu gọn, mở bằng nút kính lúp); menu "Danh mục"; nút đổi giao diện sáng/tối (chỉ hiện khi có JS); khách: nút đăng nhập, đăng ký; thành viên: nút "Viết bài" và menu avatar ("Bài của tôi", "Đã lưu", "Hồ sơ", "Đăng xuất"; admin thêm "Thống kê", "Người dùng", "Kiểm duyệt bài", "Quản lý danh mục"); màn hình nhỏ có nút ☰ mở menu trái. Footer; vùng thông báo thành công/lỗi (`flash`) ở đầu nội dung |
-| `partials/left-nav` | Mọi trang | Menu trái (màn hình nhỏ mở bằng nút ☰ ở header): "Trang chủ", "Nổi bật" (`/popular`); thành viên thêm "Bài của tôi", "Đã lưu", "Viết bài". Mục của trang đang mở được đánh dấu |
-| `posts/index` | `/`, `/search`, `/categories/:slug`, `/tags/:tag`, `/popular`, `/me/bookmarks` | Tiêu đề trang, thẻ bài (ảnh bìa nhỏ nếu có, tiêu đề, tác giả, ngày, danh mục, lượt xem, đoạn trích), phân trang (không có ở `/popular`). Trang `/search` có form lọc: từ khoá, chọn danh mục, tag, giữ lại giá trị đã nhập |
-| `posts/show` | `/posts/:slug` | Ảnh bìa (nếu có), nội dung bài, tag, lượt xem, số like; nút Like / Lưu (đã đăng nhập, đổi chữ theo trạng thái) hoặc link đăng nhập (khách); nút sửa/xoá (nếu có quyền), danh sách bình luận, form bình luận |
-| `posts/form` | Tạo và sửa bài | Tiêu đề, nội dung, chọn danh mục, tag (cách nhau dấu phẩy), trạng thái nháp/đăng, chọn ảnh bìa; form sửa hiện ảnh hiện tại + ô "Xoá ảnh bìa". Form dùng `enctype="multipart/form-data"` |
+| `partials/left-nav` | Mọi trang | Menu trái (màn hình nhỏ mở bằng nút ☰ ở header): "Trang chủ", "Nổi bật" (`/popular`), "Threads" (`/threads`); thành viên thêm "Bài của tôi", "Đã lưu", "Viết bài". Mục của trang đang mở được đánh dấu |
+| `posts/index` | `/`, `/search`, `/categories/:slug`, `/tags/:tag`, `/popular`, `/me/bookmarks` | Tiêu đề trang, thẻ bài (ảnh bìa nhỏ nếu có, tiêu đề, tác giả, ngày, danh mục, nhãn thread nếu có, lượt xem, đoạn trích), phân trang (không có ở `/popular`). Trang `/search` có form lọc: từ khoá, chọn danh mục, tag, giữ lại giá trị đã nhập |
+| `posts/show` | `/posts/:slug` | Ảnh bìa (nếu có), nhãn thread (link tới trang thread, nếu có), nội dung bài, tag, lượt xem, số like; nút Like / Lưu (đã đăng nhập, đổi chữ theo trạng thái) hoặc link đăng nhập (khách); nút sửa/xoá (nếu có quyền), danh sách bình luận, form bình luận |
+| `posts/form` | Tạo và sửa bài | Tiêu đề, nội dung, chọn danh mục, tag (cách nhau dấu phẩy), trạng thái nháp/đăng, chọn thread ("Không thuộc thread" + các thread tác giả bài đã tham gia + thread hiện tại của bài nếu có), chọn ảnh bìa; form sửa hiện ảnh hiện tại + ô "Xoá ảnh bìa". Form dùng `enctype="multipart/form-data"` |
 | `posts/mine` | `/me/posts` | Bảng bài của tôi: tiêu đề, trạng thái, ngày, nút sửa/xoá |
 | `auth/login`, `auth/register` | Đăng nhập, đăng ký | Form + lỗi validate |
 | `users/profile` | `/profile` | Đổi email, đổi mật khẩu (nhập mật khẩu cũ) |
+| `threads/index` | `/threads` | Nút "Tạo thread" (thành viên), thẻ thread: tên, mô tả ngắn, tag, số thành viên, số bài, nhãn "Đã tham gia"; phân trang; trống thì "Chưa có thread nào" |
+| `threads/show` | `/threads/:slug` | Tên, mô tả, tag (link `/tags/:tag`), người tạo, số thành viên; nút "Tham gia" / "Rời thread" (thành viên; người tạo không có nút rời) hoặc link đăng nhập (khách); nút "Viết bài trong thread" (đã tham gia, tới `/posts/new?thread=<slug>`); nút "Xoá thread" (người tạo / admin, có xác nhận); danh sách thẻ bài + phân trang |
+| `threads/form` | `/threads/new` | Tên, mô tả, tag chủ đề + lỗi validate |
 | `admin/categories` | Quản lý danh mục | Bảng danh mục + số bài, form thêm, sửa tên, xoá |
 | `admin/users` | Quản lý người dùng | Bảng user: username, email, vai trò, trạng thái, nút khoá/đổi vai trò |
 | `admin/posts` | Kiểm duyệt | Bảng mọi bài, lọc theo trạng thái, nút xoá |
